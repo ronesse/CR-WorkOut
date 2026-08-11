@@ -77,3 +77,9 @@ Kjør den nye delen i `SQL_SETUP.sql` som oppretter `cr_program_activities` og R
 
 ### SQL
 Kjør den nye v5-delen i `SQL_SETUP.sql` for å opprette `cr_program_settings` og coach-policy for `cr_programs`.
+
+
+## v5.1 – Login fix
+- Defensive initialisering av de nye import/eksport-kontrollene.
+- Appen stopper ikke lenger før Supabase Auth initialiseres dersom gammel HTML ligger i cache.
+- Cache-busting på `style.css`, `programs.js` og `app.js`.
