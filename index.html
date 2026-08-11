@@ -154,7 +154,23 @@
         </div>
       </section>
 
-      <section id="calendarScreen" class="screen hidden">
+      <section id="programsScreen" class="screen hidden">
+      <div class="section-heading">
+        <div><h2>Programmer</h2><p>Velg et program og rediger aktivitetene.</p></div>
+        <select id="coachProgramSelect" class="coach-filter"></select>
+      </div>
+      <div class="panel">
+        <div class="program-editor-head">
+          <div><div class="eyebrow">PROGRAMINNHOLD</div><h3 id="coachProgramTitle">Velg program</h3></div>
+          <button id="reloadProgramBtn" class="small-btn">↻ Last inn på nytt</button>
+        </div>
+        <div id="programEditorMessage" class="message"></div>
+        <div id="programActivitiesEditor" class="activities-editor"></div>
+        <div class="program-editor-actions"><button id="saveProgramActivitiesBtn" class="primary-btn">💾 Lagre endringer</button></div>
+      </div>
+    </section>
+
+    <section id="calendarScreen" class="screen hidden">
         <div class="section-heading">
           <div><h2>Kalender</h2><p id="calendarSubtitle">Mine økter</p></div>
           <select id="calendarAthleteSelect" class="coach-filter hidden"></select>
@@ -187,6 +203,7 @@
     <nav id="bottomNav" class="bottom-nav hidden">
       <button class="nav-btn active" data-screen="home"><span>🏠</span><small>Hjem</small></button>
       <button id="athletesNavBtn" class="nav-btn hidden" data-screen="coach"><span>👥</span><small>Utøvere</small></button>
+      <button id="programsNavBtn" class="nav-btn hidden" data-screen="programs"><span>🧩</span><small>Programmer</small></button>
       <button class="nav-btn" data-screen="calendar"><span>📅</span><small>Kalender</small></button>
       <button class="nav-btn" data-screen="stats"><span>📊</span><small>Statistikk</small></button>
     </nav>
