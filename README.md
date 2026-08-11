@@ -28,3 +28,12 @@ Når coach er innlogget finnes knappen `Kopier registreringslenke`. Lenken inneh
 
 ## Viktig
 Denne første versjonen etablerer coach/utøver-arkitekturen og øktregistrering. De komplette treningsskjermene fra WorkoutTimer2 kan flyttes inn program for program i neste trinn.
+
+## v2 – treningsmotor
+- Kettlebell 60/30 kjører nå selve 60/30-programmet: 20 runder / 30 min.
+- Tabata 20/10 og Styrke 45/15 har også aktiv intervallmotor.
+- Styrke Dag1 og Styrke Dag2 kjører oppgavevisning med Fullført / Skip / Postpone.
+- Aktiv økt kan fortsettes etter refresh/lukking på samme enhet.
+- Aktiv økt kan forkastes slik at utøveren ikke blir låst.
+- Fullført økt åpner rating + kommentar og varsler coach via eksisterende Realtime-oppsett.
+- Ingen ny SQL er nødvendig dersom v1 SQL_SETUP.sql allerede er kjørt.

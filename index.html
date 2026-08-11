@@ -63,7 +63,10 @@
             <p>Startet <span id="activeStartedAt"></span></p>
           </div>
           <strong id="activeElapsed">00:00</strong>
-          <button id="finishSessionBtn" class="primary-btn">✓ Fullfør økten</button>
+          <div class="active-actions">
+            <button id="continueSessionBtn" class="primary-btn">▶ Fortsett økten</button>
+            <button id="discardSessionBtn" class="secondary-btn danger-btn">✕ Forkast økten</button>
+          </div>
         </div>
 
         <div class="athlete-summary">
@@ -93,6 +96,61 @@
         <div class="panel">
           <div class="section-heading"><div><h2>Utøvere</h2><p>Godkjenning og programtilgang.</p></div></div>
           <div id="athletesList" class="athletes-list"></div>
+        </div>
+      </section>
+
+
+      <section id="runnerScreen" class="screen hidden">
+        <div id="intervalRunner" class="runner-wrap hidden">
+          <div id="intervalCard" class="interval-card">
+            <div class="runner-top">
+              <div><div class="eyebrow">TRENINGSPROGRAM</div><h2 id="intervalProgramName"></h2></div>
+              <div class="elapsed-box"><small>Total tid</small><strong id="intervalElapsed">00:00</strong></div>
+            </div>
+            <div class="runner-meta"><span id="intervalRound"></span><span id="intervalRemainingTotal"></span></div>
+            <div id="intervalPhase" class="interval-phase">ARBEID</div>
+            <div id="intervalMessage" class="interval-message"></div>
+            <div id="intervalTime" class="interval-time">60</div>
+            <div class="progress-track big"><div id="intervalProgressBar"></div></div>
+            <div id="intervalNext" class="runner-next"></div>
+            <div class="runner-actions">
+              <button id="intervalSkipBtn" class="secondary-btn">⏭ Hopp over</button>
+              <button id="runnerAbortBtn" class="secondary-btn danger-btn">Avslutt / forkast</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="sequenceRunner" class="runner-wrap hidden">
+          <div class="sequence-card">
+            <div class="runner-top">
+              <div><div class="eyebrow">TRENINGSPROGRAM</div><h2 id="sequenceProgramName"></h2><p id="sequenceGroupRound"></p></div>
+              <div class="elapsed-box"><small>Total tid</small><strong id="sequenceElapsed">00:00</strong></div>
+            </div>
+            <div class="sequence-progress">
+              <span id="sequenceProgressText"></span>
+              <div class="progress-track"><div id="sequenceProgressBar"></div></div>
+            </div>
+            <div class="task-card current-task">
+              <span class="task-label">NÅ</span>
+              <h2 id="sequenceActivity"></h2>
+              <div class="task-stats">
+                <div><small>Reps</small><strong id="sequenceReps">–</strong></div>
+                <div><small>Load</small><strong id="sequenceLoad">–</strong></div>
+              </div>
+              <p id="sequenceDesc" class="task-desc"></p>
+            </div>
+            <div class="task-card next-task">
+              <span class="task-label">NESTE</span>
+              <h3 id="sequenceNextActivity"></h3>
+              <p id="sequenceNextMeta"></p>
+            </div>
+            <div class="sequence-actions">
+              <button id="sequenceCompleteBtn" class="primary-btn complete-btn">✓ Fullført</button>
+              <button id="sequenceSkipBtn" class="secondary-btn">⏭ Skip</button>
+              <button id="sequencePostponeBtn" class="secondary-btn postpone-btn">↻ Postpone</button>
+            </div>
+            <button id="sequenceAbortBtn" class="link-btn danger-link">Avslutt / forkast økten</button>
+          </div>
         </div>
       </section>
 
@@ -195,5 +253,6 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="app.js"></script>
+<script>if("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js").catch(()=>{});</script>
 </body>
 </html>
