@@ -25,3 +25,50 @@
 .task-desc{margin:14px 0 0;font-size:1.05rem;color:#e2e8f0}.sequence-actions{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:9px;margin-top:14px}
 .postpone-btn{border-color:rgba(245,158,11,.4);color:#fde68a}.danger-link{color:#fca5a5}.complete-btn{background:#22c55e;color:#052e16}
 @media(max-width:540px){.active-actions,.runner-actions{grid-template-columns:1fr}.sequence-actions{grid-template-columns:1fr 1fr}.sequence-actions .complete-btn{grid-column:1/-1}}
+
+
+/* CR-Workout v3: compact strength runner + kettlebell program icon */
+.program-icon{display:flex;align-items:center;height:42px;font-size:2rem}
+.program-icon img{width:42px;height:42px;object-fit:contain;border-radius:9px;background:#fff}
+
+@media(max-width:620px){
+  #runnerScreen{position:fixed;z-index:35;inset:0;background:var(--bg);padding:max(8px,env(safe-area-inset-top)) 8px max(8px,env(safe-area-inset-bottom));overflow:hidden}
+  #sequenceRunner{height:100%;margin:0}
+  #sequenceRunner .sequence-card{height:100%;min-height:0;padding:9px;border-radius:16px;display:grid;grid-template-rows:auto auto minmax(0,1fr) auto auto auto;gap:7px;overflow:hidden}
+  #sequenceRunner .runner-top{align-items:center;gap:8px}
+  #sequenceRunner .runner-top .eyebrow{display:none}
+  #sequenceRunner .runner-top h2{font-size:1.08rem;margin:0}
+  #sequenceRunner .runner-top p{font-size:.78rem;margin:2px 0 0}
+  #sequenceRunner .elapsed-box{padding:5px 8px;border-radius:10px}
+  #sequenceRunner .elapsed-box small{font-size:.62rem}
+  #sequenceRunner .elapsed-box strong{font-size:1.05rem}
+  #sequenceRunner .sequence-progress{margin:0}
+  #sequenceRunner .sequence-progress>span{font-size:.72rem;margin-bottom:3px}
+  #sequenceRunner .progress-track{height:6px}
+  #sequenceRunner .task-card{padding:10px 12px;border-radius:14px}
+  #sequenceRunner .current-task{display:flex;min-height:0;flex-direction:column;justify-content:center;text-align:center}
+  #sequenceRunner .task-label{align-self:center;padding:3px 7px;font-size:.58rem}
+  #sequenceRunner .current-task h2{font-size:clamp(1.75rem,9vw,2.7rem);line-height:1.02;margin:7px 0}
+  #sequenceRunner .task-stats{gap:7px}
+  #sequenceRunner .task-stats>div{padding:6px;border-radius:11px}
+  #sequenceRunner .task-stats small{font-size:.68rem}
+  #sequenceRunner .task-stats strong{font-size:1.35rem;margin-top:0}
+  #sequenceRunner .task-desc{font-size:.88rem;margin:7px 0 0;line-height:1.15}
+  #sequenceRunner .next-task{margin:0;padding:7px 10px;text-align:left}
+  #sequenceRunner .next-task .task-label{padding:2px 6px;font-size:.55rem}
+  #sequenceRunner .next-task h3{display:inline;margin:0 5px;font-size:.92rem}
+  #sequenceRunner .next-task p{display:inline;margin:0;color:var(--muted);font-size:.76rem}
+  #sequenceRunner .sequence-actions{margin:0;display:grid;grid-template-columns:1fr 1fr;gap:6px}
+  #sequenceRunner .sequence-actions .complete-btn{grid-column:1/-1;min-height:58px;font-size:1.12rem}
+  #sequenceRunner .sequence-actions .secondary-btn{min-height:42px;padding:7px 8px;font-size:.84rem}
+  #sequenceRunner .link-btn{margin:0 auto;padding:2px 8px;font-size:.72rem;line-height:1.1}
+}
+@media(max-width:620px) and (max-height:690px){
+  #sequenceRunner .sequence-card{gap:4px;padding:6px}
+  #sequenceRunner .current-task h2{font-size:1.7rem;margin:4px 0}
+  #sequenceRunner .task-stats>div{padding:4px}
+  #sequenceRunner .task-desc{margin-top:4px;font-size:.78rem}
+  #sequenceRunner .next-task{padding:5px 8px}
+  #sequenceRunner .sequence-actions .complete-btn{min-height:50px}
+  #sequenceRunner .sequence-actions .secondary-btn{min-height:38px}
+}

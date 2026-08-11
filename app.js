@@ -77,7 +77,7 @@ async function loadAthleteData(){
  if(approved){const {data:a}=await sb.from("cr_athlete_programs").select("program_id").eq("athlete_id",user.id).eq("enabled",true);const ids=new Set((a||[]).map(x=>x.program_id));renderPrograms(programs.filter(p=>ids.has(p.id)))}
  renderActiveSession();
 }
-function renderPrograms(list){e.assignedPrograms.innerHTML=list.length?list.map(p=>`<article class="program-card"><span>${p.icon||"🏋️"}</span><h3>${esc(p.name)}</h3><p>${esc(p.description||"")}</p><button class="primary-btn start-program" data-id="${p.id}">Start økt</button></article>`).join(""):`<div class="empty">Ingen programmer er tildelt ennå.</div>`;e.assignedPrograms.querySelectorAll(".start-program").forEach(b=>b.onclick=()=>startSession(b.dataset.id))}
+function renderPrograms(list){e.assignedPrograms.innerHTML=list.length?list.map(p=>`<article class="program-card"><span class="program-icon">${p.id==="kettlebell"?`<img src="kettlebell.png" alt="Kettlebell">`:esc(p.icon||"🏋️")}</span><h3>${esc(p.name)}</h3><p>${esc(p.description||"")}</p><button class="primary-btn start-program" data-id="${p.id}">Start økt</button></article>`).join(""):`<div class="empty">Ingen programmer er tildelt ennå.</div>`;e.assignedPrograms.querySelectorAll(".start-program").forEach(b=>b.onclick=()=>startSession(b.dataset.id))}
 async function startSession(programId){
  if(activeSession){renderActiveSession();alert("Du har allerede en aktiv økt. Velg «Fortsett økten» eller forkast den først.");return}
  if(!INTERVAL_PROGRAMS[programId]&&!SEQUENCE_PROGRAMS[programId]){alert("Dette programmet er ikke aktivert i treningsmotoren ennå.");return}

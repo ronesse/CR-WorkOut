@@ -1,3 +1,11 @@
+# CR-Workout v3
+
+Oppdatering fra v2:
+- Mobiltilpasset Styrke Dag1/Dag2 uten behov for scrolling under økten.
+- Stor Fullført-knapp og kompakte Skip/Postpone-knapper.
+- Neste aktivitet er alltid synlig.
+- Kettlebell-programmet har fått tilbake kettlebell-ikonet.
+
 # CR-Workout v1
 
 Ny og separat coach/utøver-site. WorkoutTimer2 berøres ikke.
