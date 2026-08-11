@@ -138,21 +138,21 @@ async function loadProgramEditor(programId){
 
   const p=programs.find(x=>x.id===programId);
   e.coachProgramTitle.textContent=p?.name||programId;
-  e.editProgramName.value=p?.name||"";
-  e.editProgramDescription.value=p?.description||"";
+  if(e.editProgramName)e.editProgramName.value=p?.name||"";
+  if(e.editProgramDescription)e.editProgramDescription.value=p?.description||"";
 
   const isInterval=!!INTERVAL_PROGRAMS[programId];
-  e.intervalSettingsEditor.classList.toggle("hidden",!isInterval);
+  e.intervalSettingsEditor?.classList.toggle("hidden",!isInterval);
 
   if(isInterval){
     const {data:settings,error:settingsError}=await sb.from("cr_program_settings").select("*").eq("program_id",programId).maybeSingle();
     const fallback=INTERVAL_PROGRAMS[programId];
     if(settingsError)console.error(settingsError);
-    e.editWorkSeconds.value=settings?.work_seconds ?? fallback.work;
-    e.editRestSeconds.value=settings?.rest_seconds ?? fallback.rest;
-    e.editRounds.value=settings?.rounds ?? fallback.rounds;
-    e.editWorkWarning.value=settings?.work_warning ?? fallback.workWarning;
-    e.editRestWarning.value=settings?.rest_warning ?? fallback.restWarning;
+    if(e.editWorkSeconds)e.editWorkSeconds.value=settings?.work_seconds ?? fallback.work;
+    if(e.editRestSeconds)e.editRestSeconds.value=settings?.rest_seconds ?? fallback.rest;
+    if(e.editRounds)e.editRounds.value=settings?.rounds ?? fallback.rounds;
+    if(e.editWorkWarning)e.editWorkWarning.value=settings?.work_warning ?? fallback.workWarning;
+    if(e.editRestWarning)e.editRestWarning.value=settings?.rest_warning ?? fallback.restWarning;
   }
 
   const {data,error}=await sb.from("cr_program_activities").select("*").eq("program_id",programId).order("order_no");
@@ -187,8 +187,8 @@ async function saveProgramActivities(){
   e.programEditorMessage.textContent="Lagrer…";
 
   const {error:programError}=await sb.from("cr_programs").update({
-    name:e.editProgramName.value.trim(),
-    description:e.editProgramDescription.value.trim()
+    name:(e.editProgramName?.value||"").trim(),
+    description:(e.editProgramDescription?.value||"").trim()
   }).eq("id",programId);
   if(programError){e.programEditorMessage.textContent=`Feil: ${programError.message}`;return}
 
@@ -196,11 +196,11 @@ async function saveProgramActivities(){
     const settings={
       program_id:programId,
       program_type:"interval",
-      work_seconds:Number(e.editWorkSeconds.value)||0,
-      rest_seconds:Number(e.editRestSeconds.value)||0,
-      rounds:Number(e.editRounds.value)||1,
-      work_warning:Number(e.editWorkWarning.value)||0,
-      rest_warning:Number(e.editRestWarning.value)||0,
+      work_seconds:Number(e.editWorkSeconds?.value)||0,
+      rest_seconds:Number(e.editRestSeconds?.value)||0,
+      rounds:Number(e.editRounds?.value)||1,
+      work_warning:Number(e.editWorkWarning?.value)||0,
+      rest_warning:Number(e.editRestWarning?.value)||0,
       updated_at:new Date().toISOString()
     };
     const {error:settingsError}=await sb.from("cr_program_settings").upsert(settings,{onConflict:"program_id"});

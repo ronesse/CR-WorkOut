@@ -89,3 +89,10 @@ Kjør den nye v5-delen i `SQL_SETUP.sql` for å opprette `cr_program_settings` o
 - Programmer åpnes før databaseinnhold lastes, så eventuelle feil blir synlige.
 - Navigasjonsfeil fanges og vises i stedet for at knappen ser ut til å ikke reagere.
 - Ny cache-versjon og v5.2 cache-busting.
+
+## v5.3 – Programeditor fix
+- Rettet `Cannot set properties of null (setting 'value')`.
+- Hele Programmer-skjermen er synkronisert med app.js.
+- Kettlebell-redigering viser nå navn, beskrivelse, arbeid, hvile, runder og varsler.
+- Import/Eksport-knappene er med i samme skjerm.
+- Ekstra null-sikring gjør at programeditoren ikke stopper navigasjonen ved gammel cache.

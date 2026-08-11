@@ -7,7 +7,7 @@
   <meta name="description" content="CR-Workout – coach og utøver">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="style.css?v=5.2">
+  <link rel="stylesheet" href="style.css?v=5.3">
   <title>CR-Workout</title>
 </head>
 <body>
@@ -161,20 +161,67 @@
       </section>
 
       <section id="programsScreen" class="screen hidden">
-      <div class="section-heading">
-        <div><h2>Programmer</h2><p>Velg et program og rediger aktivitetene.</p></div>
-        <select id="coachProgramSelect" class="coach-filter"></select>
-      </div>
-      <div class="panel">
-        <div class="program-editor-head">
-          <div><div class="eyebrow">PROGRAMINNHOLD</div><h3 id="coachProgramTitle">Velg program</h3></div>
-          <button id="reloadProgramBtn" class="small-btn">↻ Last inn på nytt</button>
+        <div class="section-heading">
+          <div>
+            <h2>Programmer</h2>
+            <p>Velg et program og rediger innholdet.</p>
+          </div>
+          <div class="program-toolbar">
+            <select id="coachProgramSelect" class="coach-filter"></select>
+            <button id="exportProgramsBtn" class="small-btn">⬇ Eksporter</button>
+            <button id="importProgramsBtn" class="small-btn">⬆ Importer</button>
+            <input id="importProgramsFile" type="file" accept=".json,application/json" class="hidden">
+          </div>
         </div>
-        <div id="programEditorMessage" class="message"></div>
-        <div id="programActivitiesEditor" class="activities-editor"></div>
-        <div class="program-editor-actions"><button id="saveProgramActivitiesBtn" class="primary-btn">💾 Lagre endringer</button></div>
-      </div>
-    </section>
+
+        <div class="panel">
+          <div class="program-editor-head">
+            <div>
+              <div class="eyebrow">PROGRAMINNHOLD</div>
+              <h3 id="coachProgramTitle">Velg program</h3>
+            </div>
+            <button id="reloadProgramBtn" class="small-btn">↻ Last inn på nytt</button>
+          </div>
+
+          <div id="programEditorMessage" class="message"></div>
+
+          <div id="programMetaEditor" class="program-meta-editor">
+            <label>Programnavn
+              <input id="editProgramName" type="text">
+            </label>
+            <label>Beskrivelse
+              <input id="editProgramDescription" type="text">
+            </label>
+          </div>
+
+          <div id="intervalSettingsEditor" class="interval-settings-editor hidden">
+            <div class="eyebrow">INTERVALLINNSTILLINGER</div>
+            <div class="interval-settings-grid">
+              <label>Arbeid (sek)
+                <input id="editWorkSeconds" type="number" min="1">
+              </label>
+              <label>Hvile (sek)
+                <input id="editRestSeconds" type="number" min="0">
+              </label>
+              <label>Runder
+                <input id="editRounds" type="number" min="1">
+              </label>
+              <label>Varsel arbeid
+                <input id="editWorkWarning" type="number" min="0">
+              </label>
+              <label>Varsel hvile
+                <input id="editRestWarning" type="number" min="0">
+              </label>
+            </div>
+          </div>
+
+          <div id="programActivitiesEditor" class="activities-editor"></div>
+
+          <div class="program-editor-actions">
+            <button id="saveProgramActivitiesBtn" class="primary-btn">💾 Lagre endringer</button>
+          </div>
+        </div>
+      </section>
 
     <section id="calendarScreen" class="screen hidden">
         <div class="section-heading">
@@ -275,8 +322,8 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="programs.js?v=5.2"></script>
-  <script src="app.js?v=5.2"></script>
+  <script src="programs.js?v=5.3"></script>
+  <script src="app.js?v=5.3"></script>
 <script>if("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js").catch(()=>{});</script>
 </body>
 </html>
