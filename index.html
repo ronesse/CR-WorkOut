@@ -7,7 +7,7 @@
   <meta name="description" content="CR-Workout – coach og utøver">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="style.css?v=5.1">
+  <link rel="stylesheet" href="style.css?v=5.2">
   <title>CR-Workout</title>
 </head>
 <body>
@@ -93,8 +93,14 @@
           <div id="notificationFeed" class="notification-feed"><div class="empty">Ingen nye hendelser.</div></div>
         </div>
 
+      </section>
+
+      <section id="athletesScreen" class="screen hidden">
+        <div class="section-heading">
+          <div><h2>Utøvere</h2><p>Godkjenn utøvere og bestem hvilke programmer de har tilgang til.</p></div>
+          <button id="copyInviteBtnAthletes" class="small-btn">🔗 Kopier registreringslenke</button>
+        </div>
         <div class="panel">
-          <div class="section-heading"><div><h2>Utøvere</h2><p>Godkjenning og programtilgang.</p></div></div>
           <div id="athletesList" class="athletes-list"></div>
         </div>
       </section>
@@ -269,8 +275,8 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="programs.js?v=5.1"></script>
-  <script src="app.js?v=5.1"></script>
+  <script src="programs.js?v=5.2"></script>
+  <script src="app.js?v=5.2"></script>
 <script>if("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js").catch(()=>{});</script>
 </body>
 </html>

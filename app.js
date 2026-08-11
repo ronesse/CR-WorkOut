@@ -10,7 +10,7 @@ const SEQUENCE_PROGRAMS=window.CR_PROGRAMS?.sequence||{};
 const $=id=>document.getElementById(id),e={};
 ["accountBtn","landingScreen","athleteScreen","coachScreen","runnerScreen","intervalRunner","sequenceRunner","calendarScreen","statsScreen","bottomNav","athletesNavBtn",
 "openLoginBtn","openRegisterBtn","athleteStatusCard","athleteStatusTitle","athleteStatusText","assignedProgramsWrap","assignedPrograms","activeSessionCard","activeSessionName","activeStartedAt","activeElapsed","continueSessionBtn","discardSessionBtn","athleteSessionCount","athleteMinutes","athleteAvgRating",
-"copyInviteBtn","pendingCount","activeAthletesCount","sessionsTodayCount","notificationFeed","athletesList","programsNavBtn","programsScreen","coachProgramSelect","coachProgramTitle","reloadProgramBtn","programEditorMessage","programActivitiesEditor","saveProgramActivitiesBtn","exportProgramsBtn","importProgramsBtn","importProgramsFile","programMetaEditor","editProgramName","editProgramDescription","intervalSettingsEditor","editWorkSeconds","editRestSeconds","editRounds","editWorkWarning","editRestWarning","calendarSubtitle","calendarAthleteSelect","prevMonthBtn","nextMonthBtn","calendarTitle","calendarGrid","calendarDetails","statsSubtitle","statsAthleteSelect","statSessions","statMinutes","statRating","statCompleted","programStats",
+"copyInviteBtn","copyInviteBtnAthletes","pendingCount","activeAthletesCount","sessionsTodayCount","notificationFeed","athletesList","athletesScreen","programsNavBtn","programsScreen","coachProgramSelect","coachProgramTitle","reloadProgramBtn","programEditorMessage","programActivitiesEditor","saveProgramActivitiesBtn","exportProgramsBtn","importProgramsBtn","importProgramsFile","programMetaEditor","editProgramName","editProgramDescription","intervalSettingsEditor","editWorkSeconds","editRestSeconds","editRounds","editWorkWarning","editRestWarning","calendarSubtitle","calendarAthleteSelect","prevMonthBtn","nextMonthBtn","calendarTitle","calendarGrid","calendarDetails","statsSubtitle","statsAthleteSelect","statSessions","statMinutes","statRating","statCompleted","programStats",
 "accountModal","accountTitle","closeAccountBtn","authLoggedOut","authLoggedIn","loginEmail","loginPassword","loginBtn","showRegisterBtn","loginMessage","accountName","accountEmail","logoutBtn",
 "registerModal","closeRegisterBtn","regName","regPhone","regEmail","regPassword","registerBtn","registerMessage","programModal","programAthleteName","closeProgramBtn","programChecklist","saveProgramsBtn",
 "finishModal","finishSummary","finishStars","finishComment","saveFinishBtn","cancelFinishBtn",
@@ -25,7 +25,7 @@ function fmtDate(iso){return new Intl.DateTimeFormat("nb-NO",{dateStyle:"medium"
 function dateKey(d){const p=n=>String(n).padStart(2,"0");return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`}
 function elapsed(from,to=new Date()){return Math.max(0,Math.floor((new Date(to)-new Date(from))/1000))}
 function fmtElapsed(sec){const h=Math.floor(sec/3600),m=Math.floor((sec%3600)/60),s=sec%60;return h?`${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`:`${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`}
-function showOnly(name){["landing","athlete","coach","programs","runner","calendar","stats"].forEach(n=>e[n+"Screen"]?.classList.toggle("hidden",n!==name));document.querySelectorAll(".nav-btn").forEach(b=>b.classList.toggle("active",(name==="athlete"&&b.dataset.screen==="home")||(name==="coach"&&b.dataset.screen==="home")||b.dataset.screen===name))}
+function showOnly(name){["landing","athlete","coach","athletes","programs","runner","calendar","stats"].forEach(n=>e[n+"Screen"]?.classList.toggle("hidden",n!==name));document.querySelectorAll(".nav-btn").forEach(b=>b.classList.toggle("active",(name==="athlete"&&b.dataset.screen==="home")||(name==="coach"&&b.dataset.screen==="home")||(name==="athletes"&&b.dataset.screen==="coach")||b.dataset.screen===name))}
 function openModal(m){m.classList.remove("hidden")}function closeModal(m){m.classList.add("hidden")}
 function stateKey(){return activeSession?`cr_runner_${activeSession.id}`:""}
 function saveRunnerState(obj){if(activeSession)localStorage.setItem(stateKey(),JSON.stringify(obj))}
@@ -120,6 +120,7 @@ async function ensureProgramActivitiesSeeded(programId){
   if(insErr)console.error(insErr);
 }
 async function loadCoachProgramOptions(){
+  e.programEditorMessage.textContent="Laster programmer…";
   await loadPrograms();
   const editable=programs;
   e.coachProgramSelect.innerHTML=editable.map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join("");
@@ -309,8 +310,28 @@ async function renderCalendar(){const selected=e.calendarAthleteSelect.value||""
 function renderCalendarDetails(key,sessions){const list=sessions.filter(x=>dateKey(new Date(x.started_at))===key);e.calendarDetails.innerHTML=list.length?list.map(x=>`<div class="notification-item"><strong>${esc(x.program_name)}</strong><small>${fmtDate(x.started_at)} · ${x.status==="completed"?"Fullført":x.status==="cancelled"?"Forkastet":"Startet"}${x.rating?` · ${"★".repeat(x.rating)}`:""}</small>${x.comment?`<p>${esc(x.comment)}</p>`:""}</div>`).join(""):`<div class="empty">Ingen økter.</div>`}
 async function renderStats(){const selected=e.statsAthleteSelect.value||"",sessions=await sessionsForView(selected),valid=sessions.filter(x=>x.status!=="cancelled"),completed=valid.filter(x=>x.status==="completed"),ratings=completed.filter(x=>x.rating).map(x=>x.rating);e.statsSubtitle.textContent=profile?.role==="coach"?(selected?(athletes.find(a=>a.id===selected)?.full_name||"Utøver"):"Alle utøvere"):"Mine økter";e.statSessions.textContent=valid.length;e.statMinutes.textContent=Math.round(completed.reduce((s,x)=>s+(x.duration_seconds||0),0)/60);e.statRating.textContent=ratings.length?(ratings.reduce((a,b)=>a+b,0)/ratings.length).toFixed(1):"–";e.statCompleted.textContent=valid.length?`${Math.round(completed.length/valid.length*100)}%`:"0%";const counts={};completed.forEach(x=>counts[x.program_name]=(counts[x.program_name]||0)+1);const entries=Object.entries(counts),max=Math.max(1,...entries.map(x=>x[1]));e.programStats.innerHTML=entries.length?entries.map(([n,v])=>`<div class="bar-row"><span>${esc(n)}</span><div class="bar-track"><div class="bar-fill" style="width:${v/max*100}%"></div></div><strong>${v}</strong></div>`).join(""):`<div class="empty">Ingen fullførte økter ennå.</div>`}
 
-document.querySelectorAll(".nav-btn").forEach(b=>b.onclick=async()=>{const n=b.dataset.screen;if(n==="home"){if(profile?.role==="coach"){await loadCoachData();showOnly("coach")}else{await loadAthleteData();showOnly("athlete")}}else if(n==="coach"){await loadCoachData();showOnly("coach")}else if(n==="programs"){await loadCoachProgramOptions();showOnly("programs")}else if(n==="calendar"){await renderCalendar();showOnly("calendar")}else if(n==="stats"){await renderStats();showOnly("stats")}});
-e.accountBtn.onclick=()=>{updateAccount();openModal(e.accountModal)};e.closeAccountBtn.onclick=()=>closeModal(e.accountModal);e.openLoginBtn.onclick=()=>openModal(e.accountModal);e.openRegisterBtn.onclick=()=>openModal(e.registerModal);e.showRegisterBtn.onclick=()=>{closeModal(e.accountModal);openModal(e.registerModal)};e.closeRegisterBtn.onclick=()=>closeModal(e.registerModal);e.loginBtn.onclick=login;e.registerBtn.onclick=register;e.logoutBtn.onclick=logout;e.copyInviteBtn.onclick=copyInvite;e.closeProgramBtn.onclick=()=>closeModal(e.programModal);e.saveProgramsBtn.onclick=savePrograms;
+document.querySelectorAll(".nav-btn").forEach(b=>b.onclick=async()=>{
+  const n=b.dataset.screen;
+  try{
+    if(n==="home"){
+      if(profile?.role==="coach"){await loadCoachData();showOnly("coach")}
+      else{await loadAthleteData();showOnly("athlete")}
+    }else if(n==="coach"){
+      await loadCoachData();showOnly("athletes");
+    }else if(n==="programs"){
+      showOnly("programs");
+      await loadCoachProgramOptions();
+    }else if(n==="calendar"){
+      showOnly("calendar");await renderCalendar();
+    }else if(n==="stats"){
+      showOnly("stats");await renderStats();
+    }
+  }catch(err){
+    console.error("Navigation error",err);
+    alert("Kunne ikke åpne siden: "+(err?.message||err));
+  }
+});
+e.accountBtn.onclick=()=>{updateAccount();openModal(e.accountModal)};e.closeAccountBtn.onclick=()=>closeModal(e.accountModal);e.openLoginBtn.onclick=()=>openModal(e.accountModal);e.openRegisterBtn.onclick=()=>openModal(e.registerModal);e.showRegisterBtn.onclick=()=>{closeModal(e.accountModal);openModal(e.registerModal)};e.closeRegisterBtn.onclick=()=>closeModal(e.registerModal);e.loginBtn.onclick=login;e.registerBtn.onclick=register;e.logoutBtn.onclick=logout;e.copyInviteBtn.onclick=copyInvite;if(e.copyInviteBtnAthletes)e.copyInviteBtnAthletes.onclick=copyInvite;e.closeProgramBtn.onclick=()=>closeModal(e.programModal);e.saveProgramsBtn.onclick=savePrograms;
 if(e.coachProgramSelect)e.coachProgramSelect.onchange=()=>loadProgramEditor(e.coachProgramSelect.value);if(e.exportProgramsBtn)e.exportProgramsBtn.onclick=exportPrograms;if(e.importProgramsBtn&&e.importProgramsFile)e.importProgramsBtn.onclick=()=>e.importProgramsFile.click();if(e.importProgramsFile)e.importProgramsFile.onchange=async()=>{await importProgramsFile(e.importProgramsFile.files?.[0]);e.importProgramsFile.value="";};if(e.reloadProgramBtn)e.reloadProgramBtn.onclick=()=>loadProgramEditor(e.coachProgramSelect.value);if(e.saveProgramActivitiesBtn)e.saveProgramActivitiesBtn.onclick=saveProgramActivities;
 e.continueSessionBtn.onclick=launchRunner;e.discardSessionBtn.onclick=discardActive;e.intervalSkipBtn.onclick=skipInterval;e.runnerAbortBtn.onclick=discardActive;e.sequenceCompleteBtn.onclick=seqComplete;e.sequenceSkipBtn.onclick=seqSkip;e.sequencePostponeBtn.onclick=seqPostpone;e.sequenceAbortBtn.onclick=discardActive;
 e.cancelFinishBtn.onclick=()=>closeModal(e.finishModal);e.saveFinishBtn.onclick=saveFinish;e.finishStars.querySelectorAll("button").forEach(b=>b.onclick=()=>{finishRating=Number(b.dataset.rating);renderStars()});e.prevMonthBtn.onclick=()=>{currentMonth.setMonth(currentMonth.getMonth()-1);renderCalendar()};e.nextMonthBtn.onclick=()=>{currentMonth.setMonth(currentMonth.getMonth()+1);renderCalendar()};e.calendarAthleteSelect.onchange=renderCalendar;e.statsAthleteSelect.onchange=renderStats;

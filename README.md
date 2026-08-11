@@ -83,3 +83,9 @@ Kjør den nye v5-delen i `SQL_SETUP.sql` for å opprette `cr_program_settings` o
 - Defensive initialisering av de nye import/eksport-kontrollene.
 - Appen stopper ikke lenger før Supabase Auth initialiseres dersom gammel HTML ligger i cache.
 - Cache-busting på `style.css`, `programs.js` og `app.js`.
+
+## v5.2 – Navigasjonsretting
+- Utøvere har nå en egen coach-side i stedet for å peke tilbake til dashboardet.
+- Programmer åpnes før databaseinnhold lastes, så eventuelle feil blir synlige.
+- Navigasjonsfeil fanges og vises i stedet for at knappen ser ut til å ikke reagere.
+- Ny cache-versjon og v5.2 cache-busting.
