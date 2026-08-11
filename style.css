@@ -98,3 +98,20 @@
   #sequenceRunner .sequence-actions .secondary-btn{min-height:40px}
   #sequenceRunner .link-btn{font-size:.7rem;padding:0}
 }
+
+.program-editor-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.activities-editor{display:grid;gap:10px;margin-top:12px}
+.activity-edit-row{display:grid;grid-template-columns:72px minmax(180px,1.4fr) 95px 105px minmax(220px,1.5fr);gap:8px;align-items:end;padding:12px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.035)}
+.activity-edit-row .mini-meta{font-size:.78rem;color:var(--muted);font-weight:900;align-self:center}
+.activity-edit-row label{margin:0;font-size:.72rem;color:#cbd5e1}
+.activity-edit-row input{margin-top:4px;padding:9px 10px}
+.program-editor-actions{display:flex;justify-content:flex-end;margin-top:14px}
+#saveProgramActivitiesBtn{min-width:220px}
+@media(max-width:760px){
+ .activity-edit-row{grid-template-columns:1fr 1fr}
+ .activity-edit-row .mini-meta{grid-column:1/-1}
+ .activity-edit-row .activity-name{grid-column:1/-1}
+ .activity-edit-row .activity-desc{grid-column:1/-1}
+ .program-editor-head{flex-direction:column}
+ #saveProgramActivitiesBtn{width:100%}
+}

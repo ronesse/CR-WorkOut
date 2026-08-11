@@ -45,3 +45,16 @@ Denne første versjonen etablerer coach/utøver-arkitekturen og øktregistrering
 - Aktiv økt kan forkastes slik at utøveren ikke blir låst.
 - Fullført økt åpner rating + kommentar og varsler coach via eksisterende Realtime-oppsett.
 - Ingen ny SQL er nødvendig dersom v1 SQL_SETUP.sql allerede er kjørt.
+
+
+## v4 – Coach Program Editor
+Ny coach-fane `Programmer`.
+- Velg Styrke Dag1 eller Styrke Dag2.
+- Alle aktiviteter listes.
+- Coach kan redigere aktivitetstekst, reps, load og description.
+- Lagres i Supabase `cr_program_activities`.
+- Utøverens styrkeprogram leses fra databasen ved oppstart.
+- Første gang et program åpnes i editoren seedes dagens hardkodede program automatisk inn i databasen.
+
+### Ny SQL
+Kjør den nye delen i `SQL_SETUP.sql` som oppretter `cr_program_activities` og RLS-policyene.
