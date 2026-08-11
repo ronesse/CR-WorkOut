@@ -58,3 +58,22 @@ Ny coach-fane `Programmer`.
 
 ### Ny SQL
 Kjør den nye delen i `SQL_SETUP.sql` som oppretter `cr_program_activities` og RLS-policyene.
+
+
+## v5 – Import/eksport + redigerbare intervallprogrammer
+- Coach kan eksportere alle programmer til én JSON-fil.
+- Coach kan importere samme JSON-format tilbake.
+- Import oppdaterer programmetadata, intervallinnstillinger og aktivitetene.
+- Kettlebell 60/30, Tabata og Styrke 45/15 kan nå redigeres:
+  - programnavn
+  - beskrivelse
+  - arbeidstid
+  - hviletid
+  - antall runder
+  - varsel arbeid
+  - varsel hvile
+- Styrke Dag1/Dag2 kan fortsatt redigeres aktivitet for aktivitet.
+- Utøveren henter intervallinnstillingene fra Supabase ved start av økten.
+
+### SQL
+Kjør den nye v5-delen i `SQL_SETUP.sql` for å opprette `cr_program_settings` og coach-policy for `cr_programs`.

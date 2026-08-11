@@ -10,7 +10,7 @@ const SEQUENCE_PROGRAMS=window.CR_PROGRAMS?.sequence||{};
 const $=id=>document.getElementById(id),e={};
 ["accountBtn","landingScreen","athleteScreen","coachScreen","runnerScreen","intervalRunner","sequenceRunner","calendarScreen","statsScreen","bottomNav","athletesNavBtn",
 "openLoginBtn","openRegisterBtn","athleteStatusCard","athleteStatusTitle","athleteStatusText","assignedProgramsWrap","assignedPrograms","activeSessionCard","activeSessionName","activeStartedAt","activeElapsed","continueSessionBtn","discardSessionBtn","athleteSessionCount","athleteMinutes","athleteAvgRating",
-"copyInviteBtn","pendingCount","activeAthletesCount","sessionsTodayCount","notificationFeed","athletesList","programsNavBtn","programsScreen","coachProgramSelect","coachProgramTitle","reloadProgramBtn","programEditorMessage","programActivitiesEditor","saveProgramActivitiesBtn","calendarSubtitle","calendarAthleteSelect","prevMonthBtn","nextMonthBtn","calendarTitle","calendarGrid","calendarDetails","statsSubtitle","statsAthleteSelect","statSessions","statMinutes","statRating","statCompleted","programStats",
+"copyInviteBtn","pendingCount","activeAthletesCount","sessionsTodayCount","notificationFeed","athletesList","programsNavBtn","programsScreen","coachProgramSelect","coachProgramTitle","reloadProgramBtn","programEditorMessage","programActivitiesEditor","saveProgramActivitiesBtn","exportProgramsBtn","importProgramsBtn","importProgramsFile","programMetaEditor","editProgramName","editProgramDescription","intervalSettingsEditor","editWorkSeconds","editRestSeconds","editRounds","editWorkWarning","editRestWarning","calendarSubtitle","calendarAthleteSelect","prevMonthBtn","nextMonthBtn","calendarTitle","calendarGrid","calendarDetails","statsSubtitle","statsAthleteSelect","statSessions","statMinutes","statRating","statCompleted","programStats",
 "accountModal","accountTitle","closeAccountBtn","authLoggedOut","authLoggedIn","loginEmail","loginPassword","loginBtn","showRegisterBtn","loginMessage","accountName","accountEmail","logoutBtn",
 "registerModal","closeRegisterBtn","regName","regPhone","regEmail","regPassword","registerBtn","registerMessage","programModal","programAthleteName","closeProgramBtn","programChecklist","saveProgramsBtn",
 "finishModal","finishSummary","finishStars","finishComment","saveFinishBtn","cancelFinishBtn",
@@ -71,8 +71,8 @@ function launchRunner(){
  if(runnerMode==="interval")startIntervalRunner();else startSequenceRunner()
 }
 function stopRunnerTick(){clearInterval(runnerTimer);runnerTimer=null;lastCueKey=""}
-function startIntervalRunner(){
- const cfg=INTERVAL_PROGRAMS[activeSession.program_id];intervalState=loadRunnerState()||{offsetSeconds:0};e.intervalProgramName.textContent=cfg.name;
+async function startIntervalRunner(){
+ const cfg=await getIntervalConfig(activeSession.program_id);intervalState=loadRunnerState()||{offsetSeconds:0};e.intervalProgramName.textContent=cfg.name;
  const render=()=>{let t=elapsed(activeSession.started_at)+Number(intervalState.offsetSeconds||0),cycle=cfg.work+cfg.rest,total=cfg.rounds*cycle;if(t>=total){stopRunnerTick();openFinish();return}
  const round=Math.floor(t/cycle)+1,into=t%cycle,isWork=into<cfg.work,dur=isWork?cfg.work:cfg.rest,phaseInto=isWork?into:into-cfg.work,remain=Math.max(0,dur-phaseInto),totalRemain=Math.max(0,total-t);
  e.intervalElapsed.textContent=fmtElapsed(t);e.intervalRound.textContent=`Runde ${round} av ${cfg.rounds}`;e.intervalRemainingTotal.textContent=`${fmtElapsed(totalRemain)} igjen`;e.intervalTime.textContent=Math.ceil(remain);
@@ -80,7 +80,7 @@ function startIntervalRunner(){
  const cueKey=`${round}-${isWork?"w":"r"}-${Math.ceil(remain)}`;if(cueKey!==lastCueKey){if((isWork&&Math.ceil(remain)===cfg.workWarning)||( !isWork&&Math.ceil(remain)===cfg.restWarning)||Math.ceil(remain)===dur)audioCue(isWork?(remain<=cfg.workWarning?"Hold ut":"Arbeid"):(remain<=cfg.restWarning?"Gjør klar":"Hvile"));lastCueKey=cueKey}}
  render();stopRunnerTick();runnerTimer=setInterval(render,250)
 }
-function skipInterval(){const cfg=INTERVAL_PROGRAMS[activeSession.program_id],t=elapsed(activeSession.started_at)+Number(intervalState.offsetSeconds||0),cycle=cfg.work+cfg.rest,into=t%cycle,isWork=into<cfg.work,remain=isWork?(cfg.work-into):(cycle-into);intervalState.offsetSeconds=Number(intervalState.offsetSeconds||0)+Math.max(1,Math.ceil(remain));saveRunnerState(intervalState)}
+async function skipInterval(){const cfg=await getIntervalConfig(activeSession.program_id),t=elapsed(activeSession.started_at)+Number(intervalState.offsetSeconds||0),cycle=cfg.work+cfg.rest,into=t%cycle,isWork=into<cfg.work,remain=isWork?(cfg.work-into):(cycle-into);intervalState.offsetSeconds=Number(intervalState.offsetSeconds||0)+Math.max(1,Math.ceil(remain));saveRunnerState(intervalState)}
 
 async function startSequenceRunner(){
  const cfg=SEQUENCE_PROGRAMS[activeSession.program_id];e.sequenceProgramName.textContent=cfg.name;
@@ -121,7 +121,7 @@ async function ensureProgramActivitiesSeeded(programId){
 }
 async function loadCoachProgramOptions(){
   await loadPrograms();
-  const editable=programs.filter(p=>SEQUENCE_PROGRAMS[p.id]);
+  const editable=programs;
   e.coachProgramSelect.innerHTML=editable.map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join("");
   if(editable.length){
     await loadProgramEditor(e.coachProgramSelect.value);
@@ -134,42 +134,89 @@ async function loadProgramEditor(programId){
   if(!programId)return;
   e.programEditorMessage.textContent="Laster…";
   await ensureProgramActivitiesSeeded(programId);
-  const {data,error}=await sb.from("cr_program_activities").select("*").eq("program_id",programId).order("order_no");
-  if(error){e.programEditorMessage.textContent=error.message;return}
+
   const p=programs.find(x=>x.id===programId);
   e.coachProgramTitle.textContent=p?.name||programId;
+  e.editProgramName.value=p?.name||"";
+  e.editProgramDescription.value=p?.description||"";
+
+  const isInterval=!!INTERVAL_PROGRAMS[programId];
+  e.intervalSettingsEditor.classList.toggle("hidden",!isInterval);
+
+  if(isInterval){
+    const {data:settings,error:settingsError}=await sb.from("cr_program_settings").select("*").eq("program_id",programId).maybeSingle();
+    const fallback=INTERVAL_PROGRAMS[programId];
+    if(settingsError)console.error(settingsError);
+    e.editWorkSeconds.value=settings?.work_seconds ?? fallback.work;
+    e.editRestSeconds.value=settings?.rest_seconds ?? fallback.rest;
+    e.editRounds.value=settings?.rounds ?? fallback.rounds;
+    e.editWorkWarning.value=settings?.work_warning ?? fallback.workWarning;
+    e.editRestWarning.value=settings?.rest_warning ?? fallback.restWarning;
+  }
+
+  const {data,error}=await sb.from("cr_program_activities").select("*").eq("program_id",programId).order("order_no");
+  if(error){e.programEditorMessage.textContent=error.message;return}
   const rows=data||[];
-  e.programActivitiesEditor.innerHTML=rows.length?rows.map(r=>`
-    <div class="activity-edit-row" data-id="${r.id}">
-      <div class="mini-meta">${esc(r.group_name||"")}<br>Runde ${r.round_no??"–"}<br>#${r.order_no}</div>
-      <label class="activity-name">Aktivitet
-        <input data-field="activity" type="text" value="${esc(r.activity||"")}">
-      </label>
-      <label>Reps
-        <input data-field="reps" type="text" value="${esc(r.reps||"")}">
-      </label>
-      <label>Load
-        <input data-field="load" type="text" value="${esc(r.load||"")}">
-      </label>
-      <label class="activity-desc">Beskrivelse
-        <input data-field="description" type="text" value="${esc(r.description||"")}">
-      </label>
-    </div>`).join(""):'<div class="empty">Ingen aktiviteter i programmet.</div>';
-  e.programEditorMessage.textContent=`${rows.length} aktiviteter lastet.`;
+
+  if(isInterval && !rows.length){
+    e.programActivitiesEditor.innerHTML='<div class="empty">Dette er et intervallprogram. Rediger arbeid, hvile, runder og varsler over.</div>';
+  }else{
+    e.programActivitiesEditor.innerHTML=rows.length?rows.map(r=>`
+      <div class="activity-edit-row" data-id="${r.id}">
+        <div class="mini-meta">${esc(r.group_name||"")}<br>Runde ${r.round_no??"–"}<br>#${r.order_no}</div>
+        <label class="activity-name">Aktivitet
+          <input data-field="activity" type="text" value="${esc(r.activity||"")}">
+        </label>
+        <label>Reps
+          <input data-field="reps" type="text" value="${esc(r.reps||"")}">
+        </label>
+        <label>Load
+          <input data-field="load" type="text" value="${esc(r.load||"")}">
+        </label>
+        <label class="activity-desc">Beskrivelse
+          <input data-field="description" type="text" value="${esc(r.description||"")}">
+        </label>
+      </div>`).join(""):'<div class="empty">Ingen aktiviteter i programmet.</div>';
+  }
+  e.programEditorMessage.textContent=isInterval?"Intervallprogram lastet.":`${rows.length} aktiviteter lastet.`;
 }
 async function saveProgramActivities(){
+  const programId=e.coachProgramSelect.value;
+  if(!programId)return;
+  e.programEditorMessage.textContent="Lagrer…";
+
+  const {error:programError}=await sb.from("cr_programs").update({
+    name:e.editProgramName.value.trim(),
+    description:e.editProgramDescription.value.trim()
+  }).eq("id",programId);
+  if(programError){e.programEditorMessage.textContent=`Feil: ${programError.message}`;return}
+
+  if(INTERVAL_PROGRAMS[programId]){
+    const settings={
+      program_id:programId,
+      program_type:"interval",
+      work_seconds:Number(e.editWorkSeconds.value)||0,
+      rest_seconds:Number(e.editRestSeconds.value)||0,
+      rounds:Number(e.editRounds.value)||1,
+      work_warning:Number(e.editWorkWarning.value)||0,
+      rest_warning:Number(e.editRestWarning.value)||0,
+      updated_at:new Date().toISOString()
+    };
+    const {error:settingsError}=await sb.from("cr_program_settings").upsert(settings,{onConflict:"program_id"});
+    if(settingsError){e.programEditorMessage.textContent=`Feil: ${settingsError.message}`;return}
+  }
+
   const rows=[...e.programActivitiesEditor.querySelectorAll(".activity-edit-row")].map(row=>{
     const obj={id:Number(row.dataset.id)};
     row.querySelectorAll("input[data-field]").forEach(inp=>obj[inp.dataset.field]=inp.value.trim());
     return obj;
   });
-  if(!rows.length)return;
-  e.programEditorMessage.textContent="Lagrer…";
   for(const r of rows){
     const {id,...changes}=r;
     const {error}=await sb.from("cr_program_activities").update({...changes,updated_at:new Date().toISOString()}).eq("id",id);
     if(error){e.programEditorMessage.textContent=`Feil: ${error.message}`;return}
   }
+  await loadPrograms();
   e.programEditorMessage.textContent="✓ Endringer lagret";
 }
 async function getSequenceItems(programId){
@@ -178,6 +225,73 @@ async function getSequenceItems(programId){
     return data.map(r=>({group:r.group_name,order:r.order_no,activity:r.activity,round:r.round_no,reps:r.reps||"",load:r.load||"",desc:r.description||""}));
   }
   return SEQUENCE_PROGRAMS[programId]?.items||[];
+}
+
+
+async function exportPrograms(){
+  e.programEditorMessage.textContent="Eksporterer…";
+  const [{data:p,error:pe},{data:a,error:ae},{data:s,error:se}]=await Promise.all([
+    sb.from("cr_programs").select("*").order("sort_order"),
+    sb.from("cr_program_activities").select("*").order("program_id").order("order_no"),
+    sb.from("cr_program_settings").select("*").order("program_id")
+  ]);
+  if(pe||ae||se){e.programEditorMessage.textContent=`Eksportfeil: ${(pe||ae||se).message}`;return}
+  const payload={format:"CR-Workout Programs",version:1,exported_at:new Date().toISOString(),programs:p||[],activities:a||[],settings:s||[]};
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});
+  const url=URL.createObjectURL(blob),link=document.createElement("a");
+  link.href=url;link.download=`CR-Workout-programmer-${new Date().toISOString().slice(0,10)}.json`;
+  document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+  e.programEditorMessage.textContent="✓ Programmer eksportert";
+}
+async function importProgramsFile(file){
+  if(!file)return;
+  e.programEditorMessage.textContent="Importerer…";
+  let payload;
+  try{payload=JSON.parse(await file.text())}catch{e.programEditorMessage.textContent="Ugyldig JSON-fil.";return}
+  if(!payload||!Array.isArray(payload.programs)){e.programEditorMessage.textContent="Filen er ikke en gyldig CR-Workout programeksport.";return}
+  if(!confirm(`Importere ${payload.programs.length} programmer? Eksisterende programmer med samme ID blir oppdatert.`)){e.programEditorMessage.textContent="Import avbrutt.";return}
+
+  const cleanPrograms=payload.programs.map(({id,name,description,icon,active,sort_order})=>({id,name,description,icon,active,sort_order}));
+  if(cleanPrograms.length){
+    const {error}=await sb.from("cr_programs").upsert(cleanPrograms,{onConflict:"id"});
+    if(error){e.programEditorMessage.textContent=`Importfeil programmer: ${error.message}`;return}
+  }
+
+  if(Array.isArray(payload.settings)&&payload.settings.length){
+    const cleanSettings=payload.settings.map(({program_id,program_type,work_seconds,rest_seconds,rounds,work_warning,rest_warning})=>({program_id,program_type,work_seconds,rest_seconds,rounds,work_warning,rest_warning,updated_at:new Date().toISOString()}));
+    const {error}=await sb.from("cr_program_settings").upsert(cleanSettings,{onConflict:"program_id"});
+    if(error){e.programEditorMessage.textContent=`Importfeil innstillinger: ${error.message}`;return}
+  }
+
+  if(Array.isArray(payload.activities)){
+    const affected=[...new Set(payload.activities.map(x=>x.program_id).filter(Boolean))];
+    for(const programId of affected){
+      const {error:delError}=await sb.from("cr_program_activities").delete().eq("program_id",programId);
+      if(delError){e.programEditorMessage.textContent=`Importfeil ved sletting: ${delError.message}`;return}
+    }
+    const cleanActivities=payload.activities.map(({program_id,group_name,order_no,round_no,activity,reps,load,description})=>({program_id,group_name,order_no,round_no,activity,reps,load,description,updated_at:new Date().toISOString()}));
+    if(cleanActivities.length){
+      const {error}=await sb.from("cr_program_activities").insert(cleanActivities);
+      if(error){e.programEditorMessage.textContent=`Importfeil aktiviteter: ${error.message}`;return}
+    }
+  }
+  await loadPrograms();
+  await loadCoachProgramOptions();
+  e.programEditorMessage.textContent="✓ Import fullført";
+}
+async function getIntervalConfig(programId){
+  const fallback=INTERVAL_PROGRAMS[programId];
+  if(!fallback)return null;
+  const {data,error}=await sb.from("cr_program_settings").select("*").eq("program_id",programId).maybeSingle();
+  if(error)console.error(error);
+  return {
+    name:programs.find(p=>p.id===programId)?.name||fallback.name,
+    work:data?.work_seconds ?? fallback.work,
+    rest:data?.rest_seconds ?? fallback.rest,
+    rounds:data?.rounds ?? fallback.rounds,
+    workWarning:data?.work_warning ?? fallback.workWarning,
+    restWarning:data?.rest_warning ?? fallback.restWarning
+  };
 }
 
 async function loadCoachData(){await loadPrograms();const {data:links}=await sb.from("cr_coach_athletes").select("athlete_id,status,cr_profiles!cr_coach_athletes_athlete_id_fkey(*)").eq("coach_id",user.id).order("created_at");athletes=(links||[]).map(x=>({...x.cr_profiles,link_status:x.status}));const ids=athletes.map(a=>a.id);e.pendingCount.textContent=athletes.filter(a=>!a.approved).length;e.activeAthletesCount.textContent=athletes.filter(a=>a.approved).length;let today=0;if(ids.length){const from=new Date();from.setHours(0,0,0,0);const {count}=await sb.from("cr_workout_sessions").select("*",{count:"exact",head:true}).in("athlete_id",ids).gte("started_at",from.toISOString());today=count||0}e.sessionsTodayCount.textContent=today;renderAthletes();fillAthleteSelectors()}
@@ -197,7 +311,7 @@ async function renderStats(){const selected=e.statsAthleteSelect.value||"",sessi
 
 document.querySelectorAll(".nav-btn").forEach(b=>b.onclick=async()=>{const n=b.dataset.screen;if(n==="home"){if(profile?.role==="coach"){await loadCoachData();showOnly("coach")}else{await loadAthleteData();showOnly("athlete")}}else if(n==="coach"){await loadCoachData();showOnly("coach")}else if(n==="programs"){await loadCoachProgramOptions();showOnly("programs")}else if(n==="calendar"){await renderCalendar();showOnly("calendar")}else if(n==="stats"){await renderStats();showOnly("stats")}});
 e.accountBtn.onclick=()=>{updateAccount();openModal(e.accountModal)};e.closeAccountBtn.onclick=()=>closeModal(e.accountModal);e.openLoginBtn.onclick=()=>openModal(e.accountModal);e.openRegisterBtn.onclick=()=>openModal(e.registerModal);e.showRegisterBtn.onclick=()=>{closeModal(e.accountModal);openModal(e.registerModal)};e.closeRegisterBtn.onclick=()=>closeModal(e.registerModal);e.loginBtn.onclick=login;e.registerBtn.onclick=register;e.logoutBtn.onclick=logout;e.copyInviteBtn.onclick=copyInvite;e.closeProgramBtn.onclick=()=>closeModal(e.programModal);e.saveProgramsBtn.onclick=savePrograms;
-e.coachProgramSelect.onchange=()=>loadProgramEditor(e.coachProgramSelect.value);e.reloadProgramBtn.onclick=()=>loadProgramEditor(e.coachProgramSelect.value);e.saveProgramActivitiesBtn.onclick=saveProgramActivities;
+e.coachProgramSelect.onchange=()=>loadProgramEditor(e.coachProgramSelect.value);e.exportProgramsBtn.onclick=exportPrograms;e.importProgramsBtn.onclick=()=>e.importProgramsFile.click();e.importProgramsFile.onchange=async()=>{await importProgramsFile(e.importProgramsFile.files?.[0]);e.importProgramsFile.value="";};e.reloadProgramBtn.onclick=()=>loadProgramEditor(e.coachProgramSelect.value);e.saveProgramActivitiesBtn.onclick=saveProgramActivities;
 e.continueSessionBtn.onclick=launchRunner;e.discardSessionBtn.onclick=discardActive;e.intervalSkipBtn.onclick=skipInterval;e.runnerAbortBtn.onclick=discardActive;e.sequenceCompleteBtn.onclick=seqComplete;e.sequenceSkipBtn.onclick=seqSkip;e.sequencePostponeBtn.onclick=seqPostpone;e.sequenceAbortBtn.onclick=discardActive;
 e.cancelFinishBtn.onclick=()=>closeModal(e.finishModal);e.saveFinishBtn.onclick=saveFinish;e.finishStars.querySelectorAll("button").forEach(b=>b.onclick=()=>{finishRating=Number(b.dataset.rating);renderStars()});e.prevMonthBtn.onclick=()=>{currentMonth.setMonth(currentMonth.getMonth()-1);renderCalendar()};e.nextMonthBtn.onclick=()=>{currentMonth.setMonth(currentMonth.getMonth()+1);renderCalendar()};e.calendarAthleteSelect.onchange=renderCalendar;e.statsAthleteSelect.onchange=renderStats;
 
