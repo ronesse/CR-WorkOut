@@ -72,3 +72,29 @@
   #sequenceRunner .sequence-actions .complete-btn{min-height:50px}
   #sequenceRunner .sequence-actions .secondary-btn{min-height:38px}
 }
+
+/* v3.1 – bedre bruk av mobilskjermen i oppgavebaserte styrkeøkter */
+@media(max-width:620px){
+  #runnerScreen{margin:0 -6px}
+  #sequenceRunner .sequence-card{height:calc(100dvh - 112px);min-height:0;padding:10px;display:grid;grid-template-rows:auto auto minmax(0,1fr) auto auto auto;gap:8px;overflow:hidden}
+  #sequenceRunner .runner-top{gap:8px;align-items:center}
+  #sequenceRunner .runner-top .eyebrow{display:none}
+  #sequenceRunner .runner-top h2{font-size:1.35rem;margin:0}
+  #sequenceRunner .runner-top p{font-size:.84rem;margin:1px 0 0}
+  #sequenceRunner .elapsed-box{padding:6px 9px;border-radius:12px}
+  #sequenceRunner .elapsed-box small{font-size:.62rem}
+  #sequenceRunner .elapsed-box strong{font-size:1.25rem}
+  #sequenceRunner .sequence-progress>span{font-size:.75rem}
+  #sequenceRunner .current-task{height:auto;min-height:0;padding:10px 12px}
+  #sequenceRunner .current-task h2{font-size:clamp(2rem,10vw,3rem);margin:6px 0 8px}
+  #sequenceRunner .task-stats>div{padding:5px 8px}
+  #sequenceRunner .task-stats strong{font-size:1.45rem}
+  #sequenceRunner .task-desc{font-size:.9rem;margin:6px 0 0}
+  #sequenceRunner .next-task{display:grid;grid-template-columns:auto auto 1fr;align-items:center;gap:7px;padding:7px 9px;white-space:nowrap;overflow:hidden}
+  #sequenceRunner .next-task h3{font-size:.9rem;margin:0;overflow:hidden;text-overflow:ellipsis}
+  #sequenceRunner .next-task p{font-size:.72rem;margin:0;overflow:hidden;text-overflow:ellipsis}
+  #sequenceRunner .sequence-actions{gap:7px}
+  #sequenceRunner .sequence-actions .complete-btn{min-height:54px;font-size:1.15rem}
+  #sequenceRunner .sequence-actions .secondary-btn{min-height:40px}
+  #sequenceRunner .link-btn{font-size:.7rem;padding:0}
+}
