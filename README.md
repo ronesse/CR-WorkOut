@@ -140,3 +140,8 @@ Merk: Tabellen som ble oppgitt har 15 arbeidsøkter + 15 hvileøkter, altså 22:
 - Lagrer tid, distanse, snittpace, rating og kommentar.
 - Ruten lagres foreløpig ikke, kun beregnet distanse.
 - Kjør v7-delen i SQL_SETUP.sql før testing.
+
+## v7.1 – Løping start-fix
+- Rettet programkontrollen som stoppet Løping med meldingen «ikke aktivert i treningsmotoren».
+- Løping gjenkjennes både på program-id `running` og programnavnet `Løping`.
+- Cache-versjon oppdatert.
