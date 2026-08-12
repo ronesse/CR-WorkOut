@@ -250,3 +250,63 @@
 .layout-btn.active{
   box-shadow:0 0 0 2px rgba(96,165,250,.25)!important;
 }
+
+/* v7.9: stabile aktivitetskort for Kettlebell Mix */
+.interval-sequence-card{
+  min-height:620px;
+  display:flex;
+  flex-direction:column;
+}
+
+.interval-sequence-card .interval-phase{
+  min-height:2.25em;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  line-height:1.05;
+  text-align:center;
+  margin-top:14px;
+  padding:0 8px;
+}
+
+.interval-sequence-card .interval-message{
+  min-height:2.6em;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  line-height:1.25;
+  text-align:center;
+  padding:0 8px;
+}
+
+.interval-sequence-card .interval-time{
+  flex:0 0 auto;
+}
+
+.interval-sequence-card .runner-next{
+  min-height:2.6em;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  line-height:1.25;
+  text-align:center;
+  padding:0 8px;
+}
+
+.interval-sequence-card .runner-actions{
+  margin-top:auto;
+}
+
+@media(max-width:620px){
+  .interval-sequence-card{
+    min-height:590px;
+  }
+  .interval-sequence-card .interval-phase{
+    min-height:2.3em;
+    font-size:clamp(2.2rem,10vw,3.6rem);
+  }
+  .interval-sequence-card .interval-message,
+  .interval-sequence-card .runner-next{
+    min-height:2.8em;
+  }
+}

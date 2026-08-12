@@ -164,3 +164,10 @@ Merk: Tabellen som ble oppgitt har 15 arbeidsøkter + 15 hvileøkter, altså 22:
 - Programkortene strekkes til lik høyde i samme rad.
 - `Start økt` ligger nederst på samme nivå på alle kort.
 - Ingen ny SQL nødvendig.
+
+## v7.9 – Kettlebell Mix aktivitetskort
+- Kettlebell Mix har nå fast høyde på aktivitetskortet.
+- Aktivitetsnavnet reserverer alltid plass til to linjer.
+- Beskjedfeltet og «Neste»-feltet reserverer også fast plass.
+- Kortet hopper derfor ikke opp/ned når aktivitetsnavn har ulik lengde.
+- Ingen ny SQL nødvendig.

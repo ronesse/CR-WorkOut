@@ -260,7 +260,7 @@ async function startIntervalSequenceRunner(){
     e.intervalTime.textContent=Math.ceil(remain);
     e.intervalNext.textContent=next?`Neste: ${next.activity} · ${next.duration} sek`:"Neste: Ferdig";
     e.intervalProgressBar.style.width=`${Math.min(100,Math.max(0,phaseInto/Math.max(1,step.duration)*100))}%`;
-    e.intervalCard.className="interval-card "+(isRest?(warn?"warning-ready":"rest"):(warn?"warning-hold":"work"));
+    e.intervalCard.className="interval-card interval-sequence-card "+(isRest?(warn?"warning-ready":"rest"):(warn?"warning-hold":"work"));
 
     const secondsLeft=Math.ceil(remain),cueKey=`seq-${index}-${secondsLeft}`;
     if(cueKey!==lastCueKey){
