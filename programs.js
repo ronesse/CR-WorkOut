@@ -11,7 +11,7 @@
 */
 (() => {
   const interval = {
-    kettlebell: {name:"Kettlebell 60/30", work:60, rest:30, rounds:20, workWarning:10, restWarning:5},
+    kettlebell: {name:"Arbeid/Hvile 60/30", work:60, rest:30, rounds:20, workWarning:10, restWarning:5},
     tabata: {name:"Tabata 20/10", work:20, rest:10, rounds:8, workWarning:5, restWarning:3},
     strength_4515: {name:"Styrke 45/15", work:45, rest:15, rounds:12, workWarning:10, restWarning:5}
   };

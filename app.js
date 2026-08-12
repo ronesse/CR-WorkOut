@@ -21,6 +21,15 @@ const $=id=>document.getElementById(id),e={};
 let session=null,user=null,profile=null,athletes=[],programs=[],programAthleteId=null,activeSession=null,homeTimer=null,runnerTimer=null,finishRating=4,currentMonth=new Date(),realtimeChannel=null,runnerMode=null,intervalState=null,sequenceState=null,lastCueKey="";
 let wakeLock=null;
 
+
+function programIcon(program){
+  const id=String(program?.id||program?.program_id||"").toLowerCase();
+  const name=String(program?.name||program?.title||"").toLowerCase();
+  if(id.includes("kettlebell-mix")||id.includes("kettlebell_mix")||name.includes("kettlebell mix")) return "kettlebell.png";
+  if(id==="kettlebell"||id.includes("60-30")||id.includes("60_30")||name.includes("arbeid/hvile 60/30")) return "workrest.png";
+  return null;
+}
+
 async function requestWakeLock(){
   if(!activeSession || document.visibilityState!=="visible") return;
   if(!("wakeLock" in navigator)) return;
@@ -136,7 +145,7 @@ async function loadAthleteData(){
  if(approved){const {data:a}=await sb.from("cr_athlete_programs").select("program_id").eq("athlete_id",user.id).eq("enabled",true);const ids=new Set((a||[]).map(x=>x.program_id));renderPrograms(programs.filter(p=>ids.has(p.id)))}
  renderActiveSession();if(activeSession)requestWakeLock();
 }
-function renderPrograms(list){e.assignedPrograms.innerHTML=list.length?list.map(p=>`<article class="program-card"><span class="program-icon">${p.id==="kettlebell"?`<img src="kettlebell.png" alt="Kettlebell">`:esc(p.icon||"🏋️")}</span><h3>${esc(p.name)}</h3><p>${esc(p.description||"")}</p><button class="primary-btn start-program" data-id="${p.id}">Start økt</button></article>`).join(""):`<div class="empty">Ingen programmer er tildelt ennå.</div>`;e.assignedPrograms.querySelectorAll(".start-program").forEach(b=>b.onclick=()=>startSession(b.dataset.id))}
+function renderPrograms(list){e.assignedPrograms.innerHTML=list.length?list.map(p=>`<article class="program-card"><span class="program-icon">${programIcon(p)?`<img src="${programIcon(p)}" alt="${esc(p.name)}">`:esc(p.icon||"🏋️")}</span><h3>${esc(p.name)}</h3><p>${esc(p.description||"")}</p><button class="primary-btn start-program" data-id="${p.id}">Start økt</button></article>`).join(""):`<div class="empty">Ingen programmer er tildelt ennå.</div>`;e.assignedPrograms.querySelectorAll(".start-program").forEach(b=>b.onclick=()=>startSession(b.dataset.id))}
 async function startSession(programId){
  await unlockAudio();
  if(activeSession){renderActiveSession();alert("Du har allerede en aktiv økt. Velg «Fortsett økten» eller forkast den først.");return}
