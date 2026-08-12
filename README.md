@@ -199,3 +199,9 @@ Merk: Tabellen som ble oppgitt har 15 arbeidsøkter + 15 hvileøkter, altså 22:
 - Vanlige intervallprogrammer viser arbeid/hvile/runder.
 - Løping, Fri økt og 20 minutes Workout får egne informative oversikter.
 - Ingen ny SQL nødvendig.
+
+## v8.3 – aktivitetskort ved start
+- Oppgavebaserte programmer henter nå aktivitetene direkte fra `cr_program_activities` i Supabase når økten starter.
+- Hvis Supabase-data mangler, brukes lokal programdefinisjon som fallback.
+- Hindrer at økten starter med tomt aktivitetskort.
+- Ingen ny SQL nødvendig.

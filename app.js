@@ -324,7 +324,7 @@ async function launchRunner(){
  if(runnerMode==="twenty"){showOnly("twenty");startTwentyRunner();return}
  if(runnerMode==="running"){showOnly("running");startRunningRunner();return}
  showOnly("runner");e.intervalRunner.classList.toggle("hidden",!["interval","intervalSequence"].includes(runnerMode));e.sequenceRunner.classList.toggle("hidden",runnerMode!=="sequence");
- if(runnerMode==="interval")startIntervalRunner();else if(runnerMode==="intervalSequence")startIntervalSequenceRunner();else startSequenceRunner()
+ if(runnerMode==="interval")startIntervalRunner();else if(runnerMode==="intervalSequence")startIntervalSequenceRunner();else await startSequenceRunner()
 }
 function stopRunnerTick(){clearInterval(runnerTimer);runnerTimer=null;lastCueKey=""}
 async function startIntervalRunner(){
@@ -411,10 +411,61 @@ async function skipIntervalSequence(){
 }
 
 async function startSequenceRunner(){
- const cfg=SEQUENCE_PROGRAMS[activeSession.program_id];e.sequenceProgramName.textContent=cfg.name;
- const saved=loadRunnerState();const items=await getSequenceItems(activeSession.program_id);sequenceState=saved&&saved.mode==="sequence"?saved:{mode:"sequence",queue:items.map(x=>({...x})),completed:[],skipped:[]};saveRunnerState(sequenceState);
- const render=()=>{const cur=sequenceState.queue[0];e.sequenceElapsed.textContent=fmtElapsed(elapsed(activeSession.started_at));if(!cur){stopRunnerTick();openFinish();return}const next=sequenceState.queue[1],done=sequenceState.completed.length+sequenceState.skipped.length,total=cfg.items.length;e.sequenceGroupRound.textContent=`${cur.group==="WarmUp"?"Oppvarming":"Hoveddel"} · Runde ${cur.round}`;e.sequenceProgressText.textContent=`Aktivitet ${done+1} av ${total} · ${sequenceState.completed.length} fullført`;e.sequenceProgressBar.style.width=`${done/total*100}%`;e.sequenceActivity.textContent=cur.activity;e.sequenceReps.textContent=cur.reps||"–";e.sequenceLoad.textContent=cur.load||"–";e.sequenceDesc.textContent=cur.desc||"";e.sequenceNextActivity.textContent=next?next.activity:"Ferdig";e.sequenceNextMeta.textContent=next?`${next.group==="WarmUp"?"Oppvarming":"Hoveddel"} · Runde ${next.round}${next.reps?` · ${next.reps} reps`:""}${next.load?` · ${next.load}`:""}`:"Siste aktivitet"}
- render();stopRunnerTick();runnerTimer=setInterval(render,500)
+  const programId=activeSession?.program_id;
+  if(!programId)return;
+
+  let items=[];
+
+  // Prefer the editable Supabase activities.
+  try{
+    const {data,error}=await sb.from("cr_program_activities")
+      .select("*")
+      .eq("program_id",programId)
+      .order("order_no");
+    if(!error && data?.length){
+      items=data.map(r=>({
+        group:r.group_name||"",
+        order:r.order_no,
+        round:r.round_no,
+        activity:r.activity||"",
+        reps:r.reps||"",
+        load:r.load||"",
+        desc:r.description||""
+      }));
+    }
+  }catch(err){
+    console.warn("Kunne ikke hente programaktiviteter fra Supabase:",err);
+  }
+
+  // Fallback to local program definition if DB is empty/unavailable.
+  if(!items.length){
+    items=(SEQUENCE_PROGRAMS[programId]?.items||[]).map(x=>({...x}));
+  }
+
+  if(!items.length){
+    alert("Dette programmet har ingen aktiviteter registrert.");
+    return;
+  }
+
+  sequenceState=loadSequenceState()||{
+    queue:items.map((x,i)=>({...x,_key:`${x.order??i+1}-${i}`})),
+    completed:0,
+    skipped:0
+  };
+
+  // If an old/empty local state exists, rebuild it.
+  if(!Array.isArray(sequenceState.queue) || !sequenceState.queue.length){
+    sequenceState={
+      queue:items.map((x,i)=>({...x,_key:`${x.order??i+1}-${i}`})),
+      completed:0,
+      skipped:0
+    };
+    saveSequenceState();
+  }
+
+  renderSequence();
+  stopRunnerTick();
+  runnerTimer=setInterval(()=>{if(activeSession)e.sequenceElapsed.textContent=fmtElapsed(elapsed(activeSession.started_at))},500);
 }
 function seqComplete(){if(!sequenceState?.queue.length)return;sequenceState.completed.push(sequenceState.queue.shift());saveRunnerState(sequenceState);startSequenceRunner()}
 function seqSkip(){if(!sequenceState?.queue.length)return;sequenceState.skipped.push(sequenceState.queue.shift());saveRunnerState(sequenceState);startSequenceRunner()}
