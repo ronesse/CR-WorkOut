@@ -196,59 +196,6 @@
 .calendar-running-metrics b{display:block;font-size:1.15rem}
 .calendar-running-metrics em{display:block;color:var(--muted);font-size:.72rem;font-style:normal;font-weight:800}
 
-.program-layout-toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:10px 0 12px;color:var(--muted)}
-.program-layout-toolbar>span{font-size:.82rem;font-weight:900;color:#e2e8f0}
-.program-layout-toolbar>small{margin-left:auto;font-size:.72rem}
-.layout-choice{display:flex;gap:6px}
-.layout-btn{width:42px;height:36px;border-radius:10px;border:1px solid var(--line);background:rgba(255,255,255,.05);color:#cbd5e1;font-size:1rem;font-weight:900}
-.layout-btn.active{background:#2563eb;color:#fff;border-color:#60a5fa}
-#assignedPrograms.program-grid{display:grid!important;gap:10px}
-#assignedPrograms.program-cols-1{grid-template-columns:1fr!important}
-#assignedPrograms.program-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))!important}
-#assignedPrograms.program-cols-3{grid-template-columns:repeat(3,minmax(0,1fr))!important}
-#assignedPrograms .program-card{position:relative;touch-action:none;user-select:none;-webkit-user-select:none;min-width:0;transition:transform .12s ease,opacity .12s ease,box-shadow .12s ease}
-#assignedPrograms .program-card.dragging{opacity:.72;transform:scale(.98);box-shadow:0 18px 38px rgba(0,0,0,.42);z-index:20}
-#assignedPrograms .program-card.drag-over{outline:2px dashed #60a5fa;outline-offset:2px}
-#assignedPrograms .program-card .drag-handle{position:absolute;top:9px;right:9px;font-size:1rem;color:var(--muted);opacity:.8;padding:2px 4px;border-radius:7px;background:rgba(0,0,0,.12);pointer-events:none}
-#assignedPrograms.program-cols-3 .program-card{padding:12px!important}
-#assignedPrograms.program-cols-3 .program-card h3{font-size:.95rem!important;line-height:1.15}
-#assignedPrograms.program-cols-3 .program-card p{font-size:.72rem!important;line-height:1.25}
-#assignedPrograms.program-cols-3 .program-icon{font-size:1.3rem!important}
-#assignedPrograms.program-cols-3 .program-icon img{width:34px!important;height:34px!important}
-#assignedPrograms.program-cols-3 .primary-btn{padding:9px 7px!important;font-size:.76rem!important}
-@media(max-width:430px){.program-layout-toolbar>small{width:100%;margin-left:0}#assignedPrograms.program-cols-3{gap:7px}}
-
-#assignedPrograms .program-card .drag-handle{
-  position:absolute!important;
-  top:8px!important;right:8px!important;
-  width:38px!important;height:38px!important;
-  display:flex!important;align-items:center!important;justify-content:center!important;
-  border:1px solid rgba(148,163,184,.35)!important;
-  border-radius:11px!important;
-  background:rgba(15,23,42,.78)!important;
-  color:#e2e8f0!important;
-  font-size:1.25rem!important;font-weight:900!important;
-  opacity:1!important;
-  padding:0!important;margin:0!important;
-  cursor:grab!important;
-  pointer-events:auto!important;
-  touch-action:none!important;
-  z-index:8!important;
-  -webkit-tap-highlight-color:transparent;
-}
-#assignedPrograms .program-card .drag-handle:active{cursor:grabbing!important;background:rgba(37,99,235,.9)!important}
-body.program-reordering{overflow:hidden;overscroll-behavior:none}
-body.program-reordering #assignedPrograms .program-card.dragging{transform:scale(.97);outline:2px solid #60a5fa;outline-offset:2px}
-
-/* v7.5: Utøver velger kun størrelse, ikke rekkefølge */
-#assignedPrograms .program-card{touch-action:auto!important;user-select:auto!important;-webkit-user-select:auto!important}
-#assignedPrograms .drag-handle{display:none!important}
-
-.program-order-row{display:grid;grid-template-columns:minmax(0,1fr) 105px;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
-.program-enable{display:flex!important;align-items:center;justify-content:space-between;gap:10px;margin:0!important}
-.program-enable strong,.program-enable small{display:block}
-.program-enable small{color:var(--muted);margin-top:2px}
-.program-order-label{display:block!important;margin:0!important;font-size:.72rem;color:var(--muted)}
-.program-order-label span{display:block;margin-bottom:4px;font-weight:800}
-.program-order-input{width:100%!important;margin:0!important;text-align:center}
-@media(max-width:520px){.program-order-row{grid-template-columns:minmax(0,1fr) 86px}}
+.program-layout-toolbar{display:flex;align-items:center;gap:10px;margin:10px 0 12px}.layout-choice{display:flex;gap:6px}.layout-btn{width:38px;height:34px;border-radius:10px;border:1px solid var(--line);background:rgba(255,255,255,.05);color:#cbd5e1;font-weight:900}.layout-btn.active{background:#2563eb;color:#fff}
+#assignedPrograms.program-cols-1{grid-template-columns:1fr!important}#assignedPrograms.program-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))!important}#assignedPrograms.program-cols-3{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+.program-order-row{display:grid;grid-template-columns:minmax(0,1fr) 78px;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}.program-enable{display:flex!important;align-items:center;justify-content:space-between;gap:10px;margin:0!important}.program-enable strong,.program-enable small{display:block}.program-enable small{color:var(--muted)}.program-order-label{margin:0!important;font-size:.72rem;color:var(--muted)}.program-order-input{width:100%!important;margin:0!important;text-align:center}

@@ -7,7 +7,7 @@
   <meta name="description" content="CR-Workout – coach og utøver">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="style.css?v=7.5">
+  <link rel="stylesheet" href="style.css?v=7.2">
   <title>CR-Workout</title>
 </head>
 <body>
@@ -53,16 +53,7 @@
           <div class="section-heading">
             <div><h2>Mine programmer</h2><p>Programmene coachen har gjort tilgjengelige.</p></div>
           </div>
-          <div class="program-layout-toolbar">
-            <span>Visning</span>
-            <div class="layout-choice" role="group" aria-label="Velg programstørrelse">
-              <button type="button" class="layout-btn" data-cols="1" title="Store kort">▰</button>
-              <button type="button" class="layout-btn" data-cols="2" title="2 i bredden">▦</button>
-              <button type="button" class="layout-btn" data-cols="3" title="3 i bredden">▦▦</button>
-            </div>
-            <small>Velg hvor mange programkort du vil ha i bredden</small>
-          </div>
-          <div id="assignedPrograms" class="program-grid program-cols-2"></div>
+          <div class="program-layout-toolbar"><span>Visning</span><div class="layout-choice" role="group"><button type="button" class="layout-btn" data-cols="1">1</button><button type="button" class="layout-btn" data-cols="2">2</button><button type="button" class="layout-btn" data-cols="3">3</button></div></div><div id="assignedPrograms" class="program-grid program-cols-2"></div>
         </div>
 
         <div id="activeSessionCard" class="active-session hidden">
@@ -362,8 +353,8 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="programs.js?v=7.5"></script>
-  <script src="app.js?v=7.5"></script>
+  <script src="programs.js?v=7.2"></script>
+  <script src="app.js?v=7.2"></script>
 <script>if("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js").catch(()=>{});</script>
 </body>
 </html>

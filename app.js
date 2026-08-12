@@ -141,39 +141,21 @@ async function loadAthleteData(){
  await loadPrograms();const {data:sessions}=await sb.from("cr_workout_sessions").select("*").eq("athlete_id",user.id).order("started_at",{ascending:false});const all=sessions||[];activeSession=all.find(x=>x.status==="started")||null;
  const completed=all.filter(x=>x.status==="completed");e.athleteSessionCount.textContent=completed.length;e.athleteMinutes.textContent=Math.round(completed.reduce((s,x)=>s+(x.duration_seconds||0),0)/60);const ratings=completed.filter(x=>x.rating).map(x=>x.rating);e.athleteAvgRating.textContent=ratings.length?(ratings.reduce((a,b)=>a+b,0)/ratings.length).toFixed(1):"–";
  const approved=!!profile?.approved;e.athleteStatusCard.className="status-card "+(approved?"approved":"pending");e.athleteStatusTitle.textContent=approved?"Godkjent utøver":"Venter på godkjenning";e.athleteStatusText.textContent=approved?"Du har tilgang til programmene coachen har tildelt deg.":"Coachen må godkjenne kontoen før programmene blir tilgjengelige.";e.assignedProgramsWrap.classList.toggle("hidden",!approved);
- if(approved){
- const {data:a}=await sb.from("cr_athlete_programs").select("program_id,sort_order").eq("athlete_id",user.id).eq("enabled",true).order("sort_order",{ascending:true});
- const assigned=a||[];
- const rank=new Map(assigned.map((x,i)=>[x.program_id,Number(x.sort_order)||1000+i]));
- const ids=new Set(assigned.map(x=>x.program_id));
- renderPrograms(programs.filter(p=>ids.has(p.id)).sort((x,y)=>(rank.get(x.id)??9999)-(rank.get(y.id)??9999)));
-}
+ if(approved){let assigned=[];const q=await sb.from("cr_athlete_programs").select("program_id,sort_order").eq("athlete_id",user.id).eq("enabled",true).order("sort_order",{ascending:true});if(q.error){const f=await sb.from("cr_athlete_programs").select("program_id").eq("athlete_id",user.id).eq("enabled",true);assigned=(f.data||[]).map((x,i)=>({...x,sort_order:1000+i}))}else assigned=q.data||[];const rank=new Map(assigned.map((x,i)=>[x.program_id,Number(x.sort_order)||1000+i]));const ids=new Set(assigned.map(x=>x.program_id));renderPrograms(programs.filter(p=>ids.has(p.id)).sort((x,y)=>(rank.get(x.id)??9999)-(rank.get(y.id)??9999)))}
  renderActiveSession();if(activeSession)requestWakeLock();
 }
-
 function athleteUiKey(name){return `cr_ui_${user?.id||"anonymous"}_${name}`}
 function getProgramColumns(){const n=Number(localStorage.getItem(athleteUiKey("programColumns"))||2);return[1,2,3].includes(n)?n:2}
-function setProgramColumns(cols){
-  cols=Number(cols);if(![1,2,3].includes(cols))cols=2;
-  localStorage.setItem(athleteUiKey("programColumns"),String(cols));
-  const grid=e.assignedPrograms;
-  if(grid){grid.classList.remove("program-cols-1","program-cols-2","program-cols-3");grid.classList.add(`program-cols-${cols}`)}
-  document.querySelectorAll(".layout-btn").forEach(b=>b.classList.toggle("active",Number(b.dataset.cols)===cols));
-}
-function initProgramLayoutControls(){
-  document.querySelectorAll(".layout-btn").forEach(btn=>btn.onclick=()=>setProgramColumns(btn.dataset.cols));
-  setProgramColumns(getProgramColumns());
-}
+function setProgramColumns(cols){cols=Number(cols);if(![1,2,3].includes(cols))cols=2;localStorage.setItem(athleteUiKey("programColumns"),String(cols));e.assignedPrograms?.classList.remove("program-cols-1","program-cols-2","program-cols-3");e.assignedPrograms?.classList.add(`program-cols-${cols}`);document.querySelectorAll(".layout-btn").forEach(b=>b.classList.toggle("active",Number(b.dataset.cols)===cols))}
+function initProgramLayoutControls(){document.querySelectorAll(".layout-btn").forEach(b=>b.onclick=()=>setProgramColumns(b.dataset.cols));setProgramColumns(getProgramColumns())}
 
-function renderPrograms(list){
-  e.assignedPrograms.innerHTML=list.length?list.map(p=>`<article class="program-card" data-program-id="${p.id}">
-    <span class="program-icon">${programIcon(p)?`<img src="${programIcon(p)}" alt="${esc(p.name)}">`:esc(p.icon||"🏋️")}</span>
-    <h3>${esc(p.name)}</h3>
-    <p>${esc(p.description||"")}</p>
-    <button class="primary-btn start-program" data-id="${p.id}">Start økt</button>
-  </article>`).join(""):`<div class="empty">Ingen programmer er tildelt ennå.</div>`;
-  e.assignedPrograms.querySelectorAll(".start-program").forEach(b=>b.onclick=()=>startSession(b.dataset.id));
-  initProgramLayoutControls();
+function renderPrograms(list){e.assignedPrograms.innerHTML=list.length?list.map(p=>`<article class="program-card"><span class="program-icon">${programIcon(p)?`<img src="${programIcon(p)}" alt="${esc(p.name)}">`:esc(p.icon||"🏋️")}</span><h3>${esc(p.name)}</h3><p>${esc(p.description||"")}</p><button class="primary-btn start-program" data-id="${p.id}">Start økt</button></article>`).join(""):`<div class="empty">Ingen programmer er tildelt ennå.</div>`;e.assignedPrograms.querySelectorAll(".start-program").forEach(b=>b.onclick=()=>startSession(b.dataset.id))}
+
+function isRunningProgram(programId){
+  const p=programs.find(x=>x.id===programId);
+  return programId==="running" || String(p?.name||"").trim().toLowerCase()==="løping";
+
+initProgramLayoutControls();
 }
 
 async function startSession(programId){
@@ -525,62 +507,13 @@ async function loadCoachData(){await loadPrograms();const {data:links}=await sb.
 function renderAthletes(){e.athletesList.innerHTML=athletes.length?athletes.map(a=>`<div class="athlete-item"><div class="athlete-row"><div><strong>${esc(a.full_name||a.email)}</strong><small>${esc(a.phone||"")} · ${esc(a.email||"")}</small><small>${a.approved?"✅ Godkjent":"⏳ Venter på godkjenning"}</small></div><div class="athlete-actions">${!a.approved?`<button class="approve-btn" data-id="${a.id}">Godkjenn</button>`:""}<button class="programs-btn" data-id="${a.id}">Programmer</button></div></div></div>`).join(""):`<div class="empty">Ingen utøvere har registrert seg ennå.</div>`;e.athletesList.querySelectorAll(".approve-btn").forEach(b=>b.onclick=()=>approveAthlete(b.dataset.id));e.athletesList.querySelectorAll(".programs-btn").forEach(b=>b.onclick=()=>openPrograms(b.dataset.id))}
 async function approveAthlete(id){const {error}=await sb.from("cr_profiles").update({approved:true}).eq("id",id);if(error){alert(error.message);return}await sb.from("cr_coach_athletes").update({status:"approved"}).eq("coach_id",user.id).eq("athlete_id",id);await loadCoachData()}
 async function openPrograms(id){
-  programAthleteId=id;
-  const a=athletes.find(x=>x.id===id);
-  e.programAthleteName.textContent=a?.full_name||"Utøver";
-
-  const {data}=await sb.from("cr_athlete_programs")
-    .select("program_id,enabled,sort_order")
-    .eq("athlete_id",id);
-
-  const current=new Map((data||[]).map(x=>[x.program_id,x]));
-
-  e.programChecklist.innerHTML=programs.map((p,idx)=>{
-    const row=current.get(p.id);
-    const checked=!!row?.enabled;
-    const order=row?.sort_order ?? (idx+1);
-    return `<div class="program-order-row" data-program-id="${p.id}">
-      <label class="program-enable">
-        <span><strong>${esc(p.name)}</strong><small>${esc(p.description||"")}</small></span>
-        <input class="program-enabled" type="checkbox" ${checked?"checked":""}>
-      </label>
-      <label class="program-order-label">
-        <span>Rekkefølge</span>
-        <input class="program-order-input" type="number" min="1" step="1" value="${order}" ${checked?"":"disabled"}>
-      </label>
-    </div>`;
-  }).join("");
-
-  e.programChecklist.querySelectorAll(".program-enabled").forEach(cb=>{
-    cb.onchange=()=>{
-      const input=cb.closest(".program-order-row").querySelector(".program-order-input");
-      input.disabled=!cb.checked;
-      if(cb.checked && (!Number(input.value)||Number(input.value)<1)){
-        input.value=e.programChecklist.querySelectorAll(".program-enabled:checked").length;
-      }
-    };
-  });
-  openModal(e.programModal);
-}
-async function savePrograms(){
-  const rows=[...e.programChecklist.querySelectorAll(".program-order-row")].map((row,idx)=>{
-    const enabled=row.querySelector(".program-enabled").checked;
-    const input=row.querySelector(".program-order-input");
-    return {
-      athlete_id:programAthleteId,
-      program_id:row.dataset.programId,
-      enabled,
-      sort_order:enabled?Math.max(1,Number(input.value)||idx+1):null
-    };
-  });
-
-  const enabledRows=rows.filter(x=>x.enabled).sort((a,b)=>(a.sort_order??9999)-(b.sort_order??9999));
-  enabledRows.forEach((r,i)=>r.sort_order=i+1);
-
-  const {error}=await sb.from("cr_athlete_programs").upsert(rows,{onConflict:"athlete_id,program_id"});
-  if(error){alert(error.message);return}
-  closeModal(e.programModal);
-}
+programAthleteId=id;const athlete=athletes.find(x=>x.id===id);e.programAthleteName.textContent=athlete?.full_name||"Utøver";
+let rows=[];const q=await sb.from("cr_athlete_programs").select("program_id,enabled,sort_order").eq("athlete_id",id);
+if(q.error){const f=await sb.from("cr_athlete_programs").select("program_id,enabled").eq("athlete_id",id);if(f.error){alert("Kunne ikke laste programtilgang: "+f.error.message);return}rows=(f.data||[]).map((x,i)=>({...x,sort_order:i+1}))}else rows=q.data||[];
+const current=new Map(rows.map(x=>[x.program_id,x]));
+e.programChecklist.innerHTML=programs.map((p,idx)=>{const row=current.get(p.id),checked=!!row?.enabled,order=row?.sort_order??idx+1;return `<div class="program-order-row" data-program-id="${p.id}"><label class="program-enable"><span><strong>${esc(p.name)}</strong><small>${esc(p.description||"")}</small></span><input class="program-enabled" type="checkbox" ${checked?"checked":""}></label><label class="program-order-label"><span>Nr.</span><input class="program-order-input" type="number" min="1" value="${order}" ${checked?"":"disabled"}></label></div>`}).join("");
+e.programChecklist.querySelectorAll(".program-enabled").forEach(cb=>cb.onchange=()=>{cb.closest(".program-order-row").querySelector(".program-order-input").disabled=!cb.checked});openModal(e.programModal)}
+async function savePrograms(){const rows=[...e.programChecklist.querySelectorAll(".program-order-row")].map((row,idx)=>{const enabled=row.querySelector(".program-enabled").checked;return{athlete_id:programAthleteId,program_id:row.dataset.programId,enabled,sort_order:enabled?Math.max(1,Number(row.querySelector(".program-order-input").value)||idx+1):null}});const en=rows.filter(x=>x.enabled).sort((a,b)=>(a.sort_order??9999)-(b.sort_order??9999));en.forEach((r,i)=>r.sort_order=i+1);const {error}=await sb.from("cr_athlete_programs").upsert(rows,{onConflict:"athlete_id,program_id"});if(error){alert("Kunne ikke lagre programrekkefølge. Kjør v7.6 SQL først.\n\n"+error.message);return}closeModal(e.programModal)}
 
 function inviteUrl(){return `${location.origin}${location.pathname}?register=1&coach=${user.id}`}async function copyInvite(){await navigator.clipboard.writeText(inviteUrl());alert("Registreringslenken er kopiert.")}
 function startRealtime(){if(realtimeChannel)sb.removeChannel(realtimeChannel);realtimeChannel=sb.channel("cr-workout-coach-v2").on("postgres_changes",{event:"INSERT",schema:"public",table:"cr_workout_sessions"},p=>handleRealtime(p.new)).on("postgres_changes",{event:"UPDATE",schema:"public",table:"cr_workout_sessions"},p=>handleRealtime(p.new)).subscribe()}
