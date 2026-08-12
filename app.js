@@ -147,7 +147,32 @@ async function loadAthleteData(){
 function athleteUiKey(name){return `cr_ui_${user?.id||"anonymous"}_${name}`}
 function getProgramColumns(){const n=Number(localStorage.getItem(athleteUiKey("programColumns"))||2);return[1,2,3].includes(n)?n:2}
 function setProgramColumns(cols){cols=Number(cols);if(![1,2,3].includes(cols))cols=2;localStorage.setItem(athleteUiKey("programColumns"),String(cols));e.assignedPrograms?.classList.remove("program-cols-1","program-cols-2","program-cols-3");e.assignedPrograms?.classList.add(`program-cols-${cols}`);document.querySelectorAll(".layout-btn").forEach(b=>b.classList.toggle("active",Number(b.dataset.cols)===cols))}
-function initProgramLayoutControls(){document.querySelectorAll(".layout-btn").forEach(b=>b.onclick=()=>setProgramColumns(b.dataset.cols));setProgramColumns(getProgramColumns())}
+function initProgramLayoutControls(){applyProgramColumns(Number(localStorage.getItem(athleteUiKey("programColumns"))||2))}
+
+
+function applyProgramColumns(cols){
+  cols=Number(cols);
+  if(![1,2,3].includes(cols))cols=2;
+  localStorage.setItem(athleteUiKey("programColumns"),String(cols));
+  const grid=document.getElementById("assignedPrograms");
+  if(grid){
+    grid.classList.remove("program-cols-1","program-cols-2","program-cols-3");
+    grid.classList.add(`program-cols-${cols}`);
+    grid.style.gridTemplateColumns=cols===1
+      ?"1fr"
+      :`repeat(${cols}, minmax(0, 1fr))`;
+  }
+  document.querySelectorAll(".layout-btn").forEach(b=>{
+    b.classList.toggle("active",Number(b.dataset.cols)===cols);
+    b.setAttribute("aria-pressed",String(Number(b.dataset.cols)===cols));
+  });
+}
+document.addEventListener("click",ev=>{
+  const btn=ev.target.closest?.(".layout-btn");
+  if(!btn)return;
+  ev.preventDefault();
+  applyProgramColumns(btn.dataset.cols);
+});
 
 function renderPrograms(list){e.assignedPrograms.innerHTML=list.length?list.map(p=>`<article class="program-card"><span class="program-icon">${programIcon(p)?`<img src="${programIcon(p)}" alt="${esc(p.name)}">`:esc(p.icon||"🏋️")}</span><h3>${esc(p.name)}</h3><p>${esc(p.description||"")}</p><button class="primary-btn start-program" data-id="${p.id}">Start økt</button></article>`).join(""):`<div class="empty">Ingen programmer er tildelt ennå.</div>`;e.assignedPrograms.querySelectorAll(".start-program").forEach(b=>b.onclick=()=>startSession(b.dataset.id))}
 

@@ -199,3 +199,54 @@
 .program-layout-toolbar{display:flex;align-items:center;gap:10px;margin:10px 0 12px}.layout-choice{display:flex;gap:6px}.layout-btn{width:38px;height:34px;border-radius:10px;border:1px solid var(--line);background:rgba(255,255,255,.05);color:#cbd5e1;font-weight:900}.layout-btn.active{background:#2563eb;color:#fff}
 #assignedPrograms.program-cols-1{grid-template-columns:1fr!important}#assignedPrograms.program-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))!important}#assignedPrograms.program-cols-3{grid-template-columns:repeat(3,minmax(0,1fr))!important}
 .program-order-row{display:grid;grid-template-columns:minmax(0,1fr) 78px;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}.program-enable{display:flex!important;align-items:center;justify-content:space-between;gap:10px;margin:0!important}.program-enable strong,.program-enable small{display:block}.program-enable small{color:var(--muted)}.program-order-label{margin:0!important;font-size:.72rem;color:var(--muted)}.program-order-input{width:100%!important;margin:0!important;text-align:center}
+
+/* v7.8: stabile kolonner og like store programkort */
+#assignedPrograms{
+  align-items:stretch!important;
+}
+#assignedPrograms.program-cols-1{
+  grid-template-columns:1fr!important;
+}
+#assignedPrograms.program-cols-2{
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+}
+#assignedPrograms.program-cols-3{
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+}
+#assignedPrograms .program-card{
+  display:flex!important;
+  flex-direction:column!important;
+  height:100%!important;
+  min-height:250px!important;
+  box-sizing:border-box!important;
+}
+#assignedPrograms .program-card .program-icon{
+  flex:0 0 auto;
+}
+#assignedPrograms .program-card h3{
+  margin-bottom:8px!important;
+}
+#assignedPrograms .program-card p{
+  flex:1 1 auto!important;
+  margin-bottom:16px!important;
+}
+#assignedPrograms .program-card .start-program{
+  margin-top:auto!important;
+  align-self:flex-start!important;
+}
+#assignedPrograms.program-cols-3 .program-card{
+  min-height:230px!important;
+}
+@media(max-width:520px){
+  #assignedPrograms.program-cols-1 .program-card{min-height:220px!important}
+  #assignedPrograms.program-cols-2 .program-card{min-height:260px!important}
+  #assignedPrograms.program-cols-3 .program-card{min-height:240px!important}
+}
+
+.layout-btn{
+  cursor:pointer!important;
+  touch-action:manipulation!important;
+}
+.layout-btn.active{
+  box-shadow:0 0 0 2px rgba(96,165,250,.25)!important;
+}

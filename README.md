@@ -157,3 +157,10 @@ Merk: Tabellen som ble oppgitt har 15 arbeidsøkter + 15 hvileøkter, altså 22:
 - Eksisterende aktiviteter i Supabase beholdes.
 - Styrkeprogrammer seedes bare dersom aktivitetstabellen er tom.
 - Ingen ny SQL er nødvendig dersom v7.6 SQL allerede er kjørt.
+
+## v7.8 – programvisning
+- Rettet 1/2/3-knappene i utøvermodus.
+- Valgt antall kolonner lagres per bruker på enheten.
+- Programkortene strekkes til lik høyde i samme rad.
+- `Start økt` ligger nederst på samme nivå på alle kort.
+- Ingen ny SQL nødvendig.
