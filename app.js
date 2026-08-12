@@ -288,6 +288,40 @@ async function saveFinish(){
   if(isRunning){clearRunningState();stopGeolocation();runningState=null}
   clearRunnerState();activeSession=null;await releaseWakeLock();stopRunnerTick();closeModal(e.finishModal);await loadAthleteData();showOnly("athlete")
 }
+
+async function ensureProgramActivitiesSeeded(programId){
+  // If activities already exist in Supabase, do nothing.
+  const {data:existing,error:readError}=await sb
+    .from("cr_program_activities")
+    .select("id")
+    .eq("program_id",programId)
+    .limit(1);
+
+  if(readError){
+    console.error("Kunne ikke kontrollere programaktiviteter:",readError);
+    return;
+  }
+  if(existing && existing.length)return;
+
+  // Only task-based programs have a local fallback that can be seeded.
+  const source=SEQUENCE_PROGRAMS[programId]?.items||[];
+  if(!source.length)return;
+
+  const rows=source.map(x=>({
+    program_id:programId,
+    group_name:x.group||null,
+    order_no:x.order,
+    round_no:x.round||null,
+    activity:x.activity||"",
+    reps:x.reps||"",
+    load:x.load||"",
+    description:x.desc||""
+  }));
+
+  const {error:insertError}=await sb.from("cr_program_activities").insert(rows);
+  if(insertError)console.error("Kunne ikke opprette programaktiviteter:",insertError);
+}
+
 async function loadCoachProgramOptions(){
   e.programEditorMessage.textContent="Laster programmer…";
   await loadPrograms();
@@ -303,7 +337,13 @@ async function loadCoachProgramOptions(){
 async function loadProgramEditor(programId){
   if(!programId)return;
   e.programEditorMessage.textContent="Laster…";
-  await ensureProgramActivitiesSeeded(programId);
+  try{
+    await ensureProgramActivitiesSeeded(programId);
+  }catch(err){
+    console.error(err);
+    e.programEditorMessage.textContent="Kunne ikke laste programaktivitetene: "+(err?.message||err);
+    return;
+  }
 
   const p=programs.find(x=>x.id===programId);
   e.coachProgramTitle.textContent=p?.name||programId;

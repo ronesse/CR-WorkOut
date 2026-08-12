@@ -150,3 +150,10 @@ Merk: Tabellen som ble oppgitt har 15 arbeidsøkter + 15 hvileøkter, altså 22:
 - Fullførte løpeøkter viser distanse i km og tid i minutter i kalenderen.
 - Snittpace vises i detaljlinjen når den finnes.
 - Aktive løpeøkter viser tiden som har gått; distansen kommer når økten er lagret.
+
+## v7.7 – Programmer fix
+- Gjenopprettet `ensureProgramActivitiesSeeded`, som manglet i v7.6.
+- Coach → Programmer åpner igjen programeditoren.
+- Eksisterende aktiviteter i Supabase beholdes.
+- Styrkeprogrammer seedes bare dersom aktivitetstabellen er tom.
+- Ingen ny SQL er nødvendig dersom v7.6 SQL allerede er kjørt.
