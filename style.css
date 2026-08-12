@@ -123,3 +123,61 @@
   .interval-sequence-edit-row .activity-name,
   .interval-sequence-edit-row .activity-desc{grid-column:1/-1}
 }
+
+/* v6.3 tydelig fasefarger */
+.interval-card.work{
+  background:linear-gradient(145deg,#bff5c8,#9ee8ad)!important;
+  border-color:#69d77c!important;
+  color:#12351a!important;
+}
+.interval-card.work .eyebrow,
+.interval-card.work .runner-meta,
+.interval-card.work .interval-message,
+.interval-card.work .runner-next,
+.interval-card.work .elapsed-box small{color:#285c31!important}
+.interval-card.work .elapsed-box{background:rgba(255,255,255,.48)!important}
+
+.interval-card.warning-hold{
+  background:linear-gradient(145deg,#fff3a8,#ffe36c)!important;
+  border-color:#e8c844!important;
+  color:#4d3b00!important;
+}
+.interval-card.warning-hold .eyebrow,
+.interval-card.warning-hold .runner-meta,
+.interval-card.warning-hold .interval-message,
+.interval-card.warning-hold .runner-next,
+.interval-card.warning-hold .elapsed-box small{color:#6f5700!important}
+.interval-card.warning-hold .elapsed-box{background:rgba(255,255,255,.42)!important}
+
+.interval-card.rest{
+  background:linear-gradient(145deg,#ffb3b3,#ff8f8f)!important;
+  border-color:#ee6e6e!important;
+  color:#501717!important;
+}
+.interval-card.rest .eyebrow,
+.interval-card.rest .runner-meta,
+.interval-card.rest .interval-message,
+.interval-card.rest .runner-next,
+.interval-card.rest .elapsed-box small{color:#762828!important}
+.interval-card.rest .elapsed-box{background:rgba(255,255,255,.40)!important}
+
+.interval-card.warning-ready{
+  background:linear-gradient(145deg,#bfe8ff,#94d7ff)!important;
+  border-color:#63b9ea!important;
+  color:#123b55!important;
+}
+.interval-card.warning-ready .eyebrow,
+.interval-card.warning-ready .runner-meta,
+.interval-card.warning-ready .interval-message,
+.interval-card.warning-ready .runner-next,
+.interval-card.warning-ready .elapsed-box small{color:#245d7c!important}
+.interval-card.warning-ready .elapsed-box{background:rgba(255,255,255,.44)!important}
+
+.interval-card.work .secondary-btn,
+.interval-card.warning-hold .secondary-btn,
+.interval-card.rest .secondary-btn,
+.interval-card.warning-ready .secondary-btn{
+  background:rgba(255,255,255,.55)!important;
+  color:#1f2937!important;
+  border-color:rgba(0,0,0,.14)!important;
+}

@@ -58,6 +58,17 @@ function saveRunnerState(obj){if(activeSession)localStorage.setItem(stateKey(),J
 function loadRunnerState(){try{return JSON.parse(localStorage.getItem(stateKey())||"null")}catch{return null}}
 function clearRunnerState(){if(activeSession)localStorage.removeItem(stateKey())}
 function audioCue(text){try{const C=window.AudioContext||window.webkitAudioContext;if(C){const c=new C(),o=c.createOscillator(),g=c.createGain();o.frequency.value=900;g.gain.value=.15;o.connect(g);g.connect(c.destination);o.start();setTimeout(()=>{o.stop();c.close()},100)}}catch{}if("speechSynthesis"in window){const u=new SpeechSynthesisUtterance(text);u.lang="nb-NO";speechSynthesis.cancel();speechSynthesis.speak(u)}}
+function countdownBeep(){
+  try{
+    const C=window.AudioContext||window.webkitAudioContext;
+    if(!C)return;
+    const c=new C(),o=c.createOscillator(),g=c.createGain();
+    o.type="sine";o.frequency.value=1150;g.gain.value=.18;
+    o.connect(g);g.connect(c.destination);o.start();
+    setTimeout(()=>{try{o.stop()}catch{};c.close()},90);
+  }catch{}
+}
+
 
 async function loadProfile(){if(!user){profile=null;return}const {data}=await sb.from("cr_profiles").select("*").eq("id",user.id).maybeSingle();profile=data||null}
 function updateAccount(){const logged=!!user;e.authLoggedOut.classList.toggle("hidden",logged);e.authLoggedIn.classList.toggle("hidden",!logged);if(logged){e.accountName.textContent=profile?.full_name||user.email;e.accountEmail.textContent=user.email;e.accountTitle.textContent=profile?.role==="coach"?"Coach-konto":"Min konto"}}
@@ -103,8 +114,8 @@ async function startIntervalRunner(){
  const render=()=>{let t=elapsed(activeSession.started_at)+Number(intervalState.offsetSeconds||0),cycle=cfg.work+cfg.rest,total=cfg.rounds*cycle;if(t>=total){stopRunnerTick();openFinish();return}
  const round=Math.floor(t/cycle)+1,into=t%cycle,isWork=into<cfg.work,dur=isWork?cfg.work:cfg.rest,phaseInto=isWork?into:into-cfg.work,remain=Math.max(0,dur-phaseInto),totalRemain=Math.max(0,total-t);
  e.intervalElapsed.textContent=fmtElapsed(t);e.intervalRound.textContent=`Runde ${round} av ${cfg.rounds}`;e.intervalRemainingTotal.textContent=`${fmtElapsed(totalRemain)} igjen`;e.intervalTime.textContent=Math.ceil(remain);
- e.intervalCard.className="interval-card "+(isWork?(remain<=cfg.workWarning?"warning":"work"):"rest");e.intervalPhase.textContent=isWork?(remain<=cfg.workWarning?"HOLD UT!":"ARBEID"):(remain<=cfg.restWarning?"GJØR KLAR!":"HVILE");e.intervalMessage.textContent=isWork?(remain<=cfg.workWarning?"Hold ut!":"Jobb kontrollert"):(remain<=cfg.restWarning?"Gjør klar!":"Pust og hent deg inn");e.intervalNext.textContent=isWork?`Neste: Hvile ${cfg.rest} sek`:(round===cfg.rounds?"Neste: Ferdig":`Neste: Arbeid ${cfg.work} sek`);e.intervalProgressBar.style.width=`${Math.min(100,Math.max(0,phaseInto/dur*100))}%`;
- const cueKey=`${round}-${isWork?"w":"r"}-${Math.ceil(remain)}`;if(cueKey!==lastCueKey){if((isWork&&Math.ceil(remain)===cfg.workWarning)||( !isWork&&Math.ceil(remain)===cfg.restWarning)||Math.ceil(remain)===dur)audioCue(isWork?(remain<=cfg.workWarning?"Hold ut":"Arbeid"):(remain<=cfg.restWarning?"Gjør klar":"Hvile"));lastCueKey=cueKey}}
+ e.intervalCard.className="interval-card "+(isWork?(remain<=cfg.workWarning?"warning-hold":"work"):(remain<=cfg.restWarning?"warning-ready":"rest"));e.intervalPhase.textContent=isWork?(remain<=cfg.workWarning?"HOLD UT!":"ARBEID"):(remain<=cfg.restWarning?"GJØR KLAR!":"HVILE");e.intervalMessage.textContent=isWork?(remain<=cfg.workWarning?"Hold ut!":"Jobb kontrollert"):(remain<=cfg.restWarning?"Gjør klar!":"Pust og hent deg inn");e.intervalNext.textContent=isWork?`Neste: Hvile ${cfg.rest} sek`:(round===cfg.rounds?"Neste: Ferdig":`Neste: Arbeid ${cfg.work} sek`);e.intervalProgressBar.style.width=`${Math.min(100,Math.max(0,phaseInto/dur*100))}%`;
+ const secondsLeft=Math.ceil(remain),cueKey=`${round}-${isWork?"w":"r"}-${secondsLeft}`;if(cueKey!==lastCueKey){if((isWork&&secondsLeft===cfg.workWarning)||(!isWork&&secondsLeft===cfg.restWarning)||secondsLeft===dur)audioCue(isWork?(remain<=cfg.workWarning?"Hold ut":"Arbeid"):(remain<=cfg.restWarning?"Gjør klar":"Hvile"));if(secondsLeft<=5&&secondsLeft>=1)countdownBeep();lastCueKey=cueKey}}
  render();stopRunnerTick();runnerTimer=setInterval(render,250)
 }
 async function skipInterval(){const cfg=await getIntervalConfig(activeSession.program_id),t=elapsed(activeSession.started_at)+Number(intervalState.offsetSeconds||0),cycle=cfg.work+cfg.rest,into=t%cycle,isWork=into<cfg.work,remain=isWork?(cfg.work-into):(cycle-into);intervalState.offsetSeconds=Number(intervalState.offsetSeconds||0)+Math.max(1,Math.ceil(remain));saveRunnerState(intervalState)}
@@ -152,12 +163,13 @@ async function startIntervalSequenceRunner(){
     e.intervalTime.textContent=Math.ceil(remain);
     e.intervalNext.textContent=next?`Neste: ${next.activity} · ${next.duration} sek`:"Neste: Ferdig";
     e.intervalProgressBar.style.width=`${Math.min(100,Math.max(0,phaseInto/Math.max(1,step.duration)*100))}%`;
-    e.intervalCard.className="interval-card "+(isRest?"rest":warn?"warning":"work");
+    e.intervalCard.className="interval-card "+(isRest?(warn?"warning-ready":"rest"):(warn?"warning-hold":"work"));
 
-    const cueKey=`seq-${index}-${Math.ceil(remain)}`;
+    const secondsLeft=Math.ceil(remain),cueKey=`seq-${index}-${secondsLeft}`;
     if(cueKey!==lastCueKey){
-      if(Math.ceil(remain)===step.duration)audioCue(isRest?"Hvile":step.activity);
-      else if(step.warning>0 && Math.ceil(remain)===step.warning)audioCue(isRest?"Gjør klar":"Hold ut");
+      if(secondsLeft===step.duration)audioCue(isRest?"Hvile":step.activity);
+      else if(step.warning>0 && secondsLeft===step.warning)audioCue(isRest?"Gjør klar":"Hold ut");
+      if(secondsLeft<=5&&secondsLeft>=1)countdownBeep();
       lastCueKey=cueKey;
     }
   };

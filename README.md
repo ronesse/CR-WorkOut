@@ -117,3 +117,11 @@ Merk: Tabellen som ble oppgitt har 15 arbeidsøkter + 15 hvileøkter, altså 22:
 - Wake Lock forsøkes automatisk aktivert igjen når brukeren går tilbake til appen etter å ha byttet fane/app.
 - Wake Lock slippes når økten fullføres, forkastes eller brukeren logger ut.
 - Krever HTTPS og en nettleser som støtter Screen Wake Lock API.
+
+## v6.3 – fasefarger og nedtelling
+- Arbeid: lys grønn.
+- Hold ut-varsel: gul.
+- Hvile: rød.
+- Gjør klar-varsel: lys blå.
+- Kort beep ved 5, 4, 3, 2 og 1 sekund igjen i hver arbeid/hvile-fase.
+- Gjelder både vanlige intervallprogrammer og Kettlebell Mix-sekvensen.
