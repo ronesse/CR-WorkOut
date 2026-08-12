@@ -245,3 +245,16 @@ on conflict (id) do update
 set name=excluded.name,description=excluded.description,icon=excluded.icon,active=true,sort_order=excluded.sort_order;
 
 NOTIFY pgrst, 'reload schema';
+
+
+-- v7.5: Coachstyrt programrekkefølge per utøver
+alter table public.cr_athlete_programs
+  add column if not exists sort_order integer;
+
+update public.cr_athlete_programs ap
+set sort_order = p.sort_order
+from public.cr_programs p
+where ap.program_id = p.id
+  and ap.sort_order is null;
+
+NOTIFY pgrst, 'reload schema';

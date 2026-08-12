@@ -239,3 +239,16 @@
 #assignedPrograms .program-card .drag-handle:active{cursor:grabbing!important;background:rgba(37,99,235,.9)!important}
 body.program-reordering{overflow:hidden;overscroll-behavior:none}
 body.program-reordering #assignedPrograms .program-card.dragging{transform:scale(.97);outline:2px solid #60a5fa;outline-offset:2px}
+
+/* v7.5: Utøver velger kun størrelse, ikke rekkefølge */
+#assignedPrograms .program-card{touch-action:auto!important;user-select:auto!important;-webkit-user-select:auto!important}
+#assignedPrograms .drag-handle{display:none!important}
+
+.program-order-row{display:grid;grid-template-columns:minmax(0,1fr) 105px;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.program-enable{display:flex!important;align-items:center;justify-content:space-between;gap:10px;margin:0!important}
+.program-enable strong,.program-enable small{display:block}
+.program-enable small{color:var(--muted);margin-top:2px}
+.program-order-label{display:block!important;margin:0!important;font-size:.72rem;color:var(--muted)}
+.program-order-label span{display:block;margin-bottom:4px;font-weight:800}
+.program-order-input{width:100%!important;margin:0!important;text-align:center}
+@media(max-width:520px){.program-order-row{grid-template-columns:minmax(0,1fr) 86px}}

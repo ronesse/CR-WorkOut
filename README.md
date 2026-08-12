@@ -162,3 +162,10 @@ Merk: Tabellen som ble oppgitt har 15 arbeidsøkter + 15 hvileøkter, altså 22:
 - På telefon: trykk/hold på ☰ og dra kortet til ønsket plass.
 - Selve kortet er fortsatt klikkbart uten at scrolling eller Start økt påvirkes.
 - Rekkefølgen lagres som før per innlogget bruker på enheten.
+
+## v7.5 – Coachstyrt programrekkefølge
+- Utøveren kan fortsatt velge 1, 2 eller 3 programkort i bredden.
+- Dra/slipp er fjernet fra utøvervisningen.
+- Coach kan angi rekkefølge per utøver under Utøvere → Programmer.
+- Rekkefølgen lagres i `cr_athlete_programs.sort_order`.
+- Kjør v7.5-delen i SQL_SETUP.sql før testing.
