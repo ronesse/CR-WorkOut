@@ -161,3 +161,75 @@ do $$ begin
   alter publication supabase_realtime add table public.cr_workout_sessions;
 exception when duplicate_object then null;
 end $$;
+
+
+-- v6.1 corrected Kettlebell Mix
+
+insert into public.cr_programs (id,name,description,icon,active,sort_order)
+values ('kettlebell_mix','Kettlebell Mix 60/30','20 runder · 30 min · aktivitetstekst per intervall','kettlebell.png',true,15)
+on conflict (id) do update
+set name=excluded.name,
+    description=excluded.description,
+    icon=excluded.icon,
+    active=true,
+    sort_order=excluded.sort_order;
+
+insert into public.cr_program_settings
+(program_id,program_type,work_seconds,rest_seconds,rounds,work_warning,rest_warning)
+values ('kettlebell_mix','interval_sequence',60,30,20,10,5)
+on conflict (program_id) do update
+set program_type='interval_sequence',
+    work_seconds=60,
+    rest_seconds=30,
+    rounds=20,
+    work_warning=10,
+    rest_warning=5,
+    updated_at=now();
+
+delete from public.cr_program_activities where program_id='kettlebell_mix';
+
+insert into public.cr_program_activities
+(program_id,group_name,order_no,round_no,activity,reps,load,description,duration_seconds,warning_seconds)
+values
+('kettlebell_mix','Work',1,1,'Kettlebell Swing','','','',60,10),
+('kettlebell_mix','Rest',2,1,'Hvile','','','',30,5),
+('kettlebell_mix','Work',3,2,'Kettlebell Swing','','','',60,10),
+('kettlebell_mix','Rest',4,2,'Hvile','','','',30,5),
+('kettlebell_mix','Work',5,3,'Kettlebell Swing','','','',60,10),
+('kettlebell_mix','Rest',6,3,'Hvile','','','',30,5),
+('kettlebell_mix','Work',7,4,'Kettlebell Swing','','','',60,10),
+('kettlebell_mix','Rest',8,4,'Hvile','','','',30,5),
+('kettlebell_mix','Work',9,5,'Goblet Squat','','','',60,10),
+('kettlebell_mix','Rest',10,5,'Hvile','','','',30,5),
+('kettlebell_mix','Work',11,6,'Goblet Squat','','','',60,10),
+('kettlebell_mix','Rest',12,6,'Hvile','','','',30,5),
+('kettlebell_mix','Work',13,7,'Windmill','','','',60,10),
+('kettlebell_mix','Rest',14,7,'Hvile','','','',30,5),
+('kettlebell_mix','Work',15,8,'Windmill','','','',60,10),
+('kettlebell_mix','Rest',16,8,'Hvile','','','',30,5),
+('kettlebell_mix','Work',17,9,'Lunges','','','',60,10),
+('kettlebell_mix','Rest',18,9,'Hvile','','','',30,5),
+('kettlebell_mix','Work',19,10,'Lunges','','','',60,10),
+('kettlebell_mix','Rest',20,10,'Hvile','','','',30,5),
+('kettlebell_mix','Work',21,11,'Goblet Squat','','','',60,10),
+('kettlebell_mix','Rest',22,11,'Hvile','','','',30,5),
+('kettlebell_mix','Work',23,12,'Goblet Squat','','','',60,10),
+('kettlebell_mix','Rest',24,12,'Hvile','','','',30,5),
+('kettlebell_mix','Work',25,13,'Kettlebell Thruster','','','',60,10),
+('kettlebell_mix','Rest',26,13,'Hvile','','','',30,5),
+('kettlebell_mix','Work',27,14,'Kettlebell Thruster','','','',60,10),
+('kettlebell_mix','Rest',28,14,'Hvile','','','',30,5),
+('kettlebell_mix','Work',29,15,'Kettlebell Swing','','','',60,10),
+('kettlebell_mix','Rest',30,15,'Hvile','','','',30,5),
+('kettlebell_mix','Work',31,16,'Kettlebell Swing','','','',60,10),
+('kettlebell_mix','Rest',32,16,'Hvile','','','',30,5),
+('kettlebell_mix','Work',33,17,'Kettlebell Swing','','','',60,10),
+('kettlebell_mix','Rest',34,17,'Hvile','','','',30,5),
+('kettlebell_mix','Work',35,18,'Kettlebell Swing','','','',60,10),
+('kettlebell_mix','Rest',36,18,'Hvile','','','',30,5),
+('kettlebell_mix','Work',37,19,'Kettlebell Swing','','','',60,10),
+('kettlebell_mix','Rest',38,19,'Hvile','','','',30,5),
+('kettlebell_mix','Work',39,20,'Kettlebell Swing','','','',60,10),
+('kettlebell_mix','Rest',40,20,'Hvile','','','',30,5);
+
+NOTIFY pgrst, 'reload schema';

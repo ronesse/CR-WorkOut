@@ -106,3 +106,8 @@ Nytt sekvensbasert Kettlebell-program.
 - SQL utvider `cr_program_activities` med `duration_seconds` og `warning_seconds`.
 
 Merk: Tabellen som ble oppgitt har 15 arbeidsøkter + 15 hvileøkter, altså 22:30 total varighet, ikke 30:00. v6 følger tabellen nøyaktig.
+
+## v6.1 – Kettlebell Mix 20 runder
+- 20 arbeidsperioder + 20 hvileperioder = 30:00.
+- Runde 16–20 bruker foreløpig Kettlebell Swing / Hvile.
+- Kjør den nye v6.1-delen i SQL_SETUP.sql for å legge programmet inn i Supabase.
