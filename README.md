@@ -111,3 +111,9 @@ Merk: Tabellen som ble oppgitt har 15 arbeidsøkter + 15 hvileøkter, altså 22:
 - 20 arbeidsperioder + 20 hvileperioder = 30:00.
 - Runde 16–20 bruker foreløpig Kettlebell Swing / Hvile.
 - Kjør den nye v6.1-delen i SQL_SETUP.sql for å legge programmet inn i Supabase.
+
+## v6.2 – Hold skjermen på under aktiv økt
+- Bruker Screen Wake Lock API når en utøver starter eller fortsetter en økt.
+- Wake Lock forsøkes automatisk aktivert igjen når brukeren går tilbake til appen etter å ha byttet fane/app.
+- Wake Lock slippes når økten fullføres, forkastes eller brukeren logger ut.
+- Krever HTTPS og en nettleser som støtter Screen Wake Lock API.
