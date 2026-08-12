@@ -96,3 +96,13 @@ Kjør den nye v5-delen i `SQL_SETUP.sql` for å opprette `cr_program_settings` o
 - Kettlebell-redigering viser nå navn, beskrivelse, arbeid, hvile, runder og varsler.
 - Import/Eksport-knappene er med i samme skjerm.
 - Ekstra null-sikring gjør at programeditoren ikke stopper navigasjonen ved gammel cache.
+
+## v6 – Kettlebell Mix 60/30
+Nytt sekvensbasert Kettlebell-program.
+- Hver arbeid/hvile-del er en egen aktivitet.
+- Coach kan redigere tekst, Timer og Warning for hver aktivitet.
+- Programmet bruker samme timer-visning, lyd/stemme og varsellogikk som de øvrige intervallprogrammene.
+- Programmet kan eksporteres/importeres sammen med de andre programmene.
+- SQL utvider `cr_program_activities` med `duration_seconds` og `warning_seconds`.
+
+Merk: Tabellen som ble oppgitt har 15 arbeidsøkter + 15 hvileøkter, altså 22:30 total varighet, ikke 30:00. v6 følger tabellen nøyaktig.

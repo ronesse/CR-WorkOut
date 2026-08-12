@@ -53,7 +53,7 @@ async function loadAthleteData(){
 function renderPrograms(list){e.assignedPrograms.innerHTML=list.length?list.map(p=>`<article class="program-card"><span class="program-icon">${p.id==="kettlebell"?`<img src="kettlebell.png" alt="Kettlebell">`:esc(p.icon||"🏋️")}</span><h3>${esc(p.name)}</h3><p>${esc(p.description||"")}</p><button class="primary-btn start-program" data-id="${p.id}">Start økt</button></article>`).join(""):`<div class="empty">Ingen programmer er tildelt ennå.</div>`;e.assignedPrograms.querySelectorAll(".start-program").forEach(b=>b.onclick=()=>startSession(b.dataset.id))}
 async function startSession(programId){
  if(activeSession){renderActiveSession();alert("Du har allerede en aktiv økt. Velg «Fortsett økten» eller forkast den først.");return}
- if(!INTERVAL_PROGRAMS[programId]&&!SEQUENCE_PROGRAMS[programId]){alert("Dette programmet er ikke aktivert i treningsmotoren ennå.");return}
+ if(!INTERVAL_PROGRAMS[programId]&&!SEQUENCE_PROGRAMS[programId]&&programId!=="kettlebell_mix"){alert("Dette programmet er ikke aktivert i treningsmotoren ennå.");return}
  const p=programs.find(x=>x.id===programId);const {data,error}=await sb.from("cr_workout_sessions").insert({athlete_id:user.id,program_id:programId,program_name:p?.name||programId,status:"started",started_at:new Date().toISOString()}).select().single();if(error){alert(error.message);return}activeSession=data;clearRunnerState();launchRunner();
 }
 function renderActiveSession(){
@@ -66,9 +66,9 @@ async function discardActive(){
 }
 
 function launchRunner(){
- if(!activeSession)return;const id=activeSession.program_id;runnerMode=INTERVAL_PROGRAMS[id]?"interval":SEQUENCE_PROGRAMS[id]?"sequence":null;if(!runnerMode){alert("Programmotor mangler for denne økten.");return}
- showOnly("runner");e.intervalRunner.classList.toggle("hidden",runnerMode!=="interval");e.sequenceRunner.classList.toggle("hidden",runnerMode!=="sequence");
- if(runnerMode==="interval")startIntervalRunner();else startSequenceRunner()
+ if(!activeSession)return;const id=activeSession.program_id;runnerMode=id==="kettlebell_mix"?"intervalSequence":INTERVAL_PROGRAMS[id]?"interval":SEQUENCE_PROGRAMS[id]?"sequence":null;if(!runnerMode){alert("Programmotor mangler for denne økten.");return}
+ showOnly("runner");e.intervalRunner.classList.toggle("hidden",!["interval","intervalSequence"].includes(runnerMode));e.sequenceRunner.classList.toggle("hidden",runnerMode!=="sequence");
+ if(runnerMode==="interval")startIntervalRunner();else if(runnerMode==="intervalSequence")startIntervalSequenceRunner();else startSequenceRunner()
 }
 function stopRunnerTick(){clearInterval(runnerTimer);runnerTimer=null;lastCueKey=""}
 async function startIntervalRunner(){
@@ -81,6 +81,77 @@ async function startIntervalRunner(){
  render();stopRunnerTick();runnerTimer=setInterval(render,250)
 }
 async function skipInterval(){const cfg=await getIntervalConfig(activeSession.program_id),t=elapsed(activeSession.started_at)+Number(intervalState.offsetSeconds||0),cycle=cfg.work+cfg.rest,into=t%cycle,isWork=into<cfg.work,remain=isWork?(cfg.work-into):(cycle-into);intervalState.offsetSeconds=Number(intervalState.offsetSeconds||0)+Math.max(1,Math.ceil(remain));saveRunnerState(intervalState)}
+
+
+async function getIntervalSequence(programId){
+  const {data,error}=await sb.from("cr_program_activities")
+    .select("*").eq("program_id",programId).order("order_no");
+  if(error){console.error(error);return[]}
+  return (data||[]).map(r=>({
+    order:r.order_no,
+    activity:r.activity||"",
+    duration:Number(r.duration_seconds)||0,
+    warning:Number(r.warning_seconds)||0,
+    group:r.group_name||""
+  }));
+}
+async function startIntervalSequenceRunner(){
+  const steps=await getIntervalSequence(activeSession.program_id);
+  if(!steps.length){alert("Programmet inneholder ingen aktiviteter.");return}
+  const programName=programs.find(p=>p.id===activeSession.program_id)?.name||activeSession.program_name;
+  e.intervalProgramName.textContent=programName;
+
+  const render=()=>{
+    const t=elapsed(activeSession.started_at);
+    const total=steps.reduce((sum,x)=>sum+x.duration,0);
+    if(t>=total){stopRunnerTick();openFinish();return}
+
+    let acc=0,index=0,phaseInto=0;
+    for(let i=0;i<steps.length;i++){
+      const end=acc+steps[i].duration;
+      if(t<end){index=i;phaseInto=t-acc;break}
+      acc=end;
+    }
+    const step=steps[index],remain=Math.max(0,step.duration-phaseInto);
+    const next=steps[index+1];
+    const isRest=(step.group||"").toLowerCase()==="rest" || step.activity.toLowerCase()==="hvile";
+    const warn=step.warning>0 && remain<=step.warning;
+
+    e.intervalElapsed.textContent=fmtElapsed(t);
+    e.intervalRound.textContent=`Aktivitet ${index+1} av ${steps.length}`;
+    e.intervalRemainingTotal.textContent=`${fmtElapsed(total-t)} igjen`;
+    e.intervalPhase.textContent=warn?(isRest?"GJØR KLAR!":"HOLD UT!"):(isRest?"HVILE":step.activity.toUpperCase());
+    e.intervalMessage.textContent=warn?(isRest?"Neste aktivitet nærmer seg":"Hold ut!"):(isRest?"Pust og hent deg inn":step.activity);
+    e.intervalTime.textContent=Math.ceil(remain);
+    e.intervalNext.textContent=next?`Neste: ${next.activity} · ${next.duration} sek`:"Neste: Ferdig";
+    e.intervalProgressBar.style.width=`${Math.min(100,Math.max(0,phaseInto/Math.max(1,step.duration)*100))}%`;
+    e.intervalCard.className="interval-card "+(isRest?"rest":warn?"warning":"work");
+
+    const cueKey=`seq-${index}-${Math.ceil(remain)}`;
+    if(cueKey!==lastCueKey){
+      if(Math.ceil(remain)===step.duration)audioCue(isRest?"Hvile":step.activity);
+      else if(step.warning>0 && Math.ceil(remain)===step.warning)audioCue(isRest?"Gjør klar":"Hold ut");
+      lastCueKey=cueKey;
+    }
+  };
+  render();stopRunnerTick();runnerTimer=setInterval(render,250);
+}
+async function skipIntervalSequence(){
+  const steps=await getIntervalSequence(activeSession.program_id);
+  if(!steps.length)return;
+  const t=elapsed(activeSession.started_at);
+  let acc=0,remain=0;
+  for(const step of steps){
+    const end=acc+step.duration;
+    if(t<end){remain=end-t;break}
+    acc=end;
+  }
+  if(remain>0){
+    // Move the session start backwards so elapsed jumps to the next segment.
+    const shifted=new Date(new Date(activeSession.started_at).getTime()-remain*1000);
+    activeSession.started_at=shifted.toISOString();
+  }
+}
 
 async function startSequenceRunner(){
  const cfg=SEQUENCE_PROGRAMS[activeSession.program_id];e.sequenceProgramName.textContent=cfg.name;
@@ -142,6 +213,7 @@ async function loadProgramEditor(programId){
   if(e.editProgramDescription)e.editProgramDescription.value=p?.description||"";
 
   const isInterval=!!INTERVAL_PROGRAMS[programId];
+  const isIntervalSequence=programId==="kettlebell_mix";
   e.intervalSettingsEditor?.classList.toggle("hidden",!isInterval);
 
   if(isInterval){
@@ -161,6 +233,23 @@ async function loadProgramEditor(programId){
 
   if(isInterval && !rows.length){
     e.programActivitiesEditor.innerHTML='<div class="empty">Dette er et intervallprogram. Rediger arbeid, hvile, runder og varsler over.</div>';
+  }else if(isIntervalSequence){
+    e.programActivitiesEditor.innerHTML=rows.length?rows.map(r=>`
+      <div class="activity-edit-row interval-sequence-edit-row" data-id="${r.id}">
+        <div class="mini-meta">${esc(r.group_name||"")}<br>#${r.order_no}</div>
+        <label class="activity-name">Aktivitet
+          <input data-field="activity" type="text" value="${esc(r.activity||"")}">
+        </label>
+        <label>Timer
+          <input data-field="duration_seconds" type="number" min="1" value="${r.duration_seconds??""}">
+        </label>
+        <label>Warning
+          <input data-field="warning_seconds" type="number" min="0" value="${r.warning_seconds??""}">
+        </label>
+        <label class="activity-desc">Beskrivelse
+          <input data-field="description" type="text" value="${esc(r.description||"")}">
+        </label>
+      </div>`).join(""):'<div class="empty">Ingen aktiviteter i programmet.</div>';
   }else{
     e.programActivitiesEditor.innerHTML=rows.length?rows.map(r=>`
       <div class="activity-edit-row" data-id="${r.id}">
@@ -179,7 +268,7 @@ async function loadProgramEditor(programId){
         </label>
       </div>`).join(""):'<div class="empty">Ingen aktiviteter i programmet.</div>';
   }
-  e.programEditorMessage.textContent=isInterval?"Intervallprogram lastet.":`${rows.length} aktiviteter lastet.`;
+  e.programEditorMessage.textContent=isInterval?"Intervallprogram lastet.":isIntervalSequence?`${rows.length} intervallaktiviteter lastet.`:`${rows.length} aktiviteter lastet.`;
 }
 async function saveProgramActivities(){
   const programId=e.coachProgramSelect.value;
@@ -209,7 +298,10 @@ async function saveProgramActivities(){
 
   const rows=[...e.programActivitiesEditor.querySelectorAll(".activity-edit-row")].map(row=>{
     const obj={id:Number(row.dataset.id)};
-    row.querySelectorAll("input[data-field]").forEach(inp=>obj[inp.dataset.field]=inp.value.trim());
+    row.querySelectorAll("input[data-field]").forEach(inp=>{
+      const field=inp.dataset.field;
+      obj[field]=["duration_seconds","warning_seconds"].includes(field)?Number(inp.value)||0:inp.value.trim();
+    });
     return obj;
   });
   for(const r of rows){
@@ -270,7 +362,7 @@ async function importProgramsFile(file){
       const {error:delError}=await sb.from("cr_program_activities").delete().eq("program_id",programId);
       if(delError){e.programEditorMessage.textContent=`Importfeil ved sletting: ${delError.message}`;return}
     }
-    const cleanActivities=payload.activities.map(({program_id,group_name,order_no,round_no,activity,reps,load,description})=>({program_id,group_name,order_no,round_no,activity,reps,load,description,updated_at:new Date().toISOString()}));
+    const cleanActivities=payload.activities.map(({program_id,group_name,order_no,round_no,activity,reps,load,description,duration_seconds,warning_seconds})=>({program_id,group_name,order_no,round_no,activity,reps,load,description,duration_seconds,warning_seconds,updated_at:new Date().toISOString()}));
     if(cleanActivities.length){
       const {error}=await sb.from("cr_program_activities").insert(cleanActivities);
       if(error){e.programEditorMessage.textContent=`Importfeil aktiviteter: ${error.message}`;return}
@@ -333,7 +425,7 @@ document.querySelectorAll(".nav-btn").forEach(b=>b.onclick=async()=>{
 });
 e.accountBtn.onclick=()=>{updateAccount();openModal(e.accountModal)};e.closeAccountBtn.onclick=()=>closeModal(e.accountModal);e.openLoginBtn.onclick=()=>openModal(e.accountModal);e.openRegisterBtn.onclick=()=>openModal(e.registerModal);e.showRegisterBtn.onclick=()=>{closeModal(e.accountModal);openModal(e.registerModal)};e.closeRegisterBtn.onclick=()=>closeModal(e.registerModal);e.loginBtn.onclick=login;e.registerBtn.onclick=register;e.logoutBtn.onclick=logout;e.copyInviteBtn.onclick=copyInvite;if(e.copyInviteBtnAthletes)e.copyInviteBtnAthletes.onclick=copyInvite;e.closeProgramBtn.onclick=()=>closeModal(e.programModal);e.saveProgramsBtn.onclick=savePrograms;
 if(e.coachProgramSelect)e.coachProgramSelect.onchange=()=>loadProgramEditor(e.coachProgramSelect.value);if(e.exportProgramsBtn)e.exportProgramsBtn.onclick=exportPrograms;if(e.importProgramsBtn&&e.importProgramsFile)e.importProgramsBtn.onclick=()=>e.importProgramsFile.click();if(e.importProgramsFile)e.importProgramsFile.onchange=async()=>{await importProgramsFile(e.importProgramsFile.files?.[0]);e.importProgramsFile.value="";};if(e.reloadProgramBtn)e.reloadProgramBtn.onclick=()=>loadProgramEditor(e.coachProgramSelect.value);if(e.saveProgramActivitiesBtn)e.saveProgramActivitiesBtn.onclick=saveProgramActivities;
-e.continueSessionBtn.onclick=launchRunner;e.discardSessionBtn.onclick=discardActive;e.intervalSkipBtn.onclick=skipInterval;e.runnerAbortBtn.onclick=discardActive;e.sequenceCompleteBtn.onclick=seqComplete;e.sequenceSkipBtn.onclick=seqSkip;e.sequencePostponeBtn.onclick=seqPostpone;e.sequenceAbortBtn.onclick=discardActive;
+e.continueSessionBtn.onclick=launchRunner;e.discardSessionBtn.onclick=discardActive;e.intervalSkipBtn.onclick=()=>runnerMode==="intervalSequence"?skipIntervalSequence():skipInterval();e.runnerAbortBtn.onclick=discardActive;e.sequenceCompleteBtn.onclick=seqComplete;e.sequenceSkipBtn.onclick=seqSkip;e.sequencePostponeBtn.onclick=seqPostpone;e.sequenceAbortBtn.onclick=discardActive;
 e.cancelFinishBtn.onclick=()=>closeModal(e.finishModal);e.saveFinishBtn.onclick=saveFinish;e.finishStars.querySelectorAll("button").forEach(b=>b.onclick=()=>{finishRating=Number(b.dataset.rating);renderStars()});e.prevMonthBtn.onclick=()=>{currentMonth.setMonth(currentMonth.getMonth()-1);renderCalendar()};e.nextMonthBtn.onclick=()=>{currentMonth.setMonth(currentMonth.getMonth()+1);renderCalendar()};e.calendarAthleteSelect.onchange=renderCalendar;e.statsAthleteSelect.onchange=renderStats;
 
 sb.auth.onAuthStateChange(async(_event,newSession)=>{session=newSession;user=newSession?.user||null;await loadProfile();closeModal(e.accountModal);await route()});
