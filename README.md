@@ -145,3 +145,8 @@ Merk: Tabellen som ble oppgitt har 15 arbeidsøkter + 15 hvileøkter, altså 22:
 - Rettet programkontrollen som stoppet Løping med meldingen «ikke aktivert i treningsmotoren».
 - Løping gjenkjennes både på program-id `running` og programnavnet `Løping`.
 - Cache-versjon oppdatert.
+
+## v7.2 – Løpedata i kalender
+- Fullførte løpeøkter viser distanse i km og tid i minutter i kalenderen.
+- Snittpace vises i detaljlinjen når den finnes.
+- Aktive løpeøkter viser tiden som har gått; distansen kommer når økten er lagret.

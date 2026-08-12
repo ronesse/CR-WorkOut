@@ -508,7 +508,32 @@ function handleRealtime(row){if(!athletes.some(a=>a.id===row.athlete_id))return;
 function fillAthleteSelectors(){const opts=[`<option value="">Alle utøvere</option>`,...athletes.filter(a=>a.approved).map(a=>`<option value="${a.id}">${esc(a.full_name||a.email)}</option>`)].join("");e.calendarAthleteSelect.innerHTML=opts;e.statsAthleteSelect.innerHTML=opts}
 async function sessionsForView(selected=""){if(profile?.role==="coach"){const ids=selected?[selected]:athletes.filter(a=>a.approved).map(a=>a.id);if(!ids.length)return[];const {data}=await sb.from("cr_workout_sessions").select("*").in("athlete_id",ids).order("started_at",{ascending:false});return data||[]}const {data}=await sb.from("cr_workout_sessions").select("*").eq("athlete_id",user.id).order("started_at",{ascending:false});return data||[]}
 async function renderCalendar(){const selected=e.calendarAthleteSelect.value||"",sessions=await sessionsForView(selected),y=currentMonth.getFullYear(),m=currentMonth.getMonth();e.calendarSubtitle.textContent=profile?.role==="coach"?(selected?(athletes.find(a=>a.id===selected)?.full_name||"Utøver"):"Alle utøvere"):"Mine økter";e.calendarTitle.textContent=new Intl.DateTimeFormat("nb-NO",{month:"long",year:"numeric"}).format(currentMonth);e.calendarGrid.innerHTML="";const first=new Date(y,m,1),offset=(first.getDay()+6)%7,days=new Date(y,m+1,0).getDate(),prev=new Date(y,m,0).getDate();for(let i=0;i<42;i++){let day,dm=m;if(i<offset){day=prev-offset+i+1;dm=m-1}else if(i>=offset+days){day=i-offset-days+1;dm=m+1}else day=i-offset+1;const d=new Date(y,dm,day),key=dateKey(d),count=sessions.filter(x=>dateKey(new Date(x.started_at))===key).length,b=document.createElement("button");b.className="calendar-day"+(key===dateKey(new Date())?" today":"");b.innerHTML=`${day}${count?`<span class="day-count">${count}</span>`:""}`;b.onclick=()=>renderCalendarDetails(key,sessions);e.calendarGrid.appendChild(b)}e.calendarDetails.innerHTML=""}
-function renderCalendarDetails(key,sessions){const list=sessions.filter(x=>dateKey(new Date(x.started_at))===key);e.calendarDetails.innerHTML=list.length?list.map(x=>`<div class="notification-item"><strong>${esc(x.program_name)}</strong><small>${fmtDate(x.started_at)} · ${x.status==="completed"?"Fullført":x.status==="cancelled"?"Forkastet":"Startet"}${x.rating?` · ${"★".repeat(x.rating)}`:""}</small>${x.comment?`<p>${esc(x.comment)}</p>`:""}</div>`).join(""):`<div class="empty">Ingen økter.</div>`}
+function renderCalendarDetails(key,sessions){
+  const list=sessions.filter(x=>dateKey(new Date(x.started_at))===key);
+  e.calendarDetails.innerHTML=list.length?list.map(x=>{
+    const isRunning=x.program_id==="running"||String(x.program_name||"").trim().toLowerCase()==="løping";
+    const status=x.status==="completed"?"Fullført":x.status==="cancelled"?"Forkastet":"Startet";
+    const durationSeconds=Number(x.duration_seconds)||(x.status==="started"?elapsed(x.started_at):0);
+    const minutes=durationSeconds>0?Math.max(1,Math.round(durationSeconds/60)):0;
+    const km=Number(x.distance_meters)>0?Number(x.distance_meters)/1000:0;
+    const pace=Number(x.avg_pace_seconds_per_km)>0?formatPace(Number(x.avg_pace_seconds_per_km)):"";
+    const meta=[fmtDate(x.started_at),status];
+    if(isRunning&&km>0)meta.push(`${km.toLocaleString("nb-NO",{minimumFractionDigits:2,maximumFractionDigits:2})} km`);
+    if(isRunning&&minutes>0)meta.push(`${minutes} min`);
+    if(isRunning&&pace)meta.push(pace);
+    if(x.rating)meta.push("★".repeat(x.rating));
+
+    return `<div class="notification-item calendar-workout-card">
+      <strong>${esc(x.program_name)}</strong>
+      <small>${meta.join(" · ")}</small>
+      ${isRunning&&(km>0||minutes>0)?`<div class="calendar-running-metrics">
+        ${km>0?`<span><b>${km.toLocaleString("nb-NO",{minimumFractionDigits:2,maximumFractionDigits:2})}</b><em>km</em></span>`:""}
+        ${minutes>0?`<span><b>${minutes}</b><em>min</em></span>`:""}
+      </div>`:""}
+      ${x.comment?`<p>${esc(x.comment)}</p>`:""}
+    </div>`;
+  }).join(""):`<div class="empty">Ingen økter.</div>`
+}
 async function renderStats(){const selected=e.statsAthleteSelect.value||"",sessions=await sessionsForView(selected),valid=sessions.filter(x=>x.status!=="cancelled"),completed=valid.filter(x=>x.status==="completed"),ratings=completed.filter(x=>x.rating).map(x=>x.rating);e.statsSubtitle.textContent=profile?.role==="coach"?(selected?(athletes.find(a=>a.id===selected)?.full_name||"Utøver"):"Alle utøvere"):"Mine økter";e.statSessions.textContent=valid.length;e.statMinutes.textContent=Math.round(completed.reduce((s,x)=>s+(x.duration_seconds||0),0)/60);e.statRating.textContent=ratings.length?(ratings.reduce((a,b)=>a+b,0)/ratings.length).toFixed(1):"–";e.statCompleted.textContent=valid.length?`${Math.round(completed.length/valid.length*100)}%`:"0%";const counts={};completed.forEach(x=>counts[x.program_name]=(counts[x.program_name]||0)+1);const entries=Object.entries(counts),max=Math.max(1,...entries.map(x=>x[1]));e.programStats.innerHTML=entries.length?entries.map(([n,v])=>`<div class="bar-row"><span>${esc(n)}</span><div class="bar-track"><div class="bar-fill" style="width:${v/max*100}%"></div></div><strong>${v}</strong></div>`).join(""):`<div class="empty">Ingen fullførte økter ennå.</div>`}
 
 document.querySelectorAll(".nav-btn").forEach(b=>b.onclick=async()=>{
