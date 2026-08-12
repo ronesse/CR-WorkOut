@@ -212,3 +212,10 @@ Merk: Tabellen som ble oppgitt har 15 arbeidsøkter + 15 hvileøkter, altså 22:
 - Aktivitetene hentes fortsatt fra Supabase via `getSequenceItems()`, med lokal fallback.
 - Gammel/ødelagt lokal runner-state repareres automatisk.
 - Ingen ny SQL nødvendig.
+
+## v8.5 – start/fortsett fix
+- Fant rotårsaken til at Start økt / Fortsett økten kunne se ut til å gjøre ingenting.
+- Appen ventet på Screen Wake Lock før den byttet til treningsskjermen.
+- Wake Lock kjøres nå i bakgrunnen og kan aldri blokkere navigasjonen.
+- Sequence-runner tvinger aktivitetsvisningen synlig når Styrke Dag1/Dag2 åpnes.
+- Ingen ny SQL nødvendig.

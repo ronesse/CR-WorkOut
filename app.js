@@ -34,8 +34,10 @@ async function requestWakeLock(){
   if(!("wakeLock" in navigator)) return;
   try{
     if(wakeLock && !wakeLock.released) return;
-    wakeLock=await navigator.wakeLock.request("screen");
-    wakeLock.addEventListener("release",()=>{wakeLock=null;});
+    const request=navigator.wakeLock.request("screen");
+    const timeout=new Promise((_,reject)=>setTimeout(()=>reject(new Error("Wake Lock timeout")),1500));
+    wakeLock=await Promise.race([request,timeout]);
+    if(wakeLock)wakeLock.addEventListener("release",()=>{wakeLock=null;});
   }catch(err){
     console.warn("Wake Lock kunne ikke aktiveres:",err);
   }
@@ -306,7 +308,7 @@ async function startSession(programId){
  await unlockAudio();
  if(activeSession){renderActiveSession();alert("Du har allerede en aktiv økt. Velg «Fortsett økten» eller forkast den først.");return}
  if(!INTERVAL_PROGRAMS[programId]&&!SEQUENCE_PROGRAMS[programId]&&programId!=="kettlebell_mix"&&!isRunningProgram(programId)&&programId!=="twenty_minutes"&&programId!=="free_workout"){alert("Dette programmet er ikke aktivert i treningsmotoren ennå.");return}
- const p=programs.find(x=>x.id===programId);const {data,error}=await sb.from("cr_workout_sessions").insert({athlete_id:user.id,program_id:programId,program_name:p?.name||programId,status:"started",started_at:new Date().toISOString()}).select().single();if(error){alert(error.message);return}activeSession=data;clearRunnerState();await requestWakeLock();launchRunner();
+ const p=programs.find(x=>x.id===programId);const {data,error}=await sb.from("cr_workout_sessions").insert({athlete_id:user.id,program_id:programId,program_name:p?.name||programId,status:"started",started_at:new Date().toISOString()}).select().single();if(error){alert(error.message);return}activeSession=data;clearRunnerState();requestWakeLock().catch(()=>{});await launchRunner();
 }
 function renderActiveSession(){
  e.activeSessionCard.classList.toggle("hidden",!activeSession);clearInterval(homeTimer);if(!activeSession)return;
@@ -319,7 +321,7 @@ async function discardActive(){
 
 async function launchRunner(){
  if(!activeSession)return;
- await requestWakeLock();const id=activeSession.program_id;runnerMode=id==="free_workout"?"freeWorkout":id==="twenty_minutes"?"twenty":isRunningProgram(id)?"running":id==="kettlebell_mix"?"intervalSequence":INTERVAL_PROGRAMS[id]?"interval":SEQUENCE_PROGRAMS[id]?"sequence":null;if(!runnerMode){alert("Programmotor mangler for denne økten.");return}
+ requestWakeLock().catch(()=>{});const id=activeSession.program_id;runnerMode=id==="free_workout"?"freeWorkout":id==="twenty_minutes"?"twenty":isRunningProgram(id)?"running":id==="kettlebell_mix"?"intervalSequence":INTERVAL_PROGRAMS[id]?"interval":SEQUENCE_PROGRAMS[id]?"sequence":null;if(!runnerMode){alert("Programmotor mangler for denne økten.");return}
  if(runnerMode==="freeWorkout"){showOnly("freeWorkout");startFreeWorkoutRunner();return}
  if(runnerMode==="twenty"){showOnly("twenty");startTwentyRunner();return}
  if(runnerMode==="running"){showOnly("running");startRunningRunner();return}
@@ -417,6 +419,9 @@ async function startSequenceRunner(){
     return;
   }
 
+  showOnly("runner");
+  e.intervalRunner.classList.add("hidden");
+  e.sequenceRunner.classList.remove("hidden");
   e.sequenceProgramName.textContent=cfg.name;
 
   const saved=loadRunnerState();
@@ -827,8 +832,8 @@ function renderTwenty(){
   }
 }
 async function startTwentyRunner(){
-  await unlockAudio();
-  await requestWakeLock();
+  unlockAudio().catch(()=>{});
+  requestWakeLock().catch(()=>{});
   twentyState=loadTwentyState()||{pausedSeconds:0,paused:false,pauseStartedAt:null,beepDone:false};
   twentyPaused=!!twentyState.paused;
   twentyPauseStartedAt=twentyState.pauseStartedAt||null;
@@ -863,7 +868,7 @@ async function finishTwenty(){
 }
 
 function renderFreeWorkout(){if(!activeSession)return;const sec=elapsed(activeSession.started_at);e.freeWorkoutElapsed.textContent=fmtElapsed(sec);e.freeWorkoutBigTime.textContent=fmtElapsed(sec);e.freeWorkoutProgramName.textContent=activeSession.program_name||"Fri økt"}
-async function startFreeWorkoutRunner(){await requestWakeLock();renderFreeWorkout();stopRunnerTick();runnerTimer=setInterval(renderFreeWorkout,500)}
+async function startFreeWorkoutRunner(){requestWakeLock().catch(()=>{});renderFreeWorkout();stopRunnerTick();runnerTimer=setInterval(renderFreeWorkout,500)}
 async function finishFreeWorkout(){if(!activeSession)return;stopRunnerTick();const sec=elapsed(activeSession.started_at);activeSession._freeDuration=sec;e.finishSummary.textContent=`${activeSession.program_name} · ${fmtElapsed(sec)}`;finishRating=4;e.finishComment.value="";e.finishDistance.value="";e.finishDistanceWrap.classList.remove("hidden");renderStars();openModal(e.finishModal)}
 
 async function loadCoachData(){await loadPrograms();const {data:links}=await sb.from("cr_coach_athletes").select("athlete_id,status,cr_profiles!cr_coach_athletes_athlete_id_fkey(*)").eq("coach_id",user.id).order("created_at");athletes=(links||[]).map(x=>({...x.cr_profiles,link_status:x.status}));const ids=athletes.map(a=>a.id);e.pendingCount.textContent=athletes.filter(a=>!a.approved).length;e.activeAthletesCount.textContent=athletes.filter(a=>a.approved).length;let today=0;if(ids.length){const from=new Date();from.setHours(0,0,0,0);const {count}=await sb.from("cr_workout_sessions").select("*",{count:"exact",head:true}).in("athlete_id",ids).gte("started_at",from.toISOString());today=count||0}e.sessionsTodayCount.textContent=today;renderAthletes();fillAthleteSelectors()}
@@ -936,7 +941,7 @@ document.querySelectorAll(".nav-btn").forEach(b=>b.onclick=async()=>{
 });
 e.accountBtn.onclick=()=>{updateAccount();openModal(e.accountModal)};e.closeAccountBtn.onclick=()=>closeModal(e.accountModal);e.openLoginBtn.onclick=()=>openModal(e.accountModal);e.openRegisterBtn.onclick=()=>openModal(e.registerModal);e.showRegisterBtn.onclick=()=>{closeModal(e.accountModal);openModal(e.registerModal)};e.closeRegisterBtn.onclick=()=>closeModal(e.registerModal);e.loginBtn.onclick=login;e.registerBtn.onclick=register;e.logoutBtn.onclick=logout;e.copyInviteBtn.onclick=copyInvite;if(e.copyInviteBtnAthletes)e.copyInviteBtnAthletes.onclick=copyInvite;e.closeProgramBtn.onclick=()=>closeModal(e.programModal);e.saveProgramsBtn.onclick=savePrograms;
 if(e.coachProgramSelect)e.coachProgramSelect.onchange=()=>loadProgramEditor(e.coachProgramSelect.value);if(e.exportProgramsBtn)e.exportProgramsBtn.onclick=exportPrograms;if(e.importProgramsBtn&&e.importProgramsFile)e.importProgramsBtn.onclick=()=>e.importProgramsFile.click();if(e.importProgramsFile)e.importProgramsFile.onchange=async()=>{await importProgramsFile(e.importProgramsFile.files?.[0]);e.importProgramsFile.value="";};if(e.reloadProgramBtn)e.reloadProgramBtn.onclick=()=>loadProgramEditor(e.coachProgramSelect.value);if(e.saveProgramActivitiesBtn)e.saveProgramActivitiesBtn.onclick=saveProgramActivities;
-e.continueSessionBtn.onclick=async()=>{await unlockAudio();await requestWakeLock();launchRunner();};e.runningPauseBtn.onclick=toggleRunningPause;e.runningFinishBtn.onclick=finishRunning;e.runningDiscardBtn.onclick=discardActive;e.twentyPauseBtn.onclick=toggleTwentyPause;e.twentyFinishBtn.onclick=finishTwenty;e.twentyDiscardBtn.onclick=discardActive;e.freeWorkoutFinishBtn.onclick=finishFreeWorkout;e.freeWorkoutDiscardBtn.onclick=discardActive;e.discardSessionBtn.onclick=discardActive;e.intervalSkipBtn.onclick=()=>runnerMode==="intervalSequence"?skipIntervalSequence():skipInterval();e.runnerAbortBtn.onclick=discardActive;e.sequenceCompleteBtn.onclick=seqComplete;e.sequenceSkipBtn.onclick=seqSkip;e.sequencePostponeBtn.onclick=seqPostpone;e.sequenceAbortBtn.onclick=discardActive;
+e.continueSessionBtn.onclick=async()=>{unlockAudio().catch(()=>{});requestWakeLock().catch(()=>{});await launchRunner();};e.runningPauseBtn.onclick=toggleRunningPause;e.runningFinishBtn.onclick=finishRunning;e.runningDiscardBtn.onclick=discardActive;e.twentyPauseBtn.onclick=toggleTwentyPause;e.twentyFinishBtn.onclick=finishTwenty;e.twentyDiscardBtn.onclick=discardActive;e.freeWorkoutFinishBtn.onclick=finishFreeWorkout;e.freeWorkoutDiscardBtn.onclick=discardActive;e.discardSessionBtn.onclick=discardActive;e.intervalSkipBtn.onclick=()=>runnerMode==="intervalSequence"?skipIntervalSequence():skipInterval();e.runnerAbortBtn.onclick=discardActive;e.sequenceCompleteBtn.onclick=seqComplete;e.sequenceSkipBtn.onclick=seqSkip;e.sequencePostponeBtn.onclick=seqPostpone;e.sequenceAbortBtn.onclick=discardActive;
 e.cancelFinishBtn.onclick=()=>closeModal(e.finishModal);e.saveFinishBtn.onclick=saveFinish;e.finishStars.querySelectorAll("button").forEach(b=>b.onclick=()=>{finishRating=Number(b.dataset.rating);renderStars()});e.prevMonthBtn.onclick=()=>{currentMonth.setMonth(currentMonth.getMonth()-1);renderCalendar()};e.nextMonthBtn.onclick=()=>{currentMonth.setMonth(currentMonth.getMonth()+1);renderCalendar()};e.calendarAthleteSelect.onchange=renderCalendar;e.statsAthleteSelect.onchange=renderStats;
 
 sb.auth.onAuthStateChange(async(_event,newSession)=>{session=newSession;user=newSession?.user||null;await loadProfile();closeModal(e.accountModal);await route()});
