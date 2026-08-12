@@ -304,6 +304,14 @@ async function openProgramInfo(programId){
   }
 }
 
+
+function isRunningProgram(programId){
+  const id=String(programId||"").trim().toLowerCase();
+  if(id==="running")return true;
+  const p=programs.find(x=>String(x.id)===String(programId));
+  return String(p?.name||"").trim().toLowerCase()==="løping";
+}
+
 async function startSession(programId){
  await unlockAudio();
  if(activeSession){renderActiveSession();alert("Du har allerede en aktiv økt. Velg «Fortsett økten» eller forkast den først.");return}
@@ -311,8 +319,21 @@ async function startSession(programId){
  const p=programs.find(x=>x.id===programId);const {data,error}=await sb.from("cr_workout_sessions").insert({athlete_id:user.id,program_id:programId,program_name:p?.name||programId,status:"started",started_at:new Date().toISOString()}).select().single();if(error){alert(error.message);return}activeSession=data;clearRunnerState();requestWakeLock().catch(()=>{});await launchRunner();
 }
 function renderActiveSession(){
- e.activeSessionCard.classList.toggle("hidden",!activeSession);clearInterval(homeTimer);if(!activeSession)return;
- e.activeSessionName.textContent=activeSession.program_name;e.activeStartedAt.textContent=fmtDate(activeSession.started_at);const tick=()=>e.activeElapsed.textContent=fmtElapsed(elapsed(activeSession.started_at));tick();homeTimer=setInterval(tick,1000)
+ e.activeSessionCard.classList.toggle("hidden",!activeSession);
+ clearInterval(homeTimer);
+ if(!activeSession)return;
+ const sessionId=activeSession.id;
+ e.activeSessionName.textContent=activeSession.program_name||"Aktiv økt";
+ e.activeStartedAt.textContent=activeSession.started_at?fmtDate(activeSession.started_at):"";
+ const tick=()=>{
+   if(!activeSession || activeSession.id!==sessionId || !activeSession.started_at){
+     clearInterval(homeTimer);
+     return;
+   }
+   e.activeElapsed.textContent=fmtElapsed(elapsed(activeSession.started_at));
+ };
+ tick();
+ homeTimer=setInterval(tick,1000);
 }
 async function discardActive(){
  if(!activeSession||!confirm(`Forkaste den aktive økten «${activeSession.program_name}»?`))return;
@@ -320,13 +341,34 @@ async function discardActive(){
 }
 
 async function launchRunner(){
- if(!activeSession)return;
- requestWakeLock().catch(()=>{});const id=activeSession.program_id;runnerMode=id==="free_workout"?"freeWorkout":id==="twenty_minutes"?"twenty":isRunningProgram(id)?"running":id==="kettlebell_mix"?"intervalSequence":INTERVAL_PROGRAMS[id]?"interval":SEQUENCE_PROGRAMS[id]?"sequence":null;if(!runnerMode){alert("Programmotor mangler for denne økten.");return}
- if(runnerMode==="freeWorkout"){showOnly("freeWorkout");startFreeWorkoutRunner();return}
- if(runnerMode==="twenty"){showOnly("twenty");startTwentyRunner();return}
- if(runnerMode==="running"){showOnly("running");startRunningRunner();return}
- showOnly("runner");e.intervalRunner.classList.toggle("hidden",!["interval","intervalSequence"].includes(runnerMode));e.sequenceRunner.classList.toggle("hidden",runnerMode!=="sequence");
- if(runnerMode==="interval")startIntervalRunner();else if(runnerMode==="intervalSequence")startIntervalSequenceRunner();else await startSequenceRunner()
+ if(!activeSession || !activeSession.program_id)return;
+ requestWakeLock().catch(()=>{});
+ const id=activeSession.program_id;
+
+ if(id==="free_workout")runnerMode="freeWorkout";
+ else if(id==="twenty_minutes")runnerMode="twenty";
+ else if(isRunningProgram(id))runnerMode="running";
+ else if(id==="kettlebell_mix")runnerMode="intervalSequence";
+ else if(INTERVAL_PROGRAMS[id])runnerMode="interval";
+ else if(SEQUENCE_PROGRAMS[id])runnerMode="sequence";
+ else runnerMode=null;
+
+ if(!runnerMode){
+   alert("Programmotor mangler for denne økten.");
+   return;
+ }
+
+ if(runnerMode==="freeWorkout"){showOnly("freeWorkout");await startFreeWorkoutRunner();return}
+ if(runnerMode==="twenty"){showOnly("twenty");await startTwentyRunner();return}
+ if(runnerMode==="running"){showOnly("running");await startRunningRunner();return}
+
+ showOnly("runner");
+ e.intervalRunner.classList.toggle("hidden",!["interval","intervalSequence"].includes(runnerMode));
+ e.sequenceRunner.classList.toggle("hidden",runnerMode!=="sequence");
+
+ if(runnerMode==="interval")await startIntervalRunner();
+ else if(runnerMode==="intervalSequence")await startIntervalSequenceRunner();
+ else await startSequenceRunner();
 }
 function stopRunnerTick(){clearInterval(runnerTimer);runnerTimer=null;lastCueKey=""}
 async function startIntervalRunner(){
@@ -941,7 +983,15 @@ document.querySelectorAll(".nav-btn").forEach(b=>b.onclick=async()=>{
 });
 e.accountBtn.onclick=()=>{updateAccount();openModal(e.accountModal)};e.closeAccountBtn.onclick=()=>closeModal(e.accountModal);e.openLoginBtn.onclick=()=>openModal(e.accountModal);e.openRegisterBtn.onclick=()=>openModal(e.registerModal);e.showRegisterBtn.onclick=()=>{closeModal(e.accountModal);openModal(e.registerModal)};e.closeRegisterBtn.onclick=()=>closeModal(e.registerModal);e.loginBtn.onclick=login;e.registerBtn.onclick=register;e.logoutBtn.onclick=logout;e.copyInviteBtn.onclick=copyInvite;if(e.copyInviteBtnAthletes)e.copyInviteBtnAthletes.onclick=copyInvite;e.closeProgramBtn.onclick=()=>closeModal(e.programModal);e.saveProgramsBtn.onclick=savePrograms;
 if(e.coachProgramSelect)e.coachProgramSelect.onchange=()=>loadProgramEditor(e.coachProgramSelect.value);if(e.exportProgramsBtn)e.exportProgramsBtn.onclick=exportPrograms;if(e.importProgramsBtn&&e.importProgramsFile)e.importProgramsBtn.onclick=()=>e.importProgramsFile.click();if(e.importProgramsFile)e.importProgramsFile.onchange=async()=>{await importProgramsFile(e.importProgramsFile.files?.[0]);e.importProgramsFile.value="";};if(e.reloadProgramBtn)e.reloadProgramBtn.onclick=()=>loadProgramEditor(e.coachProgramSelect.value);if(e.saveProgramActivitiesBtn)e.saveProgramActivitiesBtn.onclick=saveProgramActivities;
-e.continueSessionBtn.onclick=async()=>{unlockAudio().catch(()=>{});requestWakeLock().catch(()=>{});await launchRunner();};e.runningPauseBtn.onclick=toggleRunningPause;e.runningFinishBtn.onclick=finishRunning;e.runningDiscardBtn.onclick=discardActive;e.twentyPauseBtn.onclick=toggleTwentyPause;e.twentyFinishBtn.onclick=finishTwenty;e.twentyDiscardBtn.onclick=discardActive;e.freeWorkoutFinishBtn.onclick=finishFreeWorkout;e.freeWorkoutDiscardBtn.onclick=discardActive;e.discardSessionBtn.onclick=discardActive;e.intervalSkipBtn.onclick=()=>runnerMode==="intervalSequence"?skipIntervalSequence():skipInterval();e.runnerAbortBtn.onclick=discardActive;e.sequenceCompleteBtn.onclick=seqComplete;e.sequenceSkipBtn.onclick=seqSkip;e.sequencePostponeBtn.onclick=seqPostpone;e.sequenceAbortBtn.onclick=discardActive;
+e.continueSessionBtn.onclick=async()=>{
+  if(!activeSession){
+    await loadAthleteData();
+    if(!activeSession){alert("Fant ingen aktiv økt.");return}
+  }
+  unlockAudio().catch(()=>{});
+  requestWakeLock().catch(()=>{});
+  await launchRunner();
+};e.runningPauseBtn.onclick=toggleRunningPause;e.runningFinishBtn.onclick=finishRunning;e.runningDiscardBtn.onclick=discardActive;e.twentyPauseBtn.onclick=toggleTwentyPause;e.twentyFinishBtn.onclick=finishTwenty;e.twentyDiscardBtn.onclick=discardActive;e.freeWorkoutFinishBtn.onclick=finishFreeWorkout;e.freeWorkoutDiscardBtn.onclick=discardActive;e.discardSessionBtn.onclick=discardActive;e.intervalSkipBtn.onclick=()=>runnerMode==="intervalSequence"?skipIntervalSequence():skipInterval();e.runnerAbortBtn.onclick=discardActive;e.sequenceCompleteBtn.onclick=seqComplete;e.sequenceSkipBtn.onclick=seqSkip;e.sequencePostponeBtn.onclick=seqPostpone;e.sequenceAbortBtn.onclick=discardActive;
 e.cancelFinishBtn.onclick=()=>closeModal(e.finishModal);e.saveFinishBtn.onclick=saveFinish;e.finishStars.querySelectorAll("button").forEach(b=>b.onclick=()=>{finishRating=Number(b.dataset.rating);renderStars()});e.prevMonthBtn.onclick=()=>{currentMonth.setMonth(currentMonth.getMonth()-1);renderCalendar()};e.nextMonthBtn.onclick=()=>{currentMonth.setMonth(currentMonth.getMonth()+1);renderCalendar()};e.calendarAthleteSelect.onchange=renderCalendar;e.statsAthleteSelect.onchange=renderStats;
 
 sb.auth.onAuthStateChange(async(_event,newSession)=>{session=newSession;user=newSession?.user||null;await loadProfile();closeModal(e.accountModal);await route()});

@@ -219,3 +219,10 @@ Merk: Tabellen som ble oppgitt har 15 arbeidsøkter + 15 hvileøkter, altså 22:
 - Wake Lock kjøres nå i bakgrunnen og kan aldri blokkere navigasjonen.
 - Sequence-runner tvinger aktivitetsvisningen synlig når Styrke Dag1/Dag2 åpnes.
 - Ingen ny SQL nødvendig.
+
+## v8.6 – runner definition fix
+- Rettet konkret JavaScript-feil: `isRunningProgram is not defined`.
+- `launchRunner()` bruker nå tydelig programrouting for Fri økt, 20 min, Løping, Kettlebell Mix, intervall og styrke.
+- Aktiv-session timer tåler at session blir null under refresh/auth-event.
+- Fortsett-knappen laster aktiv session på nytt hvis nødvendig.
+- Ingen ny SQL nødvendig.
