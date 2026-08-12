@@ -171,3 +171,15 @@ Merk: Tabellen som ble oppgitt har 15 arbeidsøkter + 15 hvileøkter, altså 22:
 - Beskjedfeltet og «Neste»-feltet reserverer også fast plass.
 - Kortet hopper derfor ikke opp/ned når aktivitetsnavn har ulik lengde.
 - Ingen ny SQL nødvendig.
+
+## v8 – 20 minutes Workout
+- Nytt program: 20 minutes Workout.
+- Teller ned fra 20:00 til 00:00.
+- 20:00–12:00: mørk grønn.
+- 12:00–07:00: lys grønn.
+- 07:00–02:00: gul.
+- 02:00–00:00: lys blå.
+- 3 sekunder lang beep ved 10:00.
+- Pause/Fortsett og fullføring med rating/kommentar.
+- Wake Lock under aktiv økt.
+- Kjør v8-delen i SQL_SETUP.sql for å legge programmet til i Supabase.

@@ -7,7 +7,7 @@
   <meta name="description" content="CR-Workout – coach og utøver">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="style.css?v=7.9">
+  <link rel="stylesheet" href="style.css?v=8">
   <title>CR-Workout</title>
 </head>
 <body>
@@ -254,6 +254,36 @@
       </div>
     </section>
 
+
+    <section id="twentyScreen" class="screen hidden">
+      <div id="twentyCard" class="twenty-card phase-darkgreen">
+        <div class="runner-top">
+          <div>
+            <div class="eyebrow">20 MINUTES WORKOUT</div>
+            <h2 id="twentyProgramName">20 minutes Workout</h2>
+          </div>
+          <div class="elapsed-box">
+            <small>Gjenstår</small>
+            <strong id="twentyRemaining">20:00</strong>
+          </div>
+        </div>
+
+        <div class="twenty-center">
+          <div class="twenty-label">TID IGJEN</div>
+          <div id="twentyBigTime" class="twenty-big-time">20:00</div>
+          <div id="twentyPhaseText" class="twenty-phase-text">START</div>
+        </div>
+
+        <div class="track"><div id="twentyProgressBar"></div></div>
+
+        <div class="running-actions">
+          <button id="twentyPauseBtn" class="secondary-btn">⏸ Pause</button>
+          <button id="twentyFinishBtn" class="primary-btn">✓ Avslutt økt</button>
+        </div>
+        <button id="twentyDiscardBtn" class="link-btn danger-link">Avslutt / forkast økten</button>
+      </div>
+    </section>
+
 <section id="calendarScreen" class="screen hidden">
         <div class="section-heading">
           <div><h2>Kalender</h2><p id="calendarSubtitle">Mine økter</p></div>
@@ -353,8 +383,8 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="programs.js?v=7.9"></script>
-  <script src="app.js?v=7.9"></script>
+  <script src="programs.js?v=8"></script>
+  <script src="app.js?v=8"></script>
 <script>if("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js").catch(()=>{});</script>
 </body>
 </html>

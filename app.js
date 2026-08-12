@@ -15,7 +15,7 @@ const $=id=>document.getElementById(id),e={};
 "registerModal","closeRegisterBtn","regName","regPhone","regEmail","regPassword","registerBtn","registerMessage","programModal","programAthleteName","closeProgramBtn","programChecklist","saveProgramsBtn",
 "finishModal","finishSummary","finishStars","finishComment","saveFinishBtn","cancelFinishBtn",
 "intervalCard","intervalProgramName","intervalElapsed","intervalRound","intervalRemainingTotal","intervalPhase","intervalMessage","intervalTime","intervalProgressBar","intervalNext","intervalSkipBtn","runnerAbortBtn",
-"sequenceProgramName","sequenceGroupRound","sequenceElapsed","sequenceProgressText","sequenceProgressBar","sequenceActivity","sequenceReps","sequenceLoad","sequenceDesc","sequenceNextActivity","sequenceNextMeta","sequenceCompleteBtn","sequenceSkipBtn","sequencePostponeBtn","sequenceAbortBtn","runningScreen","runningProgramName","gpsStatus","runningElapsed","runningDistance","runningAvgPace","runningCurrentPace","runningGpsAccuracy","runningPointCount","runningPauseBtn","runningFinishBtn","runningDiscardBtn"].forEach(id=>e[id]=$(id));
+"sequenceProgramName","sequenceGroupRound","sequenceElapsed","sequenceProgressText","sequenceProgressBar","sequenceActivity","sequenceReps","sequenceLoad","sequenceDesc","sequenceNextActivity","sequenceNextMeta","sequenceCompleteBtn","sequenceSkipBtn","sequencePostponeBtn","sequenceAbortBtn","runningScreen","runningProgramName","gpsStatus","runningElapsed","runningDistance","runningAvgPace","runningCurrentPace","runningGpsAccuracy","runningPointCount","runningPauseBtn","runningFinishBtn","runningDiscardBtn","twentyScreen","twentyCard","twentyProgramName","twentyRemaining","twentyBigTime","twentyPhaseText","twentyProgressBar","twentyPauseBtn","twentyFinishBtn","twentyDiscardBtn"].forEach(id=>e[id]=$(id));
 
 let session=null,user=null,profile=null,athletes=[],programs=[],programAthleteId=null,activeSession=null,homeTimer=null,runnerTimer=null,finishRating=4,currentMonth=new Date(),realtimeChannel=null,runnerMode=null,intervalState=null,sequenceState=null,lastCueKey="";
 let wakeLock=null;
@@ -60,7 +60,7 @@ function fmtDate(iso){return new Intl.DateTimeFormat("nb-NO",{dateStyle:"medium"
 function dateKey(d){const p=n=>String(n).padStart(2,"0");return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`}
 function elapsed(from,to=new Date()){return Math.max(0,Math.floor((new Date(to)-new Date(from))/1000))}
 function fmtElapsed(sec){const h=Math.floor(sec/3600),m=Math.floor((sec%3600)/60),s=sec%60;return h?`${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`:`${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`}
-function showOnly(name){["landing","athlete","coach","athletes","programs","runner","running","calendar","stats"].forEach(n=>e[n+"Screen"]?.classList.toggle("hidden",n!==name));document.querySelectorAll(".nav-btn").forEach(b=>b.classList.toggle("active",(name==="athlete"&&b.dataset.screen==="home")||(name==="coach"&&b.dataset.screen==="home")||(name==="athletes"&&b.dataset.screen==="coach")||b.dataset.screen===name))}
+function showOnly(name){["landing","athlete","coach","athletes","programs","runner","running","twenty","calendar","stats"].forEach(n=>e[n+"Screen"]?.classList.toggle("hidden",n!==name));document.querySelectorAll(".nav-btn").forEach(b=>b.classList.toggle("active",(name==="athlete"&&b.dataset.screen==="home")||(name==="coach"&&b.dataset.screen==="home")||(name==="athletes"&&b.dataset.screen==="coach")||b.dataset.screen===name))}
 function openModal(m){m.classList.remove("hidden")}function closeModal(m){m.classList.add("hidden")}
 function stateKey(){return activeSession?`cr_runner_${activeSession.id}`:""}
 function saveRunnerState(obj){if(activeSession)localStorage.setItem(stateKey(),JSON.stringify(obj))}
@@ -186,7 +186,7 @@ initProgramLayoutControls();
 async function startSession(programId){
  await unlockAudio();
  if(activeSession){renderActiveSession();alert("Du har allerede en aktiv økt. Velg «Fortsett økten» eller forkast den først.");return}
- if(!INTERVAL_PROGRAMS[programId]&&!SEQUENCE_PROGRAMS[programId]&&programId!=="kettlebell_mix"&&!isRunningProgram(programId)){alert("Dette programmet er ikke aktivert i treningsmotoren ennå.");return}
+ if(!INTERVAL_PROGRAMS[programId]&&!SEQUENCE_PROGRAMS[programId]&&programId!=="kettlebell_mix"&&!isRunningProgram(programId)&&programId!=="twenty_minutes"){alert("Dette programmet er ikke aktivert i treningsmotoren ennå.");return}
  const p=programs.find(x=>x.id===programId);const {data,error}=await sb.from("cr_workout_sessions").insert({athlete_id:user.id,program_id:programId,program_name:p?.name||programId,status:"started",started_at:new Date().toISOString()}).select().single();if(error){alert(error.message);return}activeSession=data;clearRunnerState();await requestWakeLock();launchRunner();
 }
 function renderActiveSession(){
@@ -195,12 +195,13 @@ function renderActiveSession(){
 }
 async function discardActive(){
  if(!activeSession||!confirm(`Forkaste den aktive økten «${activeSession.program_name}»?`))return;
- const id=activeSession.id;const {error}=await sb.from("cr_workout_sessions").update({status:"cancelled",completed_at:new Date().toISOString(),duration_seconds:elapsed(activeSession.started_at)}).eq("id",id);if(error){alert(error.message);return}if(activeSession?.program_id==="running"){clearRunningState();stopGeolocation();runningState=null}clearRunnerState();activeSession=null;await releaseWakeLock();stopRunnerTick();await loadAthleteData();showOnly("athlete")
+ const id=activeSession.id;const {error}=await sb.from("cr_workout_sessions").update({status:"cancelled",completed_at:new Date().toISOString(),duration_seconds:elapsed(activeSession.started_at)}).eq("id",id);if(error){alert(error.message);return}if(activeSession?.program_id==="running"){clearRunningState();stopGeolocation();runningState=null}if(activeSession?.program_id==="twenty_minutes"){clearTwentyState();twentyState=null}clearRunnerState();activeSession=null;await releaseWakeLock();stopRunnerTick();await loadAthleteData();showOnly("athlete")
 }
 
 async function launchRunner(){
  if(!activeSession)return;
- await requestWakeLock();const id=activeSession.program_id;runnerMode=isRunningProgram(id)?"running":id==="kettlebell_mix"?"intervalSequence":INTERVAL_PROGRAMS[id]?"interval":SEQUENCE_PROGRAMS[id]?"sequence":null;if(!runnerMode){alert("Programmotor mangler for denne økten.");return}
+ await requestWakeLock();const id=activeSession.program_id;runnerMode=id==="twenty_minutes"?"twenty":isRunningProgram(id)?"running":id==="kettlebell_mix"?"intervalSequence":INTERVAL_PROGRAMS[id]?"interval":SEQUENCE_PROGRAMS[id]?"sequence":null;if(!runnerMode){alert("Programmotor mangler for denne økten.");return}
+ if(runnerMode==="twenty"){showOnly("twenty");startTwentyRunner();return}
  if(runnerMode==="running"){showOnly("running");startRunningRunner();return}
  showOnly("runner");e.intervalRunner.classList.toggle("hidden",!["interval","intervalSequence"].includes(runnerMode));e.sequenceRunner.classList.toggle("hidden",runnerMode!=="sequence");
  if(runnerMode==="interval")startIntervalRunner();else if(runnerMode==="intervalSequence")startIntervalSequenceRunner();else startSequenceRunner()
@@ -302,15 +303,15 @@ function seqPostpone(){if(!sequenceState?.queue.length)return;const item=sequenc
 function renderStars(){e.finishStars.querySelectorAll("button").forEach(b=>b.textContent=Number(b.dataset.rating)<=finishRating?"★":"☆")}
 function openFinish(){if(!activeSession||!e.finishModal.classList.contains("hidden"))return;finishRating=4;e.finishComment.value="";e.finishSummary.textContent=`${activeSession.program_name} · ${fmtElapsed(elapsed(activeSession.started_at))}`;renderStars();openModal(e.finishModal)}
 async function saveFinish(){
-  const ended=new Date(),isRunning=activeSession?.program_id==="running";
-  const duration=isRunning?(activeSession._runningDuration||runningElapsedSeconds()):elapsed(activeSession.started_at);
+  const ended=new Date(),isRunning=activeSession?.program_id==="running",isTwenty=activeSession?.program_id==="twenty_minutes";
+  const duration=isRunning?(activeSession._runningDuration||runningElapsedSeconds()):isTwenty?(activeSession._twentyDuration??twentyElapsedSeconds()):elapsed(activeSession.started_at);
   const distance=isRunning?(activeSession._runningDistance??runningState?.distanceMeters??0):null;
   const avgPace=isRunning?(activeSession._runningAvgPace??(distance>=50?duration/(distance/1000):null)):null;
   const updates={status:"completed",completed_at:ended.toISOString(),duration_seconds:duration,rating:finishRating,comment:e.finishComment.value.trim()};
   if(isRunning){updates.distance_meters=distance;updates.avg_pace_seconds_per_km=avgPace}
   const {error}=await sb.from("cr_workout_sessions").update(updates).eq("id",activeSession.id);
   if(error){alert(error.message);return}
-  if(isRunning){clearRunningState();stopGeolocation();runningState=null}
+  if(isRunning){clearRunningState();stopGeolocation();runningState=null}if(isTwenty){clearTwentyState();twentyState=null}
   clearRunnerState();activeSession=null;await releaseWakeLock();stopRunnerTick();closeModal(e.finishModal);await loadAthleteData();showOnly("athlete")
 }
 
@@ -568,6 +569,101 @@ async function startRunningRunner(){await requestWakeLock();runningState=loadRun
 function toggleRunningPause(){if(!runningState)return;if(!runningPaused){runningPaused=true;runningPauseStartedAt=new Date().toISOString();runningState.paused=true;runningState.pauseStartedAt=runningPauseStartedAt;stopGeolocation()}else{if(runningPauseStartedAt)runningState.pausedSeconds=(runningState.pausedSeconds||0)+elapsed(runningPauseStartedAt);runningPaused=false;runningPauseStartedAt=null;runningState.paused=false;runningState.pauseStartedAt=null;runningState.lastPoint=null;startRunningGeolocation()}saveRunningState();renderRunning()}
 async function finishRunning(){if(!activeSession||!runningState)return;stopGeolocation();stopRunnerTick();const sec=runningElapsedSeconds(),distance=runningState.distanceMeters||0,avgPace=distance>=50?sec/(distance/1000):null;activeSession._runningDuration=sec;activeSession._runningDistance=distance;activeSession._runningAvgPace=avgPace;e.finishSummary.textContent=`${activeSession.program_name} · ${fmtElapsed(sec)} · ${(distance/1000).toLocaleString("nb-NO",{minimumFractionDigits:2,maximumFractionDigits:2})} km${avgPace?` · ${formatPace(avgPace)}`:""}`;finishRating=4;e.finishComment.value="";renderStars();openModal(e.finishModal)}
 
+
+let twentyState=null,twentyPaused=false,twentyPauseStartedAt=null,twentyBeepDone=false,twentyBeepTimeout=null;
+
+function twentyStorageKey(){return activeSession?`cr_twenty_${activeSession.id}`:""}
+function saveTwentyState(){if(activeSession&&twentyState)localStorage.setItem(twentyStorageKey(),JSON.stringify(twentyState))}
+function loadTwentyState(){try{return JSON.parse(localStorage.getItem(twentyStorageKey())||"null")}catch{return null}}
+function clearTwentyState(){if(activeSession)localStorage.removeItem(twentyStorageKey())}
+
+function twentyElapsedSeconds(){
+  if(!activeSession||!twentyState)return 0;
+  const raw=elapsed(activeSession.started_at);
+  const paused=Number(twentyState.pausedSeconds||0);
+  const currentPause=twentyPaused&&twentyPauseStartedAt?elapsed(twentyPauseStartedAt):0;
+  return Math.max(0,raw-paused-currentPause);
+}
+function twentyPhaseByRemaining(remain){
+  if(remain>720)return["phase-darkgreen","MØRK GRØNN"];
+  if(remain>420)return["phase-lightgreen","LYS GRØNN"];
+  if(remain>120)return["phase-yellow","GUL"];
+  return["phase-lightblue","LYS BLÅ"];
+}
+function playThreeSecondBeep(){
+  try{
+    const c=getAudioContext();
+    if(!c)return;
+    if(c.state!=="running"){c.resume().catch(()=>{});return}
+    const o=c.createOscillator(),g=c.createGain();
+    o.type="sine";o.frequency.value=1100;g.gain.value=.28;
+    o.connect(g);g.connect(c.destination);
+    o.start();
+    o.stop(c.currentTime+3.0);
+  }catch(err){console.warn("3 sek beep feilet:",err)}
+}
+function renderTwenty(){
+  if(!activeSession||!twentyState)return;
+  const total=1200,elapsedSec=twentyElapsedSeconds(),remain=Math.max(0,total-elapsedSec);
+  const mins=Math.floor(remain/60),secs=Math.floor(remain%60),txt=`${String(mins).padStart(2,"0")}:${String(secs).padStart(2,"0")}`;
+  e.twentyRemaining.textContent=txt;
+  e.twentyBigTime.textContent=txt;
+  const [phaseClass,phaseText]=twentyPhaseByRemaining(remain);
+  e.twentyCard.className=`twenty-card ${phaseClass}`;
+  e.twentyPhaseText.textContent=phaseText;
+  e.twentyProgressBar.style.width=`${Math.min(100,Math.max(0,(elapsedSec/total)*100))}%`;
+  e.twentyPauseBtn.textContent=twentyPaused?"▶ Fortsett":"⏸ Pause";
+
+  if(!twentyBeepDone && remain<=600 && remain>596){
+    twentyBeepDone=true;
+    twentyState.beepDone=true;
+    saveTwentyState();
+    playThreeSecondBeep();
+  }
+
+  if(remain<=0){
+    stopRunnerTick();
+    activeSession._twentyDuration=1200;
+    e.finishSummary.textContent=`${activeSession.program_name} · 20:00`;
+    finishRating=4;e.finishComment.value="";renderStars();openModal(e.finishModal);
+  }
+}
+async function startTwentyRunner(){
+  await unlockAudio();
+  await requestWakeLock();
+  twentyState=loadTwentyState()||{pausedSeconds:0,paused:false,pauseStartedAt:null,beepDone:false};
+  twentyPaused=!!twentyState.paused;
+  twentyPauseStartedAt=twentyState.pauseStartedAt||null;
+  twentyBeepDone=!!twentyState.beepDone;
+  renderTwenty();
+  stopRunnerTick();
+  runnerTimer=setInterval(renderTwenty,250);
+}
+function toggleTwentyPause(){
+  if(!twentyState)return;
+  if(!twentyPaused){
+    twentyPaused=true;
+    twentyPauseStartedAt=new Date().toISOString();
+    twentyState.paused=true;
+    twentyState.pauseStartedAt=twentyPauseStartedAt;
+  }else{
+    if(twentyPauseStartedAt)twentyState.pausedSeconds=(twentyState.pausedSeconds||0)+elapsed(twentyPauseStartedAt);
+    twentyPaused=false;
+    twentyPauseStartedAt=null;
+    twentyState.paused=false;
+    twentyState.pauseStartedAt=null;
+  }
+  saveTwentyState();
+  renderTwenty();
+}
+async function finishTwenty(){
+  if(!activeSession)return;
+  const duration=Math.min(1200,twentyElapsedSeconds());
+  activeSession._twentyDuration=duration;
+  e.finishSummary.textContent=`${activeSession.program_name} · ${fmtElapsed(duration)}`;
+  finishRating=4;e.finishComment.value="";renderStars();openModal(e.finishModal);
+}
+
 async function loadCoachData(){await loadPrograms();const {data:links}=await sb.from("cr_coach_athletes").select("athlete_id,status,cr_profiles!cr_coach_athletes_athlete_id_fkey(*)").eq("coach_id",user.id).order("created_at");athletes=(links||[]).map(x=>({...x.cr_profiles,link_status:x.status}));const ids=athletes.map(a=>a.id);e.pendingCount.textContent=athletes.filter(a=>!a.approved).length;e.activeAthletesCount.textContent=athletes.filter(a=>a.approved).length;let today=0;if(ids.length){const from=new Date();from.setHours(0,0,0,0);const {count}=await sb.from("cr_workout_sessions").select("*",{count:"exact",head:true}).in("athlete_id",ids).gte("started_at",from.toISOString());today=count||0}e.sessionsTodayCount.textContent=today;renderAthletes();fillAthleteSelectors()}
 function renderAthletes(){e.athletesList.innerHTML=athletes.length?athletes.map(a=>`<div class="athlete-item"><div class="athlete-row"><div><strong>${esc(a.full_name||a.email)}</strong><small>${esc(a.phone||"")} · ${esc(a.email||"")}</small><small>${a.approved?"✅ Godkjent":"⏳ Venter på godkjenning"}</small></div><div class="athlete-actions">${!a.approved?`<button class="approve-btn" data-id="${a.id}">Godkjenn</button>`:""}<button class="programs-btn" data-id="${a.id}">Programmer</button></div></div></div>`).join(""):`<div class="empty">Ingen utøvere har registrert seg ennå.</div>`;e.athletesList.querySelectorAll(".approve-btn").forEach(b=>b.onclick=()=>approveAthlete(b.dataset.id));e.athletesList.querySelectorAll(".programs-btn").forEach(b=>b.onclick=()=>openPrograms(b.dataset.id))}
 async function approveAthlete(id){const {error}=await sb.from("cr_profiles").update({approved:true}).eq("id",id);if(error){alert(error.message);return}await sb.from("cr_coach_athletes").update({status:"approved"}).eq("coach_id",user.id).eq("athlete_id",id);await loadCoachData()}
@@ -638,7 +734,7 @@ document.querySelectorAll(".nav-btn").forEach(b=>b.onclick=async()=>{
 });
 e.accountBtn.onclick=()=>{updateAccount();openModal(e.accountModal)};e.closeAccountBtn.onclick=()=>closeModal(e.accountModal);e.openLoginBtn.onclick=()=>openModal(e.accountModal);e.openRegisterBtn.onclick=()=>openModal(e.registerModal);e.showRegisterBtn.onclick=()=>{closeModal(e.accountModal);openModal(e.registerModal)};e.closeRegisterBtn.onclick=()=>closeModal(e.registerModal);e.loginBtn.onclick=login;e.registerBtn.onclick=register;e.logoutBtn.onclick=logout;e.copyInviteBtn.onclick=copyInvite;if(e.copyInviteBtnAthletes)e.copyInviteBtnAthletes.onclick=copyInvite;e.closeProgramBtn.onclick=()=>closeModal(e.programModal);e.saveProgramsBtn.onclick=savePrograms;
 if(e.coachProgramSelect)e.coachProgramSelect.onchange=()=>loadProgramEditor(e.coachProgramSelect.value);if(e.exportProgramsBtn)e.exportProgramsBtn.onclick=exportPrograms;if(e.importProgramsBtn&&e.importProgramsFile)e.importProgramsBtn.onclick=()=>e.importProgramsFile.click();if(e.importProgramsFile)e.importProgramsFile.onchange=async()=>{await importProgramsFile(e.importProgramsFile.files?.[0]);e.importProgramsFile.value="";};if(e.reloadProgramBtn)e.reloadProgramBtn.onclick=()=>loadProgramEditor(e.coachProgramSelect.value);if(e.saveProgramActivitiesBtn)e.saveProgramActivitiesBtn.onclick=saveProgramActivities;
-e.continueSessionBtn.onclick=async()=>{await unlockAudio();await requestWakeLock();launchRunner();};e.runningPauseBtn.onclick=toggleRunningPause;e.runningFinishBtn.onclick=finishRunning;e.runningDiscardBtn.onclick=discardActive;e.discardSessionBtn.onclick=discardActive;e.intervalSkipBtn.onclick=()=>runnerMode==="intervalSequence"?skipIntervalSequence():skipInterval();e.runnerAbortBtn.onclick=discardActive;e.sequenceCompleteBtn.onclick=seqComplete;e.sequenceSkipBtn.onclick=seqSkip;e.sequencePostponeBtn.onclick=seqPostpone;e.sequenceAbortBtn.onclick=discardActive;
+e.continueSessionBtn.onclick=async()=>{await unlockAudio();await requestWakeLock();launchRunner();};e.runningPauseBtn.onclick=toggleRunningPause;e.runningFinishBtn.onclick=finishRunning;e.runningDiscardBtn.onclick=discardActive;e.twentyPauseBtn.onclick=toggleTwentyPause;e.twentyFinishBtn.onclick=finishTwenty;e.twentyDiscardBtn.onclick=discardActive;e.discardSessionBtn.onclick=discardActive;e.intervalSkipBtn.onclick=()=>runnerMode==="intervalSequence"?skipIntervalSequence():skipInterval();e.runnerAbortBtn.onclick=discardActive;e.sequenceCompleteBtn.onclick=seqComplete;e.sequenceSkipBtn.onclick=seqSkip;e.sequencePostponeBtn.onclick=seqPostpone;e.sequenceAbortBtn.onclick=discardActive;
 e.cancelFinishBtn.onclick=()=>closeModal(e.finishModal);e.saveFinishBtn.onclick=saveFinish;e.finishStars.querySelectorAll("button").forEach(b=>b.onclick=()=>{finishRating=Number(b.dataset.rating);renderStars()});e.prevMonthBtn.onclick=()=>{currentMonth.setMonth(currentMonth.getMonth()-1);renderCalendar()};e.nextMonthBtn.onclick=()=>{currentMonth.setMonth(currentMonth.getMonth()+1);renderCalendar()};e.calendarAthleteSelect.onchange=renderCalendar;e.statsAthleteSelect.onchange=renderStats;
 
 sb.auth.onAuthStateChange(async(_event,newSession)=>{session=newSession;user=newSession?.user||null;await loadProfile();closeModal(e.accountModal);await route()});
