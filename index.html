@@ -7,7 +7,7 @@
   <meta name="description" content="CR-Workout – coach og utøver">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="style.css?v=8.1">
+  <link rel="stylesheet" href="style.css?v=8.2">
   <title>CR-Workout</title>
 </head>
 <body>
@@ -373,7 +373,24 @@
       </div>
     </div>
 
-    <div id="finishModal" class="modal hidden">
+    
+<div id="programInfoModal" class="modal hidden" aria-hidden="true">
+  <div class="modal-card program-info-modal-card">
+    <div class="modal-head">
+      <div>
+        <div class="eyebrow">PROGRAMOVERSIKT</div>
+        <h2 id="programInfoTitle">Program</h2>
+        <p id="programInfoDescription" class="program-info-description"></p>
+      </div>
+      <button id="programInfoClose" class="icon" aria-label="Lukk">✕</button>
+    </div>
+
+    <div id="programInfoSummary" class="program-info-summary"></div>
+    <div id="programInfoList" class="program-info-list"></div>
+  </div>
+</div>
+
+<div id="finishModal" class="modal hidden">
       <div class="modal-card">
         <div class="celebration">🎉</div>
         <h2>Fullfør økten</h2>
@@ -394,8 +411,8 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="programs.js?v=8.1"></script>
-  <script src="app.js?v=8.1"></script>
+  <script src="programs.js?v=8.2"></script>
+  <script src="app.js?v=8.2"></script>
 <script>if("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js").catch(()=>{});</script>
 </body>
 </html>

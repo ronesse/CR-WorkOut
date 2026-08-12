@@ -190,3 +190,12 @@ Merk: Tabellen som ble oppgitt har 15 arbeidsøkter + 15 hvileøkter, altså 22:
 - Eksempel: kommentar `Tredemølle`, distanse `5,5`.
 - Wake Lock beholdes.
 - Kjør v8.1-delen i SQL_SETUP.sql.
+
+## v8.2 – Programinformasjon
+- Hvert programkort har en `i`-knapp.
+- `i` åpner en ryddig programoversikt uten å starte økten.
+- Styrkeprogrammer viser aktivitet, gruppe, runde, reps, load og beskrivelse.
+- Kettlebell Mix viser alle arbeid/hvile-intervaller med tid og varsel.
+- Vanlige intervallprogrammer viser arbeid/hvile/runder.
+- Løping, Fri økt og 20 minutes Workout får egne informative oversikter.
+- Ingen ny SQL nødvendig.

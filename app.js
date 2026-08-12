@@ -15,7 +15,7 @@ const $=id=>document.getElementById(id),e={};
 "registerModal","closeRegisterBtn","regName","regPhone","regEmail","regPassword","registerBtn","registerMessage","programModal","programAthleteName","closeProgramBtn","programChecklist","saveProgramsBtn",
 "finishModal","finishSummary","finishStars","finishComment","saveFinishBtn","cancelFinishBtn",
 "intervalCard","intervalProgramName","intervalElapsed","intervalRound","intervalRemainingTotal","intervalPhase","intervalMessage","intervalTime","intervalProgressBar","intervalNext","intervalSkipBtn","runnerAbortBtn",
-"sequenceProgramName","sequenceGroupRound","sequenceElapsed","sequenceProgressText","sequenceProgressBar","sequenceActivity","sequenceReps","sequenceLoad","sequenceDesc","sequenceNextActivity","sequenceNextMeta","sequenceCompleteBtn","sequenceSkipBtn","sequencePostponeBtn","sequenceAbortBtn","runningScreen","runningProgramName","gpsStatus","runningElapsed","runningDistance","runningAvgPace","runningCurrentPace","runningGpsAccuracy","runningPointCount","runningPauseBtn","runningFinishBtn","runningDiscardBtn","twentyScreen","twentyCard","twentyProgramName","twentyRemaining","twentyBigTime","twentyPhaseText","twentyProgressBar","twentyPauseBtn","twentyFinishBtn","twentyDiscardBtn","freeWorkoutScreen","freeWorkoutProgramName","freeWorkoutElapsed","freeWorkoutBigTime","freeWorkoutFinishBtn","freeWorkoutDiscardBtn","finishDistanceWrap","finishDistance"].forEach(id=>e[id]=$(id));
+"sequenceProgramName","sequenceGroupRound","sequenceElapsed","sequenceProgressText","sequenceProgressBar","sequenceActivity","sequenceReps","sequenceLoad","sequenceDesc","sequenceNextActivity","sequenceNextMeta","sequenceCompleteBtn","sequenceSkipBtn","sequencePostponeBtn","sequenceAbortBtn","runningScreen","runningProgramName","gpsStatus","runningElapsed","runningDistance","runningAvgPace","runningCurrentPace","runningGpsAccuracy","runningPointCount","runningPauseBtn","runningFinishBtn","runningDiscardBtn","twentyScreen","twentyCard","twentyProgramName","twentyRemaining","twentyBigTime","twentyPhaseText","twentyProgressBar","twentyPauseBtn","twentyFinishBtn","twentyDiscardBtn","freeWorkoutScreen","freeWorkoutProgramName","freeWorkoutElapsed","freeWorkoutBigTime","freeWorkoutFinishBtn","freeWorkoutDiscardBtn","finishDistanceWrap","finishDistance","programInfoModal","programInfoTitle","programInfoDescription","programInfoSummary","programInfoList","programInfoClose"].forEach(id=>e[id]=$(id));
 
 let session=null,user=null,profile=null,athletes=[],programs=[],programAthleteId=null,activeSession=null,homeTimer=null,runnerTimer=null,finishRating=4,currentMonth=new Date(),realtimeChannel=null,runnerMode=null,intervalState=null,sequenceState=null,lastCueKey="";
 let wakeLock=null;
@@ -174,13 +174,132 @@ document.addEventListener("click",ev=>{
   applyProgramColumns(btn.dataset.cols);
 });
 
-function renderPrograms(list){e.assignedPrograms.innerHTML=list.length?list.map(p=>`<article class="program-card"><span class="program-icon">${programIcon(p)?`<img src="${programIcon(p)}" alt="${esc(p.name)}">`:esc(p.icon||"🏋️")}</span><h3>${esc(p.name)}</h3><p>${esc(p.description||"")}</p><button class="primary-btn start-program" data-id="${p.id}">Start økt</button></article>`).join(""):`<div class="empty">Ingen programmer er tildelt ennå.</div>`;e.assignedPrograms.querySelectorAll(".start-program").forEach(b=>b.onclick=()=>startSession(b.dataset.id))}
+function renderPrograms(list){
+  e.assignedPrograms.innerHTML=list.length?list.map(p=>`<article class="program-card" data-program-id="${p.id}">
+    <button type="button" class="program-info-btn" data-id="${p.id}" aria-label="Vis programinnhold" title="Vis programinnhold">i</button>
+    <span class="program-icon">${programIcon(p)?`<img src="${programIcon(p)}" alt="${esc(p.name)}">`:esc(p.icon||"🏋️")}</span>
+    <h3>${esc(p.name)}</h3>
+    <p>${esc(p.description||"")}</p>
+    <button class="primary-btn start-program" data-id="${p.id}">Start økt</button>
+  </article>`).join(""):`<div class="empty">Ingen programmer er tildelt ennå.</div>`;
+  e.assignedPrograms.querySelectorAll(".start-program").forEach(b=>b.onclick=()=>startSession(b.dataset.id));
+  e.assignedPrograms.querySelectorAll(".program-info-btn").forEach(b=>b.onclick=ev=>{ev.stopPropagation();openProgramInfo(b.dataset.id)});
+  initProgramLayoutControls();
+}
 
-function isRunningProgram(programId){
-  const p=programs.find(x=>x.id===programId);
-  return programId==="running" || String(p?.name||"").trim().toLowerCase()==="løping";
 
-initProgramLayoutControls();
+function programInfoSummaryHtml(program, activities, settings){
+  const id=program?.id||"";
+  if(id==="running"){
+    return `<div class="program-info-badges">
+      <span>🏃 GPS</span><span>⏱ Tid</span><span>📏 Distanse</span><span>⚡ Pace</span>
+    </div>`;
+  }
+  if(id==="free_workout"){
+    return `<div class="program-info-badges">
+      <span>⏱ Fri timer</span><span>⭐ Rating</span><span>📝 Kommentar</span><span>📏 Valgfri distanse</span>
+    </div>`;
+  }
+  if(id==="twenty_minutes"){
+    return `<div class="program-info-badges">
+      <span>20:00 → 00:00</span><span>🟢 20–12</span><span>🟩 12–7</span><span>🟨 7–2</span><span>🟦 2–0</span>
+    </div>`;
+  }
+  if(settings?.program_type==="interval" || INTERVAL_PROGRAMS[id]){
+    const cfg=INTERVAL_PROGRAMS[id]||{};
+    const work=settings?.work_seconds??cfg.work;
+    const rest=settings?.rest_seconds??cfg.rest;
+    const rounds=settings?.rounds??cfg.rounds;
+    return `<div class="program-info-badges">
+      ${work!=null?`<span>Arbeid ${work}s</span>`:""}
+      ${rest!=null?`<span>Hvile ${rest}s</span>`:""}
+      ${rounds!=null?`<span>${rounds} runder</span>`:""}
+    </div>`;
+  }
+  if(activities.length){
+    const groups=[...new Set(activities.map(x=>x.group_name).filter(Boolean))];
+    const rounds=[...new Set(activities.map(x=>x.round_no).filter(x=>x!=null))];
+    return `<div class="program-info-badges">
+      <span>${activities.length} aktiviteter</span>
+      ${groups.length?`<span>${groups.map(esc).join(" + ")}</span>`:""}
+      ${rounds.length?`<span>${rounds.length} runder</span>`:""}
+    </div>`;
+  }
+  return "";
+}
+
+function programInfoActivityHtml(row, index){
+  const isInterval=row.duration_seconds!=null || row.warning_seconds!=null || ["Work","Rest"].includes(row.group_name);
+  const groupLabel=row.group_name==="WarmUp"?"Oppvarming":row.group_name==="Main"?"Hoveddel":row.group_name==="Work"?"Arbeid":row.group_name==="Rest"?"Hvile":row.group_name||"";
+  const meta=[];
+  if(row.round_no!=null)meta.push(`Runde ${row.round_no}`);
+  if(row.reps)meta.push(`${esc(String(row.reps))} reps`);
+  if(row.load)meta.push(`Load ${esc(String(row.load))}`);
+  if(row.duration_seconds!=null)meta.push(`${row.duration_seconds} sek`);
+  if(row.warning_seconds!=null && Number(row.warning_seconds)>0)meta.push(`varsel ${row.warning_seconds} sek`);
+
+  return `<div class="program-info-row ${isInterval?"interval-info-row":""}">
+    <div class="program-info-order">${row.order_no??index+1}</div>
+    <div class="program-info-main">
+      <div class="program-info-row-top">
+        <strong>${esc(row.activity||"Aktivitet")}</strong>
+        ${groupLabel?`<span class="program-info-group">${esc(groupLabel)}</span>`:""}
+      </div>
+      ${meta.length?`<div class="program-info-meta">${meta.join(" · ")}</div>`:""}
+      ${row.description?`<div class="program-info-desc">${esc(row.description)}</div>`:""}
+    </div>
+  </div>`;
+}
+
+async function openProgramInfo(programId){
+  const program=programs.find(p=>p.id===programId);
+  if(!program)return;
+
+  e.programInfoTitle.textContent=program.name||"Program";
+  e.programInfoDescription.textContent=program.description||"";
+  e.programInfoSummary.innerHTML='<div class="program-info-loading">Laster programinnhold…</div>';
+  e.programInfoList.innerHTML="";
+  openModal(e.programInfoModal);
+
+  let activities=[];
+  let settings=null;
+
+  try{
+    const a=await sb.from("cr_program_activities").select("*").eq("program_id",programId).order("order_no");
+    if(!a.error)activities=a.data||[];
+  }catch(err){console.warn(err)}
+
+  try{
+    const s=await sb.from("cr_program_settings").select("*").eq("program_id",programId).maybeSingle();
+    if(!s.error)settings=s.data||null;
+  }catch(err){console.warn(err)}
+
+  e.programInfoSummary.innerHTML=programInfoSummaryHtml(program,activities,settings);
+
+  if(activities.length){
+    e.programInfoList.innerHTML=activities.map(programInfoActivityHtml).join("");
+    return;
+  }
+
+  if(programId==="twenty_minutes"){
+    e.programInfoList.innerHTML=`
+      <div class="program-info-row"><div class="program-info-order">1</div><div class="program-info-main"><strong>20:00–12:00</strong><div class="program-info-desc">Mørk grønn bakgrunn</div></div></div>
+      <div class="program-info-row"><div class="program-info-order">2</div><div class="program-info-main"><strong>12:00–07:00</strong><div class="program-info-desc">Lys grønn bakgrunn</div></div></div>
+      <div class="program-info-row"><div class="program-info-order">3</div><div class="program-info-main"><strong>07:00–02:00</strong><div class="program-info-desc">Gul bakgrunn</div></div></div>
+      <div class="program-info-row"><div class="program-info-order">4</div><div class="program-info-main"><strong>02:00–00:00</strong><div class="program-info-desc">Lys blå bakgrunn</div></div></div>
+      <div class="program-info-row"><div class="program-info-order">♪</div><div class="program-info-main"><strong>10:00</strong><div class="program-info-desc">3 sekunder lang beep</div></div></div>`;
+  }else if(programId==="running"){
+    e.programInfoList.innerHTML=`
+      <div class="program-info-simple">Starter tid og GPS-tracking. Under økten vises distanse, snittpace, aktuell pace og GPS-status.</div>`;
+  }else if(programId==="free_workout"){
+    e.programInfoList.innerHTML=`
+      <div class="program-info-simple">Starter en fri timer. Ved avslutning kan utøveren rate økten, beskrive hva som er gjort og angi valgfri distanse.</div>`;
+  }else if(settings?.program_type==="interval" || INTERVAL_PROGRAMS[programId]){
+    e.programInfoList.innerHTML=`
+      <div class="program-info-simple">Intervallprogram med automatisk veksling mellom arbeid og hvile, varsler og nedtelling.</div>`;
+  }else{
+    e.programInfoList.innerHTML='<div class="program-info-simple">Ingen detaljert aktivitetsliste er registrert for dette programmet.</div>';
+  }
 }
 
 async function startSession(programId){
@@ -744,4 +863,6 @@ e.cancelFinishBtn.onclick=()=>closeModal(e.finishModal);e.saveFinishBtn.onclick=
 
 sb.auth.onAuthStateChange(async(_event,newSession)=>{session=newSession;user=newSession?.user||null;await loadProfile();closeModal(e.accountModal);await route()});
 (async function init(){const {data}=await sb.auth.getSession();session=data.session;user=session?.user||null;await loadProfile();if(new URLSearchParams(location.search).get("register")==="1"&&!user)openModal(e.registerModal);await route()})();
+
+e.programInfoClose.onclick=()=>closeModal(e.programInfoModal);
 })();
