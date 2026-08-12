@@ -7,7 +7,7 @@
   <meta name="description" content="CR-Workout – coach og utøver">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="style.css?v=8">
+  <link rel="stylesheet" href="style.css?v=8.1">
   <title>CR-Workout</title>
 </head>
 <body>
@@ -284,6 +284,14 @@
       </div>
     </section>
 
+<section id="freeWorkoutScreen" class="screen hidden">
+<div class="free-workout-card">
+<div class="runner-top"><div><div class="eyebrow">FRI ØKT</div><h2 id="freeWorkoutProgramName">Fri økt</h2></div><div class="elapsed-box"><small>Total tid</small><strong id="freeWorkoutElapsed">00:00</strong></div></div>
+<div class="free-workout-center"><div class="free-workout-label">TID</div><div id="freeWorkoutBigTime" class="free-workout-big-time">00:00</div><p>Timeren går til du avslutter økten.</p></div>
+<div class="running-actions"><button id="freeWorkoutFinishBtn" class="primary-btn">✓ Avslutt økt</button></div>
+<button id="freeWorkoutDiscardBtn" class="link-btn danger-link">Avslutt / forkast økten</button>
+</div>
+</section>
 <section id="calendarScreen" class="screen hidden">
         <div class="section-heading">
           <div><h2>Kalender</h2><p id="calendarSubtitle">Mine økter</p></div>
@@ -374,7 +382,10 @@
           <button data-rating="1">☆</button><button data-rating="2">☆</button><button data-rating="3">☆</button><button data-rating="4">☆</button><button data-rating="5">☆</button>
         </div></div>
         <label>Kommentar<textarea id="finishComment" rows="4" placeholder="Hvordan gikk økten?"></textarea></label>
-        <button id="saveFinishBtn" class="primary-btn full">Lagre og fullfør</button>
+        <label id="finishDistanceWrap" class="hidden">Distanse (km)
+<input id="finishDistance" type="number" min="0" step="0.01" placeholder="f.eks. 5,5">
+</label>
+<button id="saveFinishBtn" class="primary-btn full">Lagre og fullfør</button>
         <button id="cancelFinishBtn" class="secondary-btn full">Avbryt</button>
       </div>
     </div>
@@ -383,8 +394,8 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="programs.js?v=8"></script>
-  <script src="app.js?v=8"></script>
+  <script src="programs.js?v=8.1"></script>
+  <script src="app.js?v=8.1"></script>
 <script>if("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js").catch(()=>{});</script>
 </body>
 </html>

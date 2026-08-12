@@ -15,7 +15,7 @@ const $=id=>document.getElementById(id),e={};
 "registerModal","closeRegisterBtn","regName","regPhone","regEmail","regPassword","registerBtn","registerMessage","programModal","programAthleteName","closeProgramBtn","programChecklist","saveProgramsBtn",
 "finishModal","finishSummary","finishStars","finishComment","saveFinishBtn","cancelFinishBtn",
 "intervalCard","intervalProgramName","intervalElapsed","intervalRound","intervalRemainingTotal","intervalPhase","intervalMessage","intervalTime","intervalProgressBar","intervalNext","intervalSkipBtn","runnerAbortBtn",
-"sequenceProgramName","sequenceGroupRound","sequenceElapsed","sequenceProgressText","sequenceProgressBar","sequenceActivity","sequenceReps","sequenceLoad","sequenceDesc","sequenceNextActivity","sequenceNextMeta","sequenceCompleteBtn","sequenceSkipBtn","sequencePostponeBtn","sequenceAbortBtn","runningScreen","runningProgramName","gpsStatus","runningElapsed","runningDistance","runningAvgPace","runningCurrentPace","runningGpsAccuracy","runningPointCount","runningPauseBtn","runningFinishBtn","runningDiscardBtn","twentyScreen","twentyCard","twentyProgramName","twentyRemaining","twentyBigTime","twentyPhaseText","twentyProgressBar","twentyPauseBtn","twentyFinishBtn","twentyDiscardBtn"].forEach(id=>e[id]=$(id));
+"sequenceProgramName","sequenceGroupRound","sequenceElapsed","sequenceProgressText","sequenceProgressBar","sequenceActivity","sequenceReps","sequenceLoad","sequenceDesc","sequenceNextActivity","sequenceNextMeta","sequenceCompleteBtn","sequenceSkipBtn","sequencePostponeBtn","sequenceAbortBtn","runningScreen","runningProgramName","gpsStatus","runningElapsed","runningDistance","runningAvgPace","runningCurrentPace","runningGpsAccuracy","runningPointCount","runningPauseBtn","runningFinishBtn","runningDiscardBtn","twentyScreen","twentyCard","twentyProgramName","twentyRemaining","twentyBigTime","twentyPhaseText","twentyProgressBar","twentyPauseBtn","twentyFinishBtn","twentyDiscardBtn","freeWorkoutScreen","freeWorkoutProgramName","freeWorkoutElapsed","freeWorkoutBigTime","freeWorkoutFinishBtn","freeWorkoutDiscardBtn","finishDistanceWrap","finishDistance"].forEach(id=>e[id]=$(id));
 
 let session=null,user=null,profile=null,athletes=[],programs=[],programAthleteId=null,activeSession=null,homeTimer=null,runnerTimer=null,finishRating=4,currentMonth=new Date(),realtimeChannel=null,runnerMode=null,intervalState=null,sequenceState=null,lastCueKey="";
 let wakeLock=null;
@@ -60,7 +60,7 @@ function fmtDate(iso){return new Intl.DateTimeFormat("nb-NO",{dateStyle:"medium"
 function dateKey(d){const p=n=>String(n).padStart(2,"0");return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`}
 function elapsed(from,to=new Date()){return Math.max(0,Math.floor((new Date(to)-new Date(from))/1000))}
 function fmtElapsed(sec){const h=Math.floor(sec/3600),m=Math.floor((sec%3600)/60),s=sec%60;return h?`${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`:`${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`}
-function showOnly(name){["landing","athlete","coach","athletes","programs","runner","running","twenty","calendar","stats"].forEach(n=>e[n+"Screen"]?.classList.toggle("hidden",n!==name));document.querySelectorAll(".nav-btn").forEach(b=>b.classList.toggle("active",(name==="athlete"&&b.dataset.screen==="home")||(name==="coach"&&b.dataset.screen==="home")||(name==="athletes"&&b.dataset.screen==="coach")||b.dataset.screen===name))}
+function showOnly(name){["landing","athlete","coach","athletes","programs","runner","running","twenty","freeWorkout","calendar","stats"].forEach(n=>e[n+"Screen"]?.classList.toggle("hidden",n!==name));document.querySelectorAll(".nav-btn").forEach(b=>b.classList.toggle("active",(name==="athlete"&&b.dataset.screen==="home")||(name==="coach"&&b.dataset.screen==="home")||(name==="athletes"&&b.dataset.screen==="coach")||b.dataset.screen===name))}
 function openModal(m){m.classList.remove("hidden")}function closeModal(m){m.classList.add("hidden")}
 function stateKey(){return activeSession?`cr_runner_${activeSession.id}`:""}
 function saveRunnerState(obj){if(activeSession)localStorage.setItem(stateKey(),JSON.stringify(obj))}
@@ -186,7 +186,7 @@ initProgramLayoutControls();
 async function startSession(programId){
  await unlockAudio();
  if(activeSession){renderActiveSession();alert("Du har allerede en aktiv økt. Velg «Fortsett økten» eller forkast den først.");return}
- if(!INTERVAL_PROGRAMS[programId]&&!SEQUENCE_PROGRAMS[programId]&&programId!=="kettlebell_mix"&&!isRunningProgram(programId)&&programId!=="twenty_minutes"){alert("Dette programmet er ikke aktivert i treningsmotoren ennå.");return}
+ if(!INTERVAL_PROGRAMS[programId]&&!SEQUENCE_PROGRAMS[programId]&&programId!=="kettlebell_mix"&&!isRunningProgram(programId)&&programId!=="twenty_minutes"&&programId!=="free_workout"){alert("Dette programmet er ikke aktivert i treningsmotoren ennå.");return}
  const p=programs.find(x=>x.id===programId);const {data,error}=await sb.from("cr_workout_sessions").insert({athlete_id:user.id,program_id:programId,program_name:p?.name||programId,status:"started",started_at:new Date().toISOString()}).select().single();if(error){alert(error.message);return}activeSession=data;clearRunnerState();await requestWakeLock();launchRunner();
 }
 function renderActiveSession(){
@@ -200,7 +200,8 @@ async function discardActive(){
 
 async function launchRunner(){
  if(!activeSession)return;
- await requestWakeLock();const id=activeSession.program_id;runnerMode=id==="twenty_minutes"?"twenty":isRunningProgram(id)?"running":id==="kettlebell_mix"?"intervalSequence":INTERVAL_PROGRAMS[id]?"interval":SEQUENCE_PROGRAMS[id]?"sequence":null;if(!runnerMode){alert("Programmotor mangler for denne økten.");return}
+ await requestWakeLock();const id=activeSession.program_id;runnerMode=id==="free_workout"?"freeWorkout":id==="twenty_minutes"?"twenty":isRunningProgram(id)?"running":id==="kettlebell_mix"?"intervalSequence":INTERVAL_PROGRAMS[id]?"interval":SEQUENCE_PROGRAMS[id]?"sequence":null;if(!runnerMode){alert("Programmotor mangler for denne økten.");return}
+ if(runnerMode==="freeWorkout"){showOnly("freeWorkout");startFreeWorkoutRunner();return}
  if(runnerMode==="twenty"){showOnly("twenty");startTwentyRunner();return}
  if(runnerMode==="running"){showOnly("running");startRunningRunner();return}
  showOnly("runner");e.intervalRunner.classList.toggle("hidden",!["interval","intervalSequence"].includes(runnerMode));e.sequenceRunner.classList.toggle("hidden",runnerMode!=="sequence");
@@ -303,12 +304,12 @@ function seqPostpone(){if(!sequenceState?.queue.length)return;const item=sequenc
 function renderStars(){e.finishStars.querySelectorAll("button").forEach(b=>b.textContent=Number(b.dataset.rating)<=finishRating?"★":"☆")}
 function openFinish(){if(!activeSession||!e.finishModal.classList.contains("hidden"))return;finishRating=4;e.finishComment.value="";e.finishSummary.textContent=`${activeSession.program_name} · ${fmtElapsed(elapsed(activeSession.started_at))}`;renderStars();openModal(e.finishModal)}
 async function saveFinish(){
-  const ended=new Date(),isRunning=activeSession?.program_id==="running",isTwenty=activeSession?.program_id==="twenty_minutes";
-  const duration=isRunning?(activeSession._runningDuration||runningElapsedSeconds()):isTwenty?(activeSession._twentyDuration??twentyElapsedSeconds()):elapsed(activeSession.started_at);
+  const ended=new Date(),isRunning=activeSession?.program_id==="running",isTwenty=activeSession?.program_id==="twenty_minutes",isFree=activeSession?.program_id==="free_workout";
+  const duration=isRunning?(activeSession._runningDuration||runningElapsedSeconds()):isTwenty?(activeSession._twentyDuration??twentyElapsedSeconds()):isFree?(activeSession._freeDuration??elapsed(activeSession.started_at)):elapsed(activeSession.started_at);
   const distance=isRunning?(activeSession._runningDistance??runningState?.distanceMeters??0):null;
   const avgPace=isRunning?(activeSession._runningAvgPace??(distance>=50?duration/(distance/1000):null)):null;
   const updates={status:"completed",completed_at:ended.toISOString(),duration_seconds:duration,rating:finishRating,comment:e.finishComment.value.trim()};
-  if(isRunning){updates.distance_meters=distance;updates.avg_pace_seconds_per_km=avgPace}
+  if(isRunning){updates.distance_meters=distance;updates.avg_pace_seconds_per_km=avgPace}if(isFree){const km=Number(String(e.finishDistance?.value||"").replace(",","."));if(km>0)updates.distance_meters=km*1000}
   const {error}=await sb.from("cr_workout_sessions").update(updates).eq("id",activeSession.id);
   if(error){alert(error.message);return}
   if(isRunning){clearRunningState();stopGeolocation();runningState=null}if(isTwenty){clearTwentyState();twentyState=null}
@@ -625,7 +626,7 @@ function renderTwenty(){
     stopRunnerTick();
     activeSession._twentyDuration=1200;
     e.finishSummary.textContent=`${activeSession.program_name} · 20:00`;
-    finishRating=4;e.finishComment.value="";renderStars();openModal(e.finishModal);
+    finishRating=4;e.finishComment.value="";if(e.finishDistanceWrap)e.finishDistanceWrap.classList.add("hidden");if(e.finishDistance)e.finishDistance.value="";renderStars();openModal(e.finishModal);
   }
 }
 async function startTwentyRunner(){
@@ -661,8 +662,12 @@ async function finishTwenty(){
   const duration=Math.min(1200,twentyElapsedSeconds());
   activeSession._twentyDuration=duration;
   e.finishSummary.textContent=`${activeSession.program_name} · ${fmtElapsed(duration)}`;
-  finishRating=4;e.finishComment.value="";renderStars();openModal(e.finishModal);
+  finishRating=4;e.finishComment.value="";if(e.finishDistanceWrap)e.finishDistanceWrap.classList.add("hidden");if(e.finishDistance)e.finishDistance.value="";renderStars();openModal(e.finishModal);
 }
+
+function renderFreeWorkout(){if(!activeSession)return;const sec=elapsed(activeSession.started_at);e.freeWorkoutElapsed.textContent=fmtElapsed(sec);e.freeWorkoutBigTime.textContent=fmtElapsed(sec);e.freeWorkoutProgramName.textContent=activeSession.program_name||"Fri økt"}
+async function startFreeWorkoutRunner(){await requestWakeLock();renderFreeWorkout();stopRunnerTick();runnerTimer=setInterval(renderFreeWorkout,500)}
+async function finishFreeWorkout(){if(!activeSession)return;stopRunnerTick();const sec=elapsed(activeSession.started_at);activeSession._freeDuration=sec;e.finishSummary.textContent=`${activeSession.program_name} · ${fmtElapsed(sec)}`;finishRating=4;e.finishComment.value="";e.finishDistance.value="";e.finishDistanceWrap.classList.remove("hidden");renderStars();openModal(e.finishModal)}
 
 async function loadCoachData(){await loadPrograms();const {data:links}=await sb.from("cr_coach_athletes").select("athlete_id,status,cr_profiles!cr_coach_athletes_athlete_id_fkey(*)").eq("coach_id",user.id).order("created_at");athletes=(links||[]).map(x=>({...x.cr_profiles,link_status:x.status}));const ids=athletes.map(a=>a.id);e.pendingCount.textContent=athletes.filter(a=>!a.approved).length;e.activeAthletesCount.textContent=athletes.filter(a=>a.approved).length;let today=0;if(ids.length){const from=new Date();from.setHours(0,0,0,0);const {count}=await sb.from("cr_workout_sessions").select("*",{count:"exact",head:true}).in("athlete_id",ids).gte("started_at",from.toISOString());today=count||0}e.sessionsTodayCount.textContent=today;renderAthletes();fillAthleteSelectors()}
 function renderAthletes(){e.athletesList.innerHTML=athletes.length?athletes.map(a=>`<div class="athlete-item"><div class="athlete-row"><div><strong>${esc(a.full_name||a.email)}</strong><small>${esc(a.phone||"")} · ${esc(a.email||"")}</small><small>${a.approved?"✅ Godkjent":"⏳ Venter på godkjenning"}</small></div><div class="athlete-actions">${!a.approved?`<button class="approve-btn" data-id="${a.id}">Godkjenn</button>`:""}<button class="programs-btn" data-id="${a.id}">Programmer</button></div></div></div>`).join(""):`<div class="empty">Ingen utøvere har registrert seg ennå.</div>`;e.athletesList.querySelectorAll(".approve-btn").forEach(b=>b.onclick=()=>approveAthlete(b.dataset.id));e.athletesList.querySelectorAll(".programs-btn").forEach(b=>b.onclick=()=>openPrograms(b.dataset.id))}
@@ -734,7 +739,7 @@ document.querySelectorAll(".nav-btn").forEach(b=>b.onclick=async()=>{
 });
 e.accountBtn.onclick=()=>{updateAccount();openModal(e.accountModal)};e.closeAccountBtn.onclick=()=>closeModal(e.accountModal);e.openLoginBtn.onclick=()=>openModal(e.accountModal);e.openRegisterBtn.onclick=()=>openModal(e.registerModal);e.showRegisterBtn.onclick=()=>{closeModal(e.accountModal);openModal(e.registerModal)};e.closeRegisterBtn.onclick=()=>closeModal(e.registerModal);e.loginBtn.onclick=login;e.registerBtn.onclick=register;e.logoutBtn.onclick=logout;e.copyInviteBtn.onclick=copyInvite;if(e.copyInviteBtnAthletes)e.copyInviteBtnAthletes.onclick=copyInvite;e.closeProgramBtn.onclick=()=>closeModal(e.programModal);e.saveProgramsBtn.onclick=savePrograms;
 if(e.coachProgramSelect)e.coachProgramSelect.onchange=()=>loadProgramEditor(e.coachProgramSelect.value);if(e.exportProgramsBtn)e.exportProgramsBtn.onclick=exportPrograms;if(e.importProgramsBtn&&e.importProgramsFile)e.importProgramsBtn.onclick=()=>e.importProgramsFile.click();if(e.importProgramsFile)e.importProgramsFile.onchange=async()=>{await importProgramsFile(e.importProgramsFile.files?.[0]);e.importProgramsFile.value="";};if(e.reloadProgramBtn)e.reloadProgramBtn.onclick=()=>loadProgramEditor(e.coachProgramSelect.value);if(e.saveProgramActivitiesBtn)e.saveProgramActivitiesBtn.onclick=saveProgramActivities;
-e.continueSessionBtn.onclick=async()=>{await unlockAudio();await requestWakeLock();launchRunner();};e.runningPauseBtn.onclick=toggleRunningPause;e.runningFinishBtn.onclick=finishRunning;e.runningDiscardBtn.onclick=discardActive;e.twentyPauseBtn.onclick=toggleTwentyPause;e.twentyFinishBtn.onclick=finishTwenty;e.twentyDiscardBtn.onclick=discardActive;e.discardSessionBtn.onclick=discardActive;e.intervalSkipBtn.onclick=()=>runnerMode==="intervalSequence"?skipIntervalSequence():skipInterval();e.runnerAbortBtn.onclick=discardActive;e.sequenceCompleteBtn.onclick=seqComplete;e.sequenceSkipBtn.onclick=seqSkip;e.sequencePostponeBtn.onclick=seqPostpone;e.sequenceAbortBtn.onclick=discardActive;
+e.continueSessionBtn.onclick=async()=>{await unlockAudio();await requestWakeLock();launchRunner();};e.runningPauseBtn.onclick=toggleRunningPause;e.runningFinishBtn.onclick=finishRunning;e.runningDiscardBtn.onclick=discardActive;e.twentyPauseBtn.onclick=toggleTwentyPause;e.twentyFinishBtn.onclick=finishTwenty;e.twentyDiscardBtn.onclick=discardActive;e.freeWorkoutFinishBtn.onclick=finishFreeWorkout;e.freeWorkoutDiscardBtn.onclick=discardActive;e.discardSessionBtn.onclick=discardActive;e.intervalSkipBtn.onclick=()=>runnerMode==="intervalSequence"?skipIntervalSequence():skipInterval();e.runnerAbortBtn.onclick=discardActive;e.sequenceCompleteBtn.onclick=seqComplete;e.sequenceSkipBtn.onclick=seqSkip;e.sequencePostponeBtn.onclick=seqPostpone;e.sequenceAbortBtn.onclick=discardActive;
 e.cancelFinishBtn.onclick=()=>closeModal(e.finishModal);e.saveFinishBtn.onclick=saveFinish;e.finishStars.querySelectorAll("button").forEach(b=>b.onclick=()=>{finishRating=Number(b.dataset.rating);renderStars()});e.prevMonthBtn.onclick=()=>{currentMonth.setMonth(currentMonth.getMonth()-1);renderCalendar()};e.nextMonthBtn.onclick=()=>{currentMonth.setMonth(currentMonth.getMonth()+1);renderCalendar()};e.calendarAthleteSelect.onchange=renderCalendar;e.statsAthleteSelect.onchange=renderStats;
 
 sb.auth.onAuthStateChange(async(_event,newSession)=>{session=newSession;user=newSession?.user||null;await loadProfile();closeModal(e.accountModal);await route()});

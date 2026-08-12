@@ -183,3 +183,10 @@ Merk: Tabellen som ble oppgitt har 15 arbeidsøkter + 15 hvileøkter, altså 22:
 - Pause/Fortsett og fullføring med rating/kommentar.
 - Wake Lock under aktiv økt.
 - Kjør v8-delen i SQL_SETUP.sql for å legge programmet til i Supabase.
+
+## v8.1 – Fri økt
+- Starter timer på 00:00 og teller opp til avslutning.
+- Ved avslutning: rating, kommentar og valgfri distanse i km.
+- Eksempel: kommentar `Tredemølle`, distanse `5,5`.
+- Wake Lock beholdes.
+- Kjør v8.1-delen i SQL_SETUP.sql.

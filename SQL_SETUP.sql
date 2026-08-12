@@ -263,3 +263,11 @@ set name=excluded.name,
     sort_order=excluded.sort_order;
 
 NOTIFY pgrst, 'reload schema';
+
+-- v8.1: Fri økt
+alter table public.cr_workout_sessions add column if not exists distance_meters numeric;
+insert into public.cr_programs (id,name,description,icon,active,sort_order)
+values ('free_workout','Fri økt','Fri timer · rating · kommentar · valgfri distanse','⏱️',true,80)
+on conflict (id) do update
+set name=excluded.name,description=excluded.description,icon=excluded.icon,active=true,sort_order=excluded.sort_order;
+NOTIFY pgrst, 'reload schema';

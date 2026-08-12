@@ -354,3 +354,10 @@
 .twenty-card.phase-lightblue .elapsed-box{background:rgba(255,255,255,.42)!important}
 .twenty-card .running-actions{margin-top:auto}
 @media(max-width:620px){.twenty-card{min-height:590px}}
+
+.free-workout-card{background:var(--panel);border:1px solid var(--line);border-radius:24px;padding:18px;min-height:590px;display:flex;flex-direction:column}
+.free-workout-center{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px 10px}
+.free-workout-label{font-size:.85rem;font-weight:900;letter-spacing:.12em;color:var(--muted)}
+.free-workout-big-time{font-size:clamp(5rem,20vw,9rem);font-weight:950;line-height:1;font-variant-numeric:tabular-nums;margin:12px 0}
+.free-workout-center p{color:var(--muted);margin:0}
+#finishDistanceWrap input{margin-top:6px}
