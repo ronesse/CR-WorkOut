@@ -161,43 +161,86 @@ function applySavedProgramOrder(list){
   const rank=new Map(order.map((id,i)=>[id,i]));
   return [...list].sort((a,b)=>{const ra=rank.has(a.id)?rank.get(a.id):9999,rb=rank.has(b.id)?rank.get(b.id):9999;if(ra!==rb)return ra-rb;return(a.sort_order??999)-(b.sort_order??999)})
 }
-let draggedProgramCard=null,dragPointerId=null;
+
+let draggedProgramCard=null,dragPointerId=null,dragHandle=null;
+
+function moveProgramCardAtPoint(x,y){
+  const grid=e.assignedPrograms;
+  if(!grid||!draggedProgramCard)return;
+  const cards=[...grid.querySelectorAll(".program-card:not(.dragging)")];
+  let target=null;
+  for(const card of cards){
+    const r=card.getBoundingClientRect();
+    if(x>=r.left && x<=r.right && y>=r.top && y<=r.bottom){target=card;break}
+  }
+  if(!target)return;
+  grid.querySelectorAll(".drag-over").forEach(x=>x.classList.remove("drag-over"));
+  target.classList.add("drag-over");
+  const r=target.getBoundingClientRect();
+  const before=(y < r.top+r.height/2);
+  grid.insertBefore(draggedProgramCard,before?target:target.nextSibling);
+}
+
+function finishProgramPointerDrag(ev){
+  if(dragPointerId===null || ev.pointerId!==dragPointerId)return;
+  try{dragHandle?.releasePointerCapture(ev.pointerId)}catch{}
+  draggedProgramCard?.classList.remove("dragging");
+  e.assignedPrograms?.querySelectorAll(".drag-over").forEach(x=>x.classList.remove("drag-over"));
+  saveProgramOrderFromDom();
+  draggedProgramCard=null;dragPointerId=null;dragHandle=null;
+  document.body.classList.remove("program-reordering");
+}
+
 function initProgramDragDrop(){
   const grid=e.assignedPrograms;if(!grid)return;
-  grid.querySelectorAll(".program-card").forEach(card=>{
-    card.draggable=true;
-    card.addEventListener("dragstart",ev=>{draggedProgramCard=card;card.classList.add("dragging");ev.dataTransfer.effectAllowed="move";try{ev.dataTransfer.setData("text/plain",card.dataset.programId)}catch{}});
-    card.addEventListener("dragend",()=>{card.classList.remove("dragging");grid.querySelectorAll(".drag-over").forEach(x=>x.classList.remove("drag-over"));draggedProgramCard=null;saveProgramOrderFromDom()});
-    card.addEventListener("dragover",ev=>{ev.preventDefault();if(!draggedProgramCard||draggedProgramCard===card)return;card.classList.add("drag-over");const r=card.getBoundingClientRect();const before=ev.clientY<r.top+r.height/2;grid.insertBefore(draggedProgramCard,before?card:card.nextSibling)});
-    card.addEventListener("dragleave",()=>card.classList.remove("drag-over"));
 
-    card.addEventListener("pointerdown",ev=>{
-      if(ev.target.closest("button,a,input,select,textarea"))return;
-      draggedProgramCard=card;dragPointerId=ev.pointerId;
-      try{card.setPointerCapture(ev.pointerId)}catch{}
-      card.classList.add("dragging");
-    });
-    card.addEventListener("pointermove",ev=>{
-      if(!draggedProgramCard||dragPointerId!==ev.pointerId)return;
-      ev.preventDefault();
-      const under=document.elementFromPoint(ev.clientX,ev.clientY)?.closest?.(".program-card");
-      if(!under||under===draggedProgramCard||under.parentElement!==grid)return;
-      grid.querySelectorAll(".drag-over").forEach(x=>x.classList.remove("drag-over"));
-      under.classList.add("drag-over");
-      const r=under.getBoundingClientRect();
-      const before=ev.clientY<r.top+r.height/2;
-      grid.insertBefore(draggedProgramCard,before?under:under.nextSibling);
-    });
-    const endPointer=ev=>{
-      if(dragPointerId!==ev.pointerId)return;
-      try{card.releasePointerCapture(ev.pointerId)}catch{}
-      card.classList.remove("dragging");grid.querySelectorAll(".drag-over").forEach(x=>x.classList.remove("drag-over"));
-      draggedProgramCard=null;dragPointerId=null;saveProgramOrderFromDom();
-    };
-    card.addEventListener("pointerup",endPointer);
-    card.addEventListener("pointercancel",endPointer);
+  grid.querySelectorAll(".program-card").forEach(card=>{
+    // Desktop native drag, only from the handle.
+    const handle=card.querySelector(".drag-handle");
+    card.draggable=false;
+    if(handle){
+      handle.draggable=true;
+      handle.addEventListener("dragstart",ev=>{
+        draggedProgramCard=card;
+        card.classList.add("dragging");
+        ev.dataTransfer.effectAllowed="move";
+        try{ev.dataTransfer.setData("text/plain",card.dataset.programId)}catch{}
+      });
+      handle.addEventListener("dragend",()=>{
+        card.classList.remove("dragging");
+        grid.querySelectorAll(".drag-over").forEach(x=>x.classList.remove("drag-over"));
+        draggedProgramCard=null;
+        saveProgramOrderFromDom();
+      });
+
+      // Mobile/touch: hold the visible handle, then drag.
+      handle.addEventListener("pointerdown",ev=>{
+        if(ev.pointerType==="mouse" && ev.button!==0)return;
+        ev.preventDefault();
+        draggedProgramCard=card;
+        dragPointerId=ev.pointerId;
+        dragHandle=handle;
+        try{handle.setPointerCapture(ev.pointerId)}catch{}
+        card.classList.add("dragging");
+        document.body.classList.add("program-reordering");
+      });
+      handle.addEventListener("pointermove",ev=>{
+        if(!draggedProgramCard || ev.pointerId!==dragPointerId)return;
+        ev.preventDefault();
+        moveProgramCardAtPoint(ev.clientX,ev.clientY);
+      });
+      handle.addEventListener("pointerup",finishProgramPointerDrag);
+      handle.addEventListener("pointercancel",finishProgramPointerDrag);
+    }
+  });
+
+  grid.addEventListener("dragover",ev=>{
+    if(!draggedProgramCard)return;
+    ev.preventDefault();
+    moveProgramCardAtPoint(ev.clientX,ev.clientY);
   });
 }
+
 function initProgramLayoutControls(){
   document.querySelectorAll(".layout-btn").forEach(btn=>btn.onclick=()=>setProgramColumns(btn.dataset.cols));
   setProgramColumns(getProgramColumns());
@@ -206,7 +249,7 @@ function initProgramLayoutControls(){
 function renderPrograms(list){
   const ordered=applySavedProgramOrder(list);
   e.assignedPrograms.innerHTML=ordered.length?ordered.map(p=>`<article class="program-card" data-program-id="${p.id}">
-    <span class="drag-handle">⋮⋮</span>
+    <button type="button" class="drag-handle" aria-label="Flytt program" title="Hold og dra for å flytte">☰</button>
     <span class="program-icon">${programIcon(p)?`<img src="${programIcon(p)}" alt="${esc(p.name)}">`:esc(p.icon||"🏋️")}</span>
     <h3>${esc(p.name)}</h3>
     <p>${esc(p.description||"")}</p>

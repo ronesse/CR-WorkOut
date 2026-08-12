@@ -156,3 +156,9 @@ Merk: Tabellen som ble oppgitt har 15 arbeidsøkter + 15 hvileøkter, altså 22:
 - Kortene kan dras og slippes i ønsket rekkefølge, også på touchskjerm.
 - Valgt visning og rekkefølge huskes lokalt per innlogget bruker på enheten.
 - Ingen ny SQL nødvendig.
+
+## v7.4 – forbedret dra/slipp på mobil
+- Programkort har nå et tydelig ☰-håndtak øverst til høyre.
+- På telefon: trykk/hold på ☰ og dra kortet til ønsket plass.
+- Selve kortet er fortsatt klikkbart uten at scrolling eller Start økt påvirkes.
+- Rekkefølgen lagres som før per innlogget bruker på enheten.
