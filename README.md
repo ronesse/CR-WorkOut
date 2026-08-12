@@ -131,3 +131,12 @@ Merk: Tabellen som ble oppgitt har 15 arbeidsøkter + 15 hvileøkter, altså 22:
 - Audio låses opp når brukeren trykker Start eller Fortsett.
 - Beep ved 5, 4, 3, 2 og 1 sekund bruker samme aktive AudioContext.
 - Ekstra opplåsing ved berøring under aktiv økt, nyttig etter app-/fanebytte.
+
+## v7 – Løping
+- GPS-basert løpeprogram med tid, distanse, snittpace og aktuell pace.
+- Pause/Fortsett.
+- GPS-status og nøyaktighet.
+- Wake Lock under aktiv økt.
+- Lagrer tid, distanse, snittpace, rating og kommentar.
+- Ruten lagres foreløpig ikke, kun beregnet distanse.
+- Kjør v7-delen i SQL_SETUP.sql før testing.

@@ -7,7 +7,7 @@
   <meta name="description" content="CR-Workout – coach og utøver">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="style.css?v=6.5">
+  <link rel="stylesheet" href="style.css?v=7">
   <title>CR-Workout</title>
 </head>
 <body>
@@ -223,7 +223,38 @@
         </div>
       </section>
 
-    <section id="calendarScreen" class="screen hidden">
+    
+    <section id="runningScreen" class="screen hidden">
+      <div class="running-card">
+        <div class="runner-top">
+          <div>
+            <div class="eyebrow">LØPING</div>
+            <h2 id="runningProgramName">Løping</h2>
+            <p id="gpsStatus" class="gps-status">Venter på GPS…</p>
+          </div>
+          <div class="elapsed-box"><small>Total tid</small><strong id="runningElapsed">00:00</strong></div>
+        </div>
+
+        <div class="running-main-stats">
+          <div class="running-stat primary-stat"><small>Distanse</small><strong id="runningDistance">0,00 km</strong></div>
+          <div class="running-stat"><small>Snittfart</small><strong id="runningAvgPace">– /km</strong></div>
+          <div class="running-stat"><small>Aktuell fart</small><strong id="runningCurrentPace">– /km</strong></div>
+        </div>
+
+        <div class="running-details">
+          <span id="runningGpsAccuracy">GPS-nøyaktighet: –</span>
+          <span id="runningPointCount">0 GPS-punkter</span>
+        </div>
+
+        <div class="running-actions">
+          <button id="runningPauseBtn" class="secondary-btn">⏸ Pause</button>
+          <button id="runningFinishBtn" class="primary-btn">✓ Avslutt økt</button>
+        </div>
+        <button id="runningDiscardBtn" class="link-btn danger-link">Avslutt / forkast økten</button>
+      </div>
+    </section>
+
+<section id="calendarScreen" class="screen hidden">
         <div class="section-heading">
           <div><h2>Kalender</h2><p id="calendarSubtitle">Mine økter</p></div>
           <select id="calendarAthleteSelect" class="coach-filter hidden"></select>
@@ -322,8 +353,8 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="programs.js?v=6.5"></script>
-  <script src="app.js?v=6.5"></script>
+  <script src="programs.js?v=7"></script>
+  <script src="app.js?v=7"></script>
 <script>if("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js").catch(()=>{});</script>
 </body>
 </html>

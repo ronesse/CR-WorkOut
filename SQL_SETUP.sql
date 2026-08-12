@@ -233,3 +233,15 @@ values
 ('kettlebell_mix','Rest',40,20,'Hvile','','','',30,5);
 
 NOTIFY pgrst, 'reload schema';
+
+-- v7: Løping
+alter table public.cr_workout_sessions
+  add column if not exists distance_meters numeric,
+  add column if not exists avg_pace_seconds_per_km numeric;
+
+insert into public.cr_programs (id,name,description,icon,active,sort_order)
+values ('running','Løping','GPS · tid · distanse · pace','🏃',true,60)
+on conflict (id) do update
+set name=excluded.name,description=excluded.description,icon=excluded.icon,active=true,sort_order=excluded.sort_order;
+
+NOTIFY pgrst, 'reload schema';
