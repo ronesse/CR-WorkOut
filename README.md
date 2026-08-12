@@ -150,3 +150,9 @@ Merk: Tabellen som ble oppgitt har 15 arbeidsøkter + 15 hvileøkter, altså 22:
 - Fullførte løpeøkter viser distanse i km og tid i minutter i kalenderen.
 - Snittpace vises i detaljlinjen når den finnes.
 - Aktive løpeøkter viser tiden som har gått; distansen kommer når økten er lagret.
+
+## v7.3 – programkort
+- Utøveren kan velge 1, 2 eller 3 programkort i bredden.
+- Kortene kan dras og slippes i ønsket rekkefølge, også på touchskjerm.
+- Valgt visning og rekkefølge huskes lokalt per innlogget bruker på enheten.
+- Ingen ny SQL nødvendig.

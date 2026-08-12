@@ -144,11 +144,77 @@ async function loadAthleteData(){
  if(approved){const {data:a}=await sb.from("cr_athlete_programs").select("program_id").eq("athlete_id",user.id).eq("enabled",true);const ids=new Set((a||[]).map(x=>x.program_id));renderPrograms(programs.filter(p=>ids.has(p.id)))}
  renderActiveSession();if(activeSession)requestWakeLock();
 }
-function renderPrograms(list){e.assignedPrograms.innerHTML=list.length?list.map(p=>`<article class="program-card"><span class="program-icon">${programIcon(p)?`<img src="${programIcon(p)}" alt="${esc(p.name)}">`:esc(p.icon||"🏋️")}</span><h3>${esc(p.name)}</h3><p>${esc(p.description||"")}</p><button class="primary-btn start-program" data-id="${p.id}">Start økt</button></article>`).join(""):`<div class="empty">Ingen programmer er tildelt ennå.</div>`;e.assignedPrograms.querySelectorAll(".start-program").forEach(b=>b.onclick=()=>startSession(b.dataset.id))}
 
-function isRunningProgram(programId){
-  const p=programs.find(x=>x.id===programId);
-  return programId==="running" || String(p?.name||"").trim().toLowerCase()==="løping";
+function athleteUiKey(name){return `cr_ui_${user?.id||"anonymous"}_${name}`}
+function getProgramColumns(){const n=Number(localStorage.getItem(athleteUiKey("programColumns"))||2);return[1,2,3].includes(n)?n:2}
+function setProgramColumns(cols){
+  cols=Number(cols);if(![1,2,3].includes(cols))cols=2;
+  localStorage.setItem(athleteUiKey("programColumns"),String(cols));
+  const grid=e.assignedPrograms;
+  if(grid){grid.classList.remove("program-cols-1","program-cols-2","program-cols-3");grid.classList.add(`program-cols-${cols}`)}
+  document.querySelectorAll(".layout-btn").forEach(b=>b.classList.toggle("active",Number(b.dataset.cols)===cols));
+}
+function getProgramOrder(){try{const x=JSON.parse(localStorage.getItem(athleteUiKey("programOrder"))||"[]");return Array.isArray(x)?x:[]}catch{return[]}}
+function saveProgramOrderFromDom(){const ids=[...e.assignedPrograms.querySelectorAll(".program-card")].map(c=>c.dataset.programId).filter(Boolean);localStorage.setItem(athleteUiKey("programOrder"),JSON.stringify(ids))}
+function applySavedProgramOrder(list){
+  const order=getProgramOrder();if(!order.length)return list;
+  const rank=new Map(order.map((id,i)=>[id,i]));
+  return [...list].sort((a,b)=>{const ra=rank.has(a.id)?rank.get(a.id):9999,rb=rank.has(b.id)?rank.get(b.id):9999;if(ra!==rb)return ra-rb;return(a.sort_order??999)-(b.sort_order??999)})
+}
+let draggedProgramCard=null,dragPointerId=null;
+function initProgramDragDrop(){
+  const grid=e.assignedPrograms;if(!grid)return;
+  grid.querySelectorAll(".program-card").forEach(card=>{
+    card.draggable=true;
+    card.addEventListener("dragstart",ev=>{draggedProgramCard=card;card.classList.add("dragging");ev.dataTransfer.effectAllowed="move";try{ev.dataTransfer.setData("text/plain",card.dataset.programId)}catch{}});
+    card.addEventListener("dragend",()=>{card.classList.remove("dragging");grid.querySelectorAll(".drag-over").forEach(x=>x.classList.remove("drag-over"));draggedProgramCard=null;saveProgramOrderFromDom()});
+    card.addEventListener("dragover",ev=>{ev.preventDefault();if(!draggedProgramCard||draggedProgramCard===card)return;card.classList.add("drag-over");const r=card.getBoundingClientRect();const before=ev.clientY<r.top+r.height/2;grid.insertBefore(draggedProgramCard,before?card:card.nextSibling)});
+    card.addEventListener("dragleave",()=>card.classList.remove("drag-over"));
+
+    card.addEventListener("pointerdown",ev=>{
+      if(ev.target.closest("button,a,input,select,textarea"))return;
+      draggedProgramCard=card;dragPointerId=ev.pointerId;
+      try{card.setPointerCapture(ev.pointerId)}catch{}
+      card.classList.add("dragging");
+    });
+    card.addEventListener("pointermove",ev=>{
+      if(!draggedProgramCard||dragPointerId!==ev.pointerId)return;
+      ev.preventDefault();
+      const under=document.elementFromPoint(ev.clientX,ev.clientY)?.closest?.(".program-card");
+      if(!under||under===draggedProgramCard||under.parentElement!==grid)return;
+      grid.querySelectorAll(".drag-over").forEach(x=>x.classList.remove("drag-over"));
+      under.classList.add("drag-over");
+      const r=under.getBoundingClientRect();
+      const before=ev.clientY<r.top+r.height/2;
+      grid.insertBefore(draggedProgramCard,before?under:under.nextSibling);
+    });
+    const endPointer=ev=>{
+      if(dragPointerId!==ev.pointerId)return;
+      try{card.releasePointerCapture(ev.pointerId)}catch{}
+      card.classList.remove("dragging");grid.querySelectorAll(".drag-over").forEach(x=>x.classList.remove("drag-over"));
+      draggedProgramCard=null;dragPointerId=null;saveProgramOrderFromDom();
+    };
+    card.addEventListener("pointerup",endPointer);
+    card.addEventListener("pointercancel",endPointer);
+  });
+}
+function initProgramLayoutControls(){
+  document.querySelectorAll(".layout-btn").forEach(btn=>btn.onclick=()=>setProgramColumns(btn.dataset.cols));
+  setProgramColumns(getProgramColumns());
+}
+
+function renderPrograms(list){
+  const ordered=applySavedProgramOrder(list);
+  e.assignedPrograms.innerHTML=ordered.length?ordered.map(p=>`<article class="program-card" data-program-id="${p.id}">
+    <span class="drag-handle">⋮⋮</span>
+    <span class="program-icon">${programIcon(p)?`<img src="${programIcon(p)}" alt="${esc(p.name)}">`:esc(p.icon||"🏋️")}</span>
+    <h3>${esc(p.name)}</h3>
+    <p>${esc(p.description||"")}</p>
+    <button class="primary-btn start-program" data-id="${p.id}">Start økt</button>
+  </article>`).join(""):`<div class="empty">Ingen programmer er tildelt ennå.</div>`;
+  e.assignedPrograms.querySelectorAll(".start-program").forEach(b=>b.onclick=()=>startSession(b.dataset.id));
+  initProgramLayoutControls();
+  initProgramDragDrop();
 }
 
 async function startSession(programId){
