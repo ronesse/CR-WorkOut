@@ -44,6 +44,7 @@ async function releaseWakeLock(){
 document.addEventListener("visibilitychange",()=>{
   if(document.visibilityState==="visible" && activeSession) requestWakeLock();
 });
+document.addEventListener("pointerdown",()=>{if(activeSession)unlockAudio();},{passive:true});
 
 
 function esc(s=""){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]))}
@@ -57,18 +58,66 @@ function stateKey(){return activeSession?`cr_runner_${activeSession.id}`:""}
 function saveRunnerState(obj){if(activeSession)localStorage.setItem(stateKey(),JSON.stringify(obj))}
 function loadRunnerState(){try{return JSON.parse(localStorage.getItem(stateKey())||"null")}catch{return null}}
 function clearRunnerState(){if(activeSession)localStorage.removeItem(stateKey())}
-function audioCue(text){try{const C=window.AudioContext||window.webkitAudioContext;if(C){const c=new C(),o=c.createOscillator(),g=c.createGain();o.frequency.value=900;g.gain.value=.15;o.connect(g);g.connect(c.destination);o.start();setTimeout(()=>{o.stop();c.close()},100)}}catch{}if("speechSynthesis"in window){const u=new SpeechSynthesisUtterance(text);u.lang="nb-NO";speechSynthesis.cancel();speechSynthesis.speak(u)}}
-function countdownBeep(){
-  try{
-    const C=window.AudioContext||window.webkitAudioContext;
-    if(!C)return;
-    const c=new C(),o=c.createOscillator(),g=c.createGain();
-    o.type="sine";o.frequency.value=1150;g.gain.value=.18;
-    o.connect(g);g.connect(c.destination);o.start();
-    setTimeout(()=>{try{o.stop()}catch{};c.close()},90);
-  }catch{}
+let sharedAudioContext=null;
+
+function getAudioContext(){
+  const C=window.AudioContext||window.webkitAudioContext;
+  if(!C)return null;
+  if(!sharedAudioContext)sharedAudioContext=new C();
+  return sharedAudioContext;
 }
 
+async function unlockAudio(){
+  try{
+    const c=getAudioContext();
+    if(!c)return;
+    if(c.state==="suspended")await c.resume();
+    const o=c.createOscillator(),g=c.createGain();
+    g.gain.value=0.00001;
+    o.connect(g);g.connect(c.destination);
+    o.start();
+    o.stop(c.currentTime+0.02);
+  }catch(err){
+    console.warn("Audio kunne ikke låses opp:",err);
+  }
+}
+
+function playTone(freq=1150,duration=0.10,volume=0.25){
+  try{
+    const c=getAudioContext();
+    if(!c)return;
+    if(c.state!=="running"){
+      c.resume().catch(()=>{});
+      return;
+    }
+    const o=c.createOscillator(),g=c.createGain();
+    o.type="sine";
+    o.frequency.setValueAtTime(freq,c.currentTime);
+    g.gain.setValueAtTime(volume,c.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+duration);
+    o.connect(g);g.connect(c.destination);
+    o.start(c.currentTime);
+    o.stop(c.currentTime+duration);
+  }catch(err){
+    console.warn("Tonefeil:",err);
+  }
+}
+
+function audioCue(text){
+  playTone(900,0.12,0.18);
+  if("speechSynthesis" in window){
+    try{
+      const u=new SpeechSynthesisUtterance(text);
+      u.lang="nb-NO";
+      speechSynthesis.cancel();
+      speechSynthesis.speak(u);
+    }catch{}
+  }
+}
+
+function countdownBeep(){
+  playTone(1300,0.10,0.30);
+}
 
 async function loadProfile(){if(!user){profile=null;return}const {data}=await sb.from("cr_profiles").select("*").eq("id",user.id).maybeSingle();profile=data||null}
 function updateAccount(){const logged=!!user;e.authLoggedOut.classList.toggle("hidden",logged);e.authLoggedIn.classList.toggle("hidden",!logged);if(logged){e.accountName.textContent=profile?.full_name||user.email;e.accountEmail.textContent=user.email;e.accountTitle.textContent=profile?.role==="coach"?"Coach-konto":"Min konto"}}
@@ -89,6 +138,7 @@ async function loadAthleteData(){
 }
 function renderPrograms(list){e.assignedPrograms.innerHTML=list.length?list.map(p=>`<article class="program-card"><span class="program-icon">${p.id==="kettlebell"?`<img src="kettlebell.png" alt="Kettlebell">`:esc(p.icon||"🏋️")}</span><h3>${esc(p.name)}</h3><p>${esc(p.description||"")}</p><button class="primary-btn start-program" data-id="${p.id}">Start økt</button></article>`).join(""):`<div class="empty">Ingen programmer er tildelt ennå.</div>`;e.assignedPrograms.querySelectorAll(".start-program").forEach(b=>b.onclick=()=>startSession(b.dataset.id))}
 async function startSession(programId){
+ await unlockAudio();
  if(activeSession){renderActiveSession();alert("Du har allerede en aktiv økt. Velg «Fortsett økten» eller forkast den først.");return}
  if(!INTERVAL_PROGRAMS[programId]&&!SEQUENCE_PROGRAMS[programId]&&programId!=="kettlebell_mix"){alert("Dette programmet er ikke aktivert i treningsmotoren ennå.");return}
  const p=programs.find(x=>x.id===programId);const {data,error}=await sb.from("cr_workout_sessions").insert({athlete_id:user.id,program_id:programId,program_name:p?.name||programId,status:"started",started_at:new Date().toISOString()}).select().single();if(error){alert(error.message);return}activeSession=data;clearRunnerState();await requestWakeLock();launchRunner();
@@ -464,7 +514,7 @@ document.querySelectorAll(".nav-btn").forEach(b=>b.onclick=async()=>{
 });
 e.accountBtn.onclick=()=>{updateAccount();openModal(e.accountModal)};e.closeAccountBtn.onclick=()=>closeModal(e.accountModal);e.openLoginBtn.onclick=()=>openModal(e.accountModal);e.openRegisterBtn.onclick=()=>openModal(e.registerModal);e.showRegisterBtn.onclick=()=>{closeModal(e.accountModal);openModal(e.registerModal)};e.closeRegisterBtn.onclick=()=>closeModal(e.registerModal);e.loginBtn.onclick=login;e.registerBtn.onclick=register;e.logoutBtn.onclick=logout;e.copyInviteBtn.onclick=copyInvite;if(e.copyInviteBtnAthletes)e.copyInviteBtnAthletes.onclick=copyInvite;e.closeProgramBtn.onclick=()=>closeModal(e.programModal);e.saveProgramsBtn.onclick=savePrograms;
 if(e.coachProgramSelect)e.coachProgramSelect.onchange=()=>loadProgramEditor(e.coachProgramSelect.value);if(e.exportProgramsBtn)e.exportProgramsBtn.onclick=exportPrograms;if(e.importProgramsBtn&&e.importProgramsFile)e.importProgramsBtn.onclick=()=>e.importProgramsFile.click();if(e.importProgramsFile)e.importProgramsFile.onchange=async()=>{await importProgramsFile(e.importProgramsFile.files?.[0]);e.importProgramsFile.value="";};if(e.reloadProgramBtn)e.reloadProgramBtn.onclick=()=>loadProgramEditor(e.coachProgramSelect.value);if(e.saveProgramActivitiesBtn)e.saveProgramActivitiesBtn.onclick=saveProgramActivities;
-e.continueSessionBtn.onclick=async()=>{await requestWakeLock();launchRunner();};e.discardSessionBtn.onclick=discardActive;e.intervalSkipBtn.onclick=()=>runnerMode==="intervalSequence"?skipIntervalSequence():skipInterval();e.runnerAbortBtn.onclick=discardActive;e.sequenceCompleteBtn.onclick=seqComplete;e.sequenceSkipBtn.onclick=seqSkip;e.sequencePostponeBtn.onclick=seqPostpone;e.sequenceAbortBtn.onclick=discardActive;
+e.continueSessionBtn.onclick=async()=>{await unlockAudio();await requestWakeLock();launchRunner();};e.discardSessionBtn.onclick=discardActive;e.intervalSkipBtn.onclick=()=>runnerMode==="intervalSequence"?skipIntervalSequence():skipInterval();e.runnerAbortBtn.onclick=discardActive;e.sequenceCompleteBtn.onclick=seqComplete;e.sequenceSkipBtn.onclick=seqSkip;e.sequencePostponeBtn.onclick=seqPostpone;e.sequenceAbortBtn.onclick=discardActive;
 e.cancelFinishBtn.onclick=()=>closeModal(e.finishModal);e.saveFinishBtn.onclick=saveFinish;e.finishStars.querySelectorAll("button").forEach(b=>b.onclick=()=>{finishRating=Number(b.dataset.rating);renderStars()});e.prevMonthBtn.onclick=()=>{currentMonth.setMonth(currentMonth.getMonth()-1);renderCalendar()};e.nextMonthBtn.onclick=()=>{currentMonth.setMonth(currentMonth.getMonth()+1);renderCalendar()};e.calendarAthleteSelect.onchange=renderCalendar;e.statsAthleteSelect.onchange=renderStats;
 
 sb.auth.onAuthStateChange(async(_event,newSession)=>{session=newSession;user=newSession?.user||null;await loadProfile();closeModal(e.accountModal);await route()});

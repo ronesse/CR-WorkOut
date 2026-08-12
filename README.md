@@ -125,3 +125,9 @@ Merk: Tabellen som ble oppgitt har 15 arbeidsøkter + 15 hvileøkter, altså 22:
 - Gjør klar-varsel: lys blå.
 - Kort beep ved 5, 4, 3, 2 og 1 sekund igjen i hver arbeid/hvile-fase.
 - Gjelder både vanlige intervallprogrammer og Kettlebell Mix-sekvensen.
+
+## v6.4 – mobil lyd fix
+- Én persistent AudioContext brukes gjennom hele økten.
+- Audio låses opp når brukeren trykker Start eller Fortsett.
+- Beep ved 5, 4, 3, 2 og 1 sekund bruker samme aktive AudioContext.
+- Ekstra opplåsing ved berøring under aktiv økt, nyttig etter app-/fanebytte.
