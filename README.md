@@ -205,3 +205,10 @@ Merk: Tabellen som ble oppgitt har 15 arbeidsøkter + 15 hvileøkter, altså 22:
 - Hvis Supabase-data mangler, brukes lokal programdefinisjon som fallback.
 - Hindrer at økten starter med tomt aktivitetskort.
 - Ingen ny SQL nødvendig.
+
+## v8.4 – Sequence runner fix
+- Rettet feilen som gjorde at Styrke Dag1/Dag2 startet økten uten å vise aktivitetskort.
+- Gjenopprettet den stabile sequence-runneren.
+- Aktivitetene hentes fortsatt fra Supabase via `getSequenceItems()`, med lokal fallback.
+- Gammel/ødelagt lokal runner-state repareres automatisk.
+- Ingen ny SQL nødvendig.

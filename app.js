@@ -411,62 +411,89 @@ async function skipIntervalSequence(){
 }
 
 async function startSequenceRunner(){
-  const programId=activeSession?.program_id;
-  if(!programId)return;
-
-  let items=[];
-
-  // Prefer the editable Supabase activities.
-  try{
-    const {data,error}=await sb.from("cr_program_activities")
-      .select("*")
-      .eq("program_id",programId)
-      .order("order_no");
-    if(!error && data?.length){
-      items=data.map(r=>({
-        group:r.group_name||"",
-        order:r.order_no,
-        round:r.round_no,
-        activity:r.activity||"",
-        reps:r.reps||"",
-        load:r.load||"",
-        desc:r.description||""
-      }));
-    }
-  }catch(err){
-    console.warn("Kunne ikke hente programaktiviteter fra Supabase:",err);
+  const cfg=SEQUENCE_PROGRAMS[activeSession.program_id];
+  if(!cfg){
+    alert("Programmotor mangler for denne økten.");
+    return;
   }
 
-  // Fallback to local program definition if DB is empty/unavailable.
-  if(!items.length){
-    items=(SEQUENCE_PROGRAMS[programId]?.items||[]).map(x=>({...x}));
-  }
+  e.sequenceProgramName.textContent=cfg.name;
+
+  const saved=loadRunnerState();
+  const items=await getSequenceItems(activeSession.program_id);
 
   if(!items.length){
     alert("Dette programmet har ingen aktiviteter registrert.");
     return;
   }
 
-  sequenceState=loadSequenceState()||{
-    queue:items.map((x,i)=>({...x,_key:`${x.order??i+1}-${i}`})),
-    completed:0,
-    skipped:0
-  };
+  sequenceState=
+    saved &&
+    saved.mode==="sequence" &&
+    Array.isArray(saved.queue) &&
+    Array.isArray(saved.completed) &&
+    Array.isArray(saved.skipped)
+      ? saved
+      : {
+          mode:"sequence",
+          queue:items.map(x=>({...x})),
+          completed:[],
+          skipped:[]
+        };
 
-  // If an old/empty local state exists, rebuild it.
-  if(!Array.isArray(sequenceState.queue) || !sequenceState.queue.length){
+  // Repair any malformed/stale state created by an older version.
+  if(!Array.isArray(sequenceState.queue) ||
+     !Array.isArray(sequenceState.completed) ||
+     !Array.isArray(sequenceState.skipped)){
     sequenceState={
-      queue:items.map((x,i)=>({...x,_key:`${x.order??i+1}-${i}`})),
-      completed:0,
-      skipped:0
+      mode:"sequence",
+      queue:items.map(x=>({...x})),
+      completed:[],
+      skipped:[]
     };
-    saveSequenceState();
   }
 
-  renderSequence();
+  saveRunnerState(sequenceState);
+
+  const render=()=>{
+    const cur=sequenceState.queue[0];
+    e.sequenceElapsed.textContent=fmtElapsed(elapsed(activeSession.started_at));
+
+    if(!cur){
+      stopRunnerTick();
+      openFinish();
+      return;
+    }
+
+    const next=sequenceState.queue[1];
+    const done=sequenceState.completed.length+sequenceState.skipped.length;
+    const total=items.length;
+
+    e.sequenceGroupRound.textContent=
+      `${cur.group==="WarmUp"?"Oppvarming":"Hoveddel"} · Runde ${cur.round}`;
+
+    e.sequenceProgressText.textContent=
+      `Aktivitet ${done+1} av ${total} · ${sequenceState.completed.length} fullført`;
+
+    e.sequenceProgressBar.style.width=
+      `${Math.min(100,(done/Math.max(1,total))*100)}%`;
+
+    e.sequenceActivity.textContent=cur.activity||"Aktivitet";
+    e.sequenceReps.textContent=cur.reps||"–";
+    e.sequenceLoad.textContent=cur.load||"–";
+    e.sequenceDesc.textContent=cur.desc||"";
+
+    e.sequenceNextActivity.textContent=next?next.activity:"Ferdig";
+    e.sequenceNextMeta.textContent=next
+      ? `${next.group==="WarmUp"?"Oppvarming":"Hoveddel"} · Runde ${next.round}${next.reps?` · ${next.reps} reps`:""}${next.load?` · ${next.load}`:""}`
+      : "Siste aktivitet";
+  };
+
+  render();
   stopRunnerTick();
-  runnerTimer=setInterval(()=>{if(activeSession)e.sequenceElapsed.textContent=fmtElapsed(elapsed(activeSession.started_at))},500);
+  runnerTimer=setInterval(render,500);
 }
+
 function seqComplete(){if(!sequenceState?.queue.length)return;sequenceState.completed.push(sequenceState.queue.shift());saveRunnerState(sequenceState);startSequenceRunner()}
 function seqSkip(){if(!sequenceState?.queue.length)return;sequenceState.skipped.push(sequenceState.queue.shift());saveRunnerState(sequenceState);startSequenceRunner()}
 function seqPostpone(){if(!sequenceState?.queue.length)return;const item=sequenceState.queue[0];let last=-1;for(let i=1;i<sequenceState.queue.length;i++){const x=sequenceState.queue[i];if(x.group===item.group&&x.round===item.round)last=i;else break}if(last<1){alert("Dette er siste aktivitet i denne runden.");return}sequenceState.queue.shift();sequenceState.queue.splice(last,0,item);saveRunnerState(sequenceState);startSequenceRunner()}
