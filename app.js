@@ -1416,6 +1416,33 @@ function dbCourseToGolfData(course,holes){
  holes.forEach(h=>d.holes[h.hole_no]={number:h.hole_no,par:h.par,strokeIndex:h.stroke_index,lengths:{39:h.tee_39_m,43:h.tee_43_m,48:h.tee_48_m,50:h.tee_50_m},pin:h.green_lat!=null&&h.green_lon!=null?{lat:Number(h.green_lat),lon:Number(h.green_lon)}:null,pinSource:h.green_lat!=null?"CR-Workout green":""});
  return d;
 }
+
+async function resolveGolfCourseDataFromDb(courseName=""){
+  await loadGolfDbCourses();
+  let course=null;
+
+  const selectedId=e.golfSavedCourseSelect?.value||"";
+  if(selectedId)course=golfDbCourses.find(c=>c.id===selectedId)||null;
+
+  if(!course && courseName){
+    const wanted=String(courseName).trim().toLowerCase();
+    course=golfDbCourses.find(c=>String(c.name||"").trim().toLowerCase()===wanted)||null;
+  }
+
+  if(!course && courseName){
+    const wanted=String(courseName).trim().toLowerCase();
+    course=golfDbCourses.find(c=>{
+      const n=String(c.name||"").trim().toLowerCase();
+      return n.includes(wanted)||wanted.includes(n);
+    })||null;
+  }
+
+  if(!course)return null;
+  const result=await loadGolfDbCourse(course.id);
+  if(!result)return null;
+  return dbCourseToGolfData(result.course,result.holes);
+}
+
 async function chooseSavedGolfCourse(){
  const r=await loadGolfDbCourse(e.golfSavedCourseSelect.value); if(!r)return;
  e.golfSetupCourse.value=r.course.name;e.golfSetupHoles.value=String(r.course.holes||18);
@@ -1701,13 +1728,27 @@ function populateGolfStartHoles(){
 async function openGolfSetup(){
   golfSetupCourseData=null;
   await loadGolfDbCourses();
+  if(golfDbCourses.length===1 && e.golfSavedCourseSelect){
+    e.golfSavedCourseSelect.value=golfDbCourses[0].id;
+    const r=await loadGolfDbCourse(golfDbCourses[0].id);
+    if(r){
+      e.golfSetupCourse.value=r.course.name;
+      e.golfSetupHoles.value=String(r.course.holes||18);
+      golfSetupCourseData=dbCourseToGolfData(r.course,r.holes);
+    }
+  }
   golfCourseCandidates=[];
   populateGolfStartHoles();
-  e.golfSetupCourse.value="";
-  e.golfSetupHoles.value="18";
+  if(!golfSetupCourseData)e.golfSetupCourse.value="";
+  if(!golfSetupCourseData)e.golfSetupHoles.value="18";
   e.golfSetupStartHole.value="1";
   renderGolfCourseCandidates([]);
-  setGolfCourseStatus("Du kan starte uten kartdata, eller la appen forsøke å hente hull, par og flagg fra OpenStreetMap.");
+  if(golfSetupCourseData){
+    const count=Object.keys(golfSetupCourseData.holes||{}).length;
+    setGolfCourseStatus(`Lagret banedata klar: ${count} hull.`,"ok");
+  }else{
+    setGolfCourseStatus("Du kan starte uten kartdata, eller la appen forsøke å hente hull, par og flagg fra OpenStreetMap.");
+  }
   openModal(e.golfSetupModal);
 }
 
@@ -1717,6 +1758,10 @@ async function createGolfSession(){
   const holes=Number(e.golfSetupHoles.value)||18;
   const startHole=Number(e.golfSetupStartHole.value)||1;
   const p=programs.find(x=>x.id==="golf");
+
+  if(!golfSetupCourseData){
+    golfSetupCourseData=await resolveGolfCourseDataFromDb(course);
+  }
 
   const {data,error}=await sb.from("cr_workout_sessions").insert({
     athlete_id:user.id,
@@ -1987,6 +2032,18 @@ async function startGolfRunner(){
   };
 
   if(!golfState.courseData&&activeSession.golf_course_data)golfState.courseData=activeSession.golf_course_data;
+  if(!golfState.courseData){
+    golfState.courseData=await resolveGolfCourseDataFromDb(golfState.course||activeSession.golf_course||"");
+    if(golfState.courseData){
+      activeSession.golf_course_data=golfState.courseData;
+      saveGolfState();
+      try{
+        await sb.from("cr_workout_sessions")
+          .update({golf_course_data:golfState.courseData})
+          .eq("id",activeSession.id);
+      }catch(err){console.warn("Kunne ikke lagre banedata på aktiv golfrunde:",err)}
+    }
+  }
   if(!Array.isArray(golfState.queue))golfState.queue=[];
   if(!Array.isArray(golfState.completed))golfState.completed=[];
   if(!Array.isArray(golfState.skipped))golfState.skipped=[];

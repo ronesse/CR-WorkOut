@@ -331,3 +331,10 @@ Merk: Tabellen som ble oppgitt har 15 arbeidsøkter + 15 hvileøkter, altså 22:
 - Knappen er nå lagt inn i Coach-visningen.
 - Nye Golf-admin bindings er gjort defensive slik at manglende UI-element aldri kan stoppe innlogging igjen.
 - Ingen ny SQL nødvendig.
+
+## v9.3.3 – Golf banedata fix
+- Lagrede banedata lastes nå automatisk fra `cr_golf_courses`/`cr_golf_holes` ved start.
+- Hvis utøveren bare skriver «Norefjell Golfklubb», forsøker appen å matche navnet mot banedatabasen.
+- På en allerede aktiv Golf-runde uten `courseData` hentes banedata automatisk og lagres tilbake på økten.
+- Hvis databasen bare inneholder én bane, velges den automatisk i Golf-oppsettet.
+- Ingen ny SQL nødvendig.
