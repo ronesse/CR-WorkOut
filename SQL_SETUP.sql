@@ -289,3 +289,22 @@ alter table public.cr_workout_sessions
   add column if not exists last_live_update timestamptz;
 
 NOTIFY pgrst, 'reload schema';
+
+
+-- v9.0: Golf
+alter table public.cr_workout_sessions
+  add column if not exists golf_course text,
+  add column if not exists golf_holes integer,
+  add column if not exists golf_start_hole integer,
+  add column if not exists golf_scorecard jsonb;
+
+insert into public.cr_programs (id,name,description,icon,active,sort_order)
+values ('golf','Golf','Golfrunde · GPS · distanse · score per hull','⛳',true,90)
+on conflict (id) do update
+set name=excluded.name,
+    description=excluded.description,
+    icon=excluded.icon,
+    active=true,
+    sort_order=excluded.sort_order;
+
+NOTIFY pgrst, 'reload schema';

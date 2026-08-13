@@ -279,3 +279,17 @@ Merk: Tabellen som ble oppgitt har 15 arbeidsøkter + 15 hvileøkter, altså 22:
 - Påløpt tid vises over baren.
 - Selve tidsbaren oppdateres lokalt hvert sekund; databasepolling er fortsatt bare hvert 5. sekund.
 - Ingen ny SQL nødvendig.
+
+## v9.0 – Golf
+- Nytt program `Golf`.
+- Før start velger utøveren bane, 9/18 hull og starthull.
+- Hullene bygges i riktig rekkefølge og wrap-er etter hull 18.
+- Timer og GPS-tracking starter når `Start runde` trykkes.
+- Aktivitetskortet viser aktuelt hull og neste hull.
+- For hvert hull registreres antall slag før `Fullført hull`.
+- `Skip` hopper over hullet; `Postpone` flytter hullet til slutten.
+- Total slag, progresjon, tid og gangdistanse vises under runden.
+- GPS-sporet lagres i `gps_track`; scorekort lagres i `golf_scorecard`.
+- Pågående Golf publiserer progresjon og live GPS til Coach Live.
+- Golf-ruter kan vises på kart både under runden og fra Kalender.
+- Kjør v9.0-delen i SQL_SETUP.sql før testing.

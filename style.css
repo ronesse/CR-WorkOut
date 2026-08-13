@@ -668,3 +668,33 @@ body:not(.coach-mode) #coachLiveSection{
 .rolling-time-progress .coach-progress-track>div{
   transition:width .8s linear;
 }
+
+/* v9.0 Golf */
+.golf-setup-modal-card{width:min(560px,calc(100vw - 24px))}
+.golf-setup-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.golf-setup-note{padding:11px;border-radius:12px;background:rgba(59,130,246,.09);border:1px solid rgba(96,165,250,.2);color:var(--muted);font-size:.82rem;margin:4px 0 14px}
+.golf-runner-card{background:var(--panel);border:1px solid var(--line);border-radius:24px;padding:18px;min-height:650px;display:flex;flex-direction:column}
+.golf-progress-wrap{margin:14px 0 10px}
+.golf-progress-label{display:flex;justify-content:space-between;gap:12px;margin-bottom:6px;font-size:.82rem}
+.golf-metrics{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.golf-metrics>div{padding:10px 12px;border-radius:13px;background:rgba(255,255,255,.045);border:1px solid var(--line)}
+.golf-metrics small{display:block;color:var(--muted);font-size:.72rem}
+.golf-metrics strong{display:block;margin-top:3px}
+.golf-hole-card{flex:1;min-height:270px;border:1px solid var(--line);border-radius:20px;padding:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:rgba(255,255,255,.025)}
+.golf-hole-card h2{font-size:clamp(2.8rem,11vw,5rem);margin:8px 0}
+.golf-hole-card p{color:var(--muted)}
+.golf-strokes-box{display:grid;grid-template-columns:58px minmax(110px,150px) 58px;align-items:end;gap:10px;margin-top:12px}
+.golf-strokes-box label{margin:0!important;text-align:center}
+.golf-strokes-box label span{display:block;margin-bottom:5px;color:var(--muted);font-size:.78rem;font-weight:800}
+.golf-strokes-box input{text-align:center;font-size:2rem;font-weight:950;padding:8px!important}
+.stroke-btn{height:54px;border-radius:15px;border:1px solid var(--line);background:rgba(255,255,255,.06);color:var(--text);font-size:2rem;font-weight:900}
+.golf-next-card{margin-top:10px}
+.golf-actions{display:grid;grid-template-columns:2fr 1fr 1fr;gap:8px;margin-top:10px}
+.golf-map-btn{margin-top:10px}
+@media(max-width:560px){
+  .golf-setup-grid{grid-template-columns:1fr}
+  .golf-runner-card{min-height:610px;padding:14px}
+  .golf-actions{grid-template-columns:1fr 1fr}
+  .golf-actions .complete-btn{grid-column:1/-1}
+  .golf-strokes-box{grid-template-columns:54px minmax(100px,140px) 54px}
+}

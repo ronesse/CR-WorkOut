@@ -7,7 +7,7 @@
   <meta name="description" content="CR-Workout – coach og utøver">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="style.css?v=8.12">
+  <link rel="stylesheet" href="style.css?v=9.0">
   <title>CR-Workout</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     crossorigin="">
@@ -310,6 +310,67 @@
 <button id="freeWorkoutDiscardBtn" class="link-btn danger-link">Avslutt / forkast økten</button>
 </div>
 </section>
+
+      <section id="golfScreen" class="screen hidden">
+        <div class="golf-runner-card">
+          <div class="runner-top">
+            <div>
+              <div class="eyebrow">GOLF</div>
+              <h2 id="golfCourseName">Golf</h2>
+              <p id="golfRoundMeta"></p>
+            </div>
+            <div class="elapsed-box">
+              <small>Total tid</small>
+              <strong id="golfElapsed">00:00</strong>
+            </div>
+          </div>
+
+          <div class="golf-progress-wrap">
+            <div class="golf-progress-label">
+              <span id="golfProgressText">Hull 1 av 18</span>
+              <strong id="golfTotalStrokes">0 slag</strong>
+            </div>
+            <div class="progress-track"><div id="golfProgressBar"></div></div>
+          </div>
+
+          <div class="golf-metrics">
+            <div><small>Distanse</small><strong id="golfDistance">0,00 km</strong></div>
+            <div><small>GPS</small><strong id="golfGpsStatus">Starter…</strong></div>
+          </div>
+
+          <div class="golf-hole-card">
+            <span class="task-label">NÅ</span>
+            <h2 id="golfCurrentHole">Hull 1</h2>
+            <p id="golfHoleStatus">Registrer antall slag når hullet er ferdig.</p>
+
+            <div class="golf-strokes-box">
+              <button id="golfMinusStrokeBtn" type="button" class="stroke-btn">−</button>
+              <label>
+                <span>Slag</span>
+                <input id="golfStrokesInput" type="number" min="1" max="30" inputmode="numeric" value="4">
+              </label>
+              <button id="golfPlusStrokeBtn" type="button" class="stroke-btn">+</button>
+            </div>
+          </div>
+
+          <div class="task-card next-task golf-next-card">
+            <span class="task-label">NESTE</span>
+            <h3 id="golfNextHole">Hull 2</h3>
+            <p id="golfNextMeta"></p>
+          </div>
+
+          <div class="golf-actions">
+            <button id="golfCompleteBtn" class="primary-btn complete-btn">✓ Fullført hull</button>
+            <button id="golfSkipBtn" class="secondary-btn">⏭ Skip</button>
+            <button id="golfPostponeBtn" class="secondary-btn postpone-btn">↻ Postpone</button>
+          </div>
+
+          <button id="golfMapBtn" class="secondary-btn full golf-map-btn">🗺 Vis GPS-spor</button>
+          <button id="golfFinishRoundBtn" class="secondary-btn full">Avslutt runden</button>
+          <button id="golfDiscardBtn" class="link-btn danger-link">Avslutt / forkast økten</button>
+        </div>
+      </section>
+
 <section id="calendarScreen" class="screen hidden">
         <div class="section-heading">
           <div><h2>Kalender</h2><p id="calendarSubtitle">Mine økter</p></div>
@@ -449,6 +510,42 @@
   </div>
 </div>
 
+
+<div id="golfSetupModal" class="modal hidden" aria-hidden="true">
+  <div class="modal-card golf-setup-modal-card">
+    <div class="modal-head">
+      <div>
+        <div class="eyebrow">GOLF</div>
+        <h2>Start ny golfrunde</h2>
+      </div>
+      <button id="golfSetupClose" class="icon-btn" aria-label="Lukk">✕</button>
+    </div>
+
+    <label>Bane
+      <input id="golfSetupCourse" type="text" placeholder="f.eks. Tyrifjord Golfklubb">
+    </label>
+
+    <div class="golf-setup-grid">
+      <label>Antall hull
+        <select id="golfSetupHoles">
+          <option value="9">9 hull</option>
+          <option value="18" selected>18 hull</option>
+        </select>
+      </label>
+
+      <label>Start på hull
+        <select id="golfSetupStartHole"></select>
+      </label>
+    </div>
+
+    <div class="golf-setup-note">
+      GPS-spor, distanse, tid og score per hull lagres i runden.
+    </div>
+
+    <button id="golfStartRoundBtn" class="primary-btn full">⛳ Start runde</button>
+  </div>
+</div>
+
 <div id="finishModal" class="modal hidden">
       <div class="modal-card">
         <div class="celebration">🎉</div>
@@ -470,8 +567,8 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="programs.js?v=8.12"></script>
-  <script src="app.js?v=8.12"></script>
+  <script src="programs.js?v=9.0"></script>
+  <script src="app.js?v=9.0"></script>
 <script>if("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js").catch(()=>{});</script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
   crossorigin=""></script>

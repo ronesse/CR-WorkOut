@@ -15,7 +15,7 @@ const $=id=>document.getElementById(id),e={};
 "registerModal","closeRegisterBtn","regName","regPhone","regEmail","regPassword","registerBtn","registerMessage","programModal","programAthleteName","closeProgramBtn","programChecklist","saveProgramsBtn",
 "finishModal","finishSummary","finishStars","finishComment","saveFinishBtn","cancelFinishBtn",
 "intervalCard","intervalProgramName","intervalElapsed","intervalRound","intervalRemainingTotal","intervalPhase","intervalMessage","intervalTime","intervalProgressBar","intervalNext","intervalSkipBtn","runnerAbortBtn",
-"sequenceProgramName","sequenceGroupRound","sequenceElapsed","sequenceProgressText","sequenceProgressBar","sequenceActivity","sequenceReps","sequenceLoad","sequenceDesc","sequenceNextActivity","sequenceNextMeta","sequenceCompleteBtn","sequenceSkipBtn","sequencePostponeBtn","sequenceAbortBtn","runningScreen","runningProgramName","gpsStatus","runningElapsed","runningDistance","runningAvgPace","runningCurrentPace","runningGpsAccuracy","runningPointCount","runningPauseBtn","runningFinishBtn","runningDiscardBtn","twentyScreen","twentyCard","twentyProgramName","twentyRemaining","twentyBigTime","twentyPhaseText","twentyProgressBar","twentyPauseBtn","twentyFinishBtn","twentyDiscardBtn","freeWorkoutScreen","freeWorkoutProgramName","freeWorkoutElapsed","freeWorkoutBigTime","freeWorkoutFinishBtn","freeWorkoutDiscardBtn","finishDistanceWrap","finishDistance","programInfoModal","programInfoTitle","programInfoDescription","programInfoSummary","programInfoList","programInfoClose","routeMapModal","routeMapTitle","routeMapMeta","routeMap","routeMapClose","coachLiveSection","coachLiveSummary","coachLiveList","coachLiveRefreshBtn","liveRouteMapModal","liveRouteMapTitle","liveRouteMapMeta","liveRouteMap","liveRouteMapClose","coachLiveUpdated"].forEach(id=>e[id]=$(id));
+"sequenceProgramName","sequenceGroupRound","sequenceElapsed","sequenceProgressText","sequenceProgressBar","sequenceActivity","sequenceReps","sequenceLoad","sequenceDesc","sequenceNextActivity","sequenceNextMeta","sequenceCompleteBtn","sequenceSkipBtn","sequencePostponeBtn","sequenceAbortBtn","runningScreen","runningProgramName","gpsStatus","runningElapsed","runningDistance","runningAvgPace","runningCurrentPace","runningGpsAccuracy","runningPointCount","runningPauseBtn","runningFinishBtn","runningDiscardBtn","twentyScreen","twentyCard","twentyProgramName","twentyRemaining","twentyBigTime","twentyPhaseText","twentyProgressBar","twentyPauseBtn","twentyFinishBtn","twentyDiscardBtn","freeWorkoutScreen","freeWorkoutProgramName","freeWorkoutElapsed","freeWorkoutBigTime","freeWorkoutFinishBtn","freeWorkoutDiscardBtn","finishDistanceWrap","finishDistance","programInfoModal","programInfoTitle","programInfoDescription","programInfoSummary","programInfoList","programInfoClose","routeMapModal","routeMapTitle","routeMapMeta","routeMap","routeMapClose","coachLiveSection","coachLiveSummary","coachLiveList","coachLiveRefreshBtn","liveRouteMapModal","liveRouteMapTitle","liveRouteMapMeta","liveRouteMap","liveRouteMapClose","coachLiveUpdated","golfScreen","golfCourseName","golfRoundMeta","golfElapsed","golfProgressText","golfTotalStrokes","golfProgressBar","golfDistance","golfGpsStatus","golfCurrentHole","golfHoleStatus","golfStrokesInput","golfMinusStrokeBtn","golfPlusStrokeBtn","golfNextHole","golfNextMeta","golfCompleteBtn","golfSkipBtn","golfPostponeBtn","golfMapBtn","golfFinishRoundBtn","golfDiscardBtn","golfSetupModal","golfSetupClose","golfSetupCourse","golfSetupHoles","golfSetupStartHole","golfStartRoundBtn"].forEach(id=>e[id]=$(id));
 
 let session=null,user=null,profile=null,athletes=[],programs=[],programAthleteId=null,activeSession=null,homeTimer=null,runnerTimer=null,finishRating=4,currentMonth=new Date(),realtimeChannel=null,runnerMode=null,intervalState=null,sequenceState=null,lastCueKey="";
 let wakeLock=null;
@@ -63,7 +63,7 @@ function dateKey(d){const p=n=>String(n).padStart(2,"0");return `${d.getFullYear
 function elapsed(from,to=new Date()){return Math.max(0,Math.floor((new Date(to)-new Date(from))/1000))}
 function fmtElapsed(sec){const h=Math.floor(sec/3600),m=Math.floor((sec%3600)/60),s=sec%60;return h?`${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`:`${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`}
 function showOnly(name){
-  ["landing","athlete","coach","athletes","programs","runner","running","twenty","freeWorkout","calendar","stats"]
+  ["landing","athlete","coach","athletes","programs","runner","running","twenty","freeWorkout","golf","calendar","stats"]
     .forEach(n=>e[n+"Screen"]?.classList.toggle("hidden",n!==name));
 
   document.querySelectorAll(".nav-btn").forEach(b=>
@@ -230,6 +230,11 @@ function programInfoSummaryHtml(program, activities, settings){
       <span>⏱ Fri timer</span><span>⭐ Rating</span><span>📝 Kommentar</span><span>📏 Valgfri distanse</span>
     </div>`;
   }
+  if(id==="golf"){
+    return `<div class="program-info-badges">
+      <span>⛳ Hull-for-hull</span><span>🏌️ Slag</span><span>⏱ Tid</span><span>📏 GPS-distanse</span><span>🗺 GPS-spor</span>
+    </div>`;
+  }
   if(id==="twenty_minutes"){
     return `<div class="program-info-badges">
       <span>20:00 → 00:00</span><span>🟢 20–12</span><span>🟩 12–7</span><span>🟨 7–2</span><span>🟦 2–0</span>
@@ -324,6 +329,9 @@ async function openProgramInfo(programId){
   }else if(programId==="free_workout"){
     e.programInfoList.innerHTML=`
       <div class="program-info-simple">Starter en fri timer. Ved avslutning kan utøveren rate økten, beskrive hva som er gjort og angi valgfri distanse.</div>`;
+  }else if(programId==="golf"){
+    e.programInfoList.innerHTML=`
+      <div class="program-info-simple">Velg golfbane, antall hull og starthull. Runden lagrer tid, GPS-spor, gangdistanse og score per hull. Hull kan fullføres, hoppes over eller utsettes.</div>`;
   }else if(settings?.program_type==="interval" || INTERVAL_PROGRAMS[programId]){
     e.programInfoList.innerHTML=`
       <div class="program-info-simple">Intervallprogram med automatisk veksling mellom arbeid og hvile, varsler og nedtelling.</div>`;
@@ -343,7 +351,8 @@ function isRunningProgram(programId){
 async function startSession(programId){
  await unlockAudio();
  if(activeSession){renderActiveSession();alert("Du har allerede en aktiv økt. Velg «Fortsett økten» eller forkast den først.");return}
- if(!INTERVAL_PROGRAMS[programId]&&!SEQUENCE_PROGRAMS[programId]&&programId!=="kettlebell_mix"&&!isRunningProgram(programId)&&programId!=="twenty_minutes"&&programId!=="free_workout"){alert("Dette programmet er ikke aktivert i treningsmotoren ennå.");return}
+ if(programId==="golf"){openGolfSetup();return}
+ if(!INTERVAL_PROGRAMS[programId]&&!SEQUENCE_PROGRAMS[programId]&&programId!=="kettlebell_mix"&&!isRunningProgram(programId)&&programId!=="twenty_minutes"&&programId!=="free_workout"&&programId!=="golf"){alert("Dette programmet er ikke aktivert i treningsmotoren ennå.");return}
  const p=programs.find(x=>x.id===programId);const {data,error}=await sb.from("cr_workout_sessions").insert({athlete_id:user.id,program_id:programId,program_name:p?.name||programId,status:"started",started_at:new Date().toISOString()}).select().single();if(error){alert(error.message);return}activeSession=data;clearRunnerState();requestWakeLock().catch(()=>{});await launchRunner();
 }
 function renderActiveSession(){
@@ -365,7 +374,7 @@ function renderActiveSession(){
 }
 async function discardActive(){
  if(!activeSession||!confirm(`Forkaste den aktive økten «${activeSession.program_name}»?`))return;
- const id=activeSession.id;const {error}=await sb.from("cr_workout_sessions").update({status:"cancelled",completed_at:new Date().toISOString(),duration_seconds:elapsed(activeSession.started_at)}).eq("id",id);if(error){alert(error.message);return}if(activeSession?.program_id==="running"){clearRunningState();stopGeolocation();runningState=null}if(activeSession?.program_id==="twenty_minutes"){clearTwentyState();twentyState=null}stopLivePublishing();clearRunnerState();activeSession=null;stopLivePublishing();await releaseWakeLock();stopRunnerTick();await loadAthleteData();showOnly("athlete")
+ const id=activeSession.id;const {error}=await sb.from("cr_workout_sessions").update({status:"cancelled",completed_at:new Date().toISOString(),duration_seconds:elapsed(activeSession.started_at)}).eq("id",id);if(error){alert(error.message);return}if(activeSession?.program_id==="running"){clearRunningState();stopGeolocation();runningState=null}if(activeSession?.program_id==="twenty_minutes"){clearTwentyState();twentyState=null}if(activeSession?.program_id==="golf"){stopGolfGeolocation();clearGolfState();golfState=null}stopLivePublishing();clearRunnerState();activeSession=null;stopLivePublishing();await releaseWakeLock();stopRunnerTick();await loadAthleteData();showOnly("athlete")
 }
 
 async function launchRunner(){
@@ -373,7 +382,8 @@ async function launchRunner(){
  requestWakeLock().catch(()=>{});
  const id=activeSession.program_id;
 
- if(id==="free_workout")runnerMode="freeWorkout";
+ if(id==="golf")runnerMode="golf";
+ else if(id==="free_workout")runnerMode="freeWorkout";
  else if(id==="twenty_minutes")runnerMode="twenty";
  else if(isRunningProgram(id))runnerMode="running";
  else if(id==="kettlebell_mix")runnerMode="intervalSequence";
@@ -388,6 +398,7 @@ async function launchRunner(){
 
  startLivePublishing();
 
+ if(runnerMode==="golf"){showOnly("golf");await startGolfRunner();return}
  if(runnerMode==="freeWorkout"){showOnly("freeWorkout");await startFreeWorkoutRunner();return}
  if(runnerMode==="twenty"){showOnly("twenty");await startTwentyRunner();return}
  if(runnerMode==="running"){showOnly("running");await startRunningRunner();return}
@@ -578,8 +589,8 @@ function seqPostpone(){if(!sequenceState?.queue.length)return;const item=sequenc
 function renderStars(){e.finishStars.querySelectorAll("button").forEach(b=>b.textContent=Number(b.dataset.rating)<=finishRating?"★":"☆")}
 function openFinish(){if(!activeSession||!e.finishModal.classList.contains("hidden"))return;finishRating=4;e.finishComment.value="";e.finishSummary.textContent=`${activeSession.program_name} · ${fmtElapsed(elapsed(activeSession.started_at))}`;renderStars();openModal(e.finishModal)}
 async function saveFinish(){
-  const ended=new Date(),isRunning=activeSession?.program_id==="running",isTwenty=activeSession?.program_id==="twenty_minutes",isFree=activeSession?.program_id==="free_workout";
-  const duration=isRunning?(activeSession._runningDuration||runningElapsedSeconds()):isTwenty?(activeSession._twentyDuration??twentyElapsedSeconds()):isFree?(activeSession._freeDuration??elapsed(activeSession.started_at)):elapsed(activeSession.started_at);
+  const ended=new Date(),isRunning=activeSession?.program_id==="running",isTwenty=activeSession?.program_id==="twenty_minutes",isFree=activeSession?.program_id==="free_workout",isGolf=activeSession?.program_id==="golf";
+  const duration=isRunning?(activeSession._runningDuration||runningElapsedSeconds()):isTwenty?(activeSession._twentyDuration??twentyElapsedSeconds()):isFree?(activeSession._freeDuration??elapsed(activeSession.started_at)):isGolf?(activeSession._golfDuration??elapsed(activeSession.started_at)):elapsed(activeSession.started_at);
   const distance=isRunning?(activeSession._runningDistance??runningState?.distanceMeters??0):null;
   const avgPace=isRunning?(activeSession._runningAvgPace??(distance>=50?duration/(distance/1000):null)):null;
   const updates={status:"completed",completed_at:ended.toISOString(),duration_seconds:duration,rating:finishRating,comment:e.finishComment.value.trim()};
@@ -587,10 +598,21 @@ async function saveFinish(){
     updates.distance_meters=distance;
     updates.avg_pace_seconds_per_km=avgPace;
     updates.gps_track=activeSession?._runningTrack??(Array.isArray(runningState?.track)?runningState.track:[]);
+  }if(isGolf){
+    updates.distance_meters=(activeSession?._golfDistance??Number(golfState?.distanceMeters))||0;
+    updates.gps_track=activeSession?._golfTrack??(Array.isArray(golfState?.track)?golfState.track:[]);
+    updates.golf_scorecard=activeSession?._golfScorecard??{
+      course:golfState?.course||activeSession?.golf_course||"Golf",
+      holes:golfState?.holes||activeSession?.golf_holes||18,
+      start_hole:golfState?.startHole||activeSession?.golf_start_hole||1,
+      completed:golfState?.completed||[],
+      skipped:golfState?.skipped||[],
+      total_strokes:golfTotalStrokes()
+    };
   }if(isFree){const km=Number(String(e.finishDistance?.value||"").replace(",","."));if(km>0)updates.distance_meters=km*1000}
   const {error}=await sb.from("cr_workout_sessions").update(updates).eq("id",activeSession.id);
   if(error){alert(error.message);return}
-  if(isRunning){clearRunningState();stopGeolocation();runningState=null}if(isTwenty){clearTwentyState();twentyState=null}
+  if(isRunning){clearRunningState();stopGeolocation();runningState=null}if(isTwenty){clearTwentyState();twentyState=null}if(isGolf){stopGolfGeolocation();clearGolfState();golfState=null}
   stopLivePublishing();clearRunnerState();activeSession=null;stopLivePublishing();await releaseWakeLock();stopRunnerTick();closeModal(e.finishModal);await loadAthleteData();showOnly("athlete")
 }
 
@@ -1025,6 +1047,16 @@ function currentWorkoutLivePayload(){
     return payload;
   }
 
+  if(activeSession.program_id==="golf"){
+    const done=golfProcessedCount();
+    const total=Number(golfState?.holes)||Number(activeSession.golf_holes)||18;
+    payload.progress_percent=total?Math.min(100,(done/total)*100):0;
+    payload.current_activity=golfState?.queue?.[0]?`Hull ${golfState.queue[0]}`:"Golf";
+    payload.live_distance_meters=Number(golfState?.distanceMeters)||0;
+    payload.live_gps_track=Array.isArray(golfState?.track)?golfState.track.slice(-1000):[];
+    return payload;
+  }
+
   if(runnerMode==="sequence" && sequenceState){
     const done=(sequenceState.completed?.length||0)+(sequenceState.skipped?.length||0);
     const total=done+(sequenceState.queue?.length||0);
@@ -1156,7 +1188,8 @@ function renderCoachLive(){
   e.coachLiveList.innerHTML=list.length?list.map(s=>{
     const progress=liveSessionProgress(s);
     const isRun=s.program_id==="running" || String(s.program_name||"").toLowerCase()==="løping";
-    const hasMap=isRun && Array.isArray(s.live_gps_track) && s.live_gps_track.length>1;
+    const isGolf=s.program_id==="golf" || String(s.program_name||"").toLowerCase()==="golf";
+    const hasMap=(isRun||isGolf) && Array.isArray(s.live_gps_track) && s.live_gps_track.length>1;
     return `<article class="coach-live-card">
       <div class="coach-live-top">
         <div>
@@ -1345,6 +1378,281 @@ function openLiveRouteMap(session){
       e.liveRouteMap.innerHTML='<div class="route-map-empty">Kunne ikke vise kartet.</div>';
     }
   },80);
+}
+
+
+let golfWatchId=null,golfState=null;
+
+function golfStorageKey(){return activeSession?`cr_golf_${activeSession.id}`:""}
+function saveGolfState(){if(activeSession&&golfState)localStorage.setItem(golfStorageKey(),JSON.stringify(golfState))}
+function loadGolfState(){try{return JSON.parse(localStorage.getItem(golfStorageKey())||"null")}catch{return null}}
+function clearGolfState(){if(activeSession)localStorage.removeItem(golfStorageKey())}
+
+function buildGolfHoleQueue(count,startHole){
+  const holes=[];
+  const n=Math.max(1,Math.min(18,Number(count)||18));
+  const start=Math.max(1,Math.min(18,Number(startHole)||1));
+  for(let i=0;i<n;i++)holes.push(((start-1+i)%18)+1);
+  return holes;
+}
+
+function populateGolfStartHoles(){
+  const selected=Number(e.golfSetupStartHole?.value)||1;
+  if(!e.golfSetupStartHole)return;
+  e.golfSetupStartHole.innerHTML=Array.from({length:18},(_,i)=>`<option value="${i+1}">Hull ${i+1}</option>`).join("");
+  e.golfSetupStartHole.value=String(Math.min(18,Math.max(1,selected)));
+}
+
+function openGolfSetup(){
+  populateGolfStartHoles();
+  e.golfSetupCourse.value="";
+  e.golfSetupHoles.value="18";
+  e.golfSetupStartHole.value="1";
+  openModal(e.golfSetupModal);
+}
+
+async function createGolfSession(){
+  if(activeSession)return;
+  const course=e.golfSetupCourse.value.trim()||"Golf";
+  const holes=Number(e.golfSetupHoles.value)||18;
+  const startHole=Number(e.golfSetupStartHole.value)||1;
+  const p=programs.find(x=>x.id==="golf");
+
+  const {data,error}=await sb.from("cr_workout_sessions").insert({
+    athlete_id:user.id,
+    program_id:"golf",
+    program_name:p?.name||"Golf",
+    status:"started",
+    started_at:new Date().toISOString(),
+    golf_course:course,
+    golf_holes:holes,
+    golf_start_hole:startHole
+  }).select().single();
+
+  if(error){alert(error.message);return}
+
+  activeSession=data;
+  golfState={
+    course,
+    holes,
+    startHole,
+    queue:buildGolfHoleQueue(holes,startHole),
+    completed:[],
+    skipped:[],
+    distanceMeters:0,
+    track:[],
+    lastPoint:null,
+    pointCount:0
+  };
+  saveGolfState();
+  closeModal(e.golfSetupModal);
+  requestWakeLock().catch(()=>{});
+  await launchRunner();
+}
+
+function stopGolfGeolocation(){
+  if(golfWatchId!==null){
+    navigator.geolocation?.clearWatch(golfWatchId);
+    golfWatchId=null;
+  }
+}
+
+function updateGolfGpsStatus(accuracy){
+  if(!e.golfGpsStatus)return;
+  if(!Number.isFinite(Number(accuracy))){e.golfGpsStatus.textContent="Søker…";return}
+  const a=Math.round(Number(accuracy));
+  e.golfGpsStatus.textContent=`±${a} m`;
+}
+
+function handleGolfPosition(pos){
+  if(!golfState)return;
+  const c=pos.coords;
+  const p={lat:c.latitude,lon:c.longitude,accuracy:c.accuracy,ts:pos.timestamp};
+  const prev=golfState.lastPoint;
+  updateGolfGpsStatus(c.accuracy);
+
+  let accept=(p.accuracy||999)<=50;
+  if(prev){
+    const dt=(p.ts-prev.ts)/1000;
+    const dist=haversineMeters(prev,p);
+    const speed=dt>0?(dist/dt)*3.6:0;
+    const good=Math.max(p.accuracy||999,prev.accuracy||999)<=50;
+    if(good&&dist>=2&&speed<=18)golfState.distanceMeters+=dist;
+    if(speed>25)accept=false;
+  }
+
+  if(accept){
+    golfState.track.push({lat:p.lat,lon:p.lon,accuracy:p.accuracy,ts:p.ts});
+  }
+
+  golfState.lastPoint=p;
+  golfState.pointCount=(golfState.pointCount||0)+1;
+  saveGolfState();
+  renderGolf();
+}
+
+function startGolfGeolocation(){
+  if(!navigator.geolocation){
+    e.golfGpsStatus.textContent="Ikke støttet";
+    return;
+  }
+  stopGolfGeolocation();
+  e.golfGpsStatus.textContent="Søker…";
+  golfWatchId=navigator.geolocation.watchPosition(
+    handleGolfPosition,
+    err=>{
+      console.warn("Golf GPS:",err);
+      e.golfGpsStatus.textContent=err.code===1?"Ingen tilgang":"GPS-feil";
+    },
+    {enableHighAccuracy:true,maximumAge:2000,timeout:15000}
+  );
+}
+
+function golfTotalStrokes(){
+  return (golfState?.completed||[]).reduce((sum,x)=>sum+(Number(x.strokes)||0),0);
+}
+
+function golfProcessedCount(){
+  return (golfState?.completed?.length||0)+(golfState?.skipped?.length||0);
+}
+
+function renderGolf(){
+  if(!activeSession||!golfState)return;
+
+  const cur=golfState.queue?.[0];
+  const next=golfState.queue?.[1];
+  const processed=golfProcessedCount();
+  const total=Number(golfState.holes)||18;
+  const pct=Math.min(100,(processed/Math.max(1,total))*100);
+  const km=(Number(golfState.distanceMeters)||0)/1000;
+
+  e.golfCourseName.textContent=golfState.course||"Golf";
+  e.golfRoundMeta.textContent=`${total} hull · start hull ${golfState.startHole}`;
+  e.golfElapsed.textContent=fmtElapsed(elapsed(activeSession.started_at));
+  e.golfProgressText.textContent=cur?`Hull ${processed+1} av ${total}`:`Runden er ferdig`;
+  e.golfTotalStrokes.textContent=`${golfTotalStrokes()} slag`;
+  e.golfProgressBar.style.width=`${pct}%`;
+  e.golfDistance.textContent=`${km.toLocaleString("nb-NO",{minimumFractionDigits:2,maximumFractionDigits:2})} km`;
+
+  e.golfCurrentHole.textContent=cur?`Hull ${cur}`:"Ferdig";
+  e.golfHoleStatus.textContent=cur?"Registrer antall slag når hullet er ferdig.":"Alle hull er behandlet.";
+  e.golfStrokesInput.disabled=!cur;
+  e.golfCompleteBtn.disabled=!cur;
+  e.golfSkipBtn.disabled=!cur;
+  e.golfPostponeBtn.disabled=!cur;
+
+  e.golfNextHole.textContent=next?`Hull ${next}`:"Ingen flere hull";
+  e.golfNextMeta.textContent=next?"Neste aktivitet":"";
+
+  if(!cur){
+    stopGolfGeolocation();
+    openGolfFinish();
+  }
+}
+
+async function startGolfRunner(){
+  requestWakeLock().catch(()=>{});
+  golfState=loadGolfState()||{
+    course:activeSession.golf_course||"Golf",
+    holes:activeSession.golf_holes||18,
+    startHole:activeSession.golf_start_hole||1,
+    queue:buildGolfHoleQueue(activeSession.golf_holes||18,activeSession.golf_start_hole||1),
+    completed:[],
+    skipped:[],
+    distanceMeters:0,
+    track:[],
+    lastPoint:null,
+    pointCount:0
+  };
+
+  if(!Array.isArray(golfState.queue))golfState.queue=[];
+  if(!Array.isArray(golfState.completed))golfState.completed=[];
+  if(!Array.isArray(golfState.skipped))golfState.skipped=[];
+  if(!Array.isArray(golfState.track))golfState.track=[];
+
+  renderGolf();
+  stopRunnerTick();
+  runnerTimer=setInterval(renderGolf,500);
+  startGolfGeolocation();
+}
+
+function changeGolfStrokes(delta){
+  const v=Math.max(1,Math.min(30,(Number(e.golfStrokesInput.value)||1)+delta));
+  e.golfStrokesInput.value=String(v);
+}
+
+function golfCompleteHole(){
+  if(!golfState?.queue?.length)return;
+  const strokes=Math.max(1,Math.min(30,Number(e.golfStrokesInput.value)||0));
+  if(!strokes){alert("Angi antall slag.");return}
+  const hole=golfState.queue.shift();
+  const previousDistance=golfState.completed.length
+    ? Number(golfState.completed[golfState.completed.length-1].cumulative_distance_meters)||0
+    : 0;
+
+  golfState.completed.push({
+    hole,
+    strokes,
+    completed_at:new Date().toISOString(),
+    cumulative_distance_meters:Number(golfState.distanceMeters)||0,
+    hole_walk_distance_meters:Math.max(0,(Number(golfState.distanceMeters)||0)-previousDistance)
+  });
+
+  e.golfStrokesInput.value="4";
+  saveGolfState();
+  publishLiveWorkout(true);
+  renderGolf();
+}
+
+function golfSkipHole(){
+  if(!golfState?.queue?.length)return;
+  const hole=golfState.queue.shift();
+  golfState.skipped.push({hole,skipped_at:new Date().toISOString()});
+  saveGolfState();
+  publishLiveWorkout(true);
+  renderGolf();
+}
+
+function golfPostponeHole(){
+  if(!golfState?.queue?.length)return;
+  if(golfState.queue.length===1){alert("Dette er siste gjenstående hull.");return}
+  golfState.queue.push(golfState.queue.shift());
+  saveGolfState();
+  publishLiveWorkout(true);
+  renderGolf();
+}
+
+function openGolfCurrentMap(){
+  const track=Array.isArray(golfState?.track)?golfState.track:[];
+  openRouteMap({
+    program_name:`${golfState?.course||"Golf"} · pågående`,
+    gps_track:track,
+    distance_meters:Number(golfState?.distanceMeters)||0,
+    duration_seconds:elapsed(activeSession.started_at)
+  });
+}
+
+function openGolfFinish(){
+  if(!activeSession||!golfState||!e.finishModal.classList.contains("hidden"))return;
+  stopGolfGeolocation();
+  activeSession._golfDuration=elapsed(activeSession.started_at);
+  activeSession._golfDistance=Number(golfState.distanceMeters)||0;
+  activeSession._golfTrack=Array.isArray(golfState.track)?golfState.track:[];
+  activeSession._golfScorecard={
+    course:golfState.course,
+    holes:golfState.holes,
+    start_hole:golfState.startHole,
+    completed:golfState.completed,
+    skipped:golfState.skipped,
+    total_strokes:golfTotalStrokes()
+  };
+
+  e.finishSummary.textContent=`${golfState.course} · ${golfState.completed.length}/${golfState.holes} hull · ${golfTotalStrokes()} slag · ${fmtElapsed(activeSession._golfDuration)}`;
+  finishRating=4;
+  e.finishComment.value="";
+  if(e.finishDistanceWrap)e.finishDistanceWrap.classList.add("hidden");
+  renderStars();
+  openModal(e.finishModal);
 }
 
 async function loadCoachData(){
@@ -1543,7 +1851,7 @@ function renderCalendarDetails(key,sessions){
         ${km>0?`<span><b>${km.toLocaleString("nb-NO",{minimumFractionDigits:2,maximumFractionDigits:2})}</b><em>km</em></span>`:""}
         ${minutes>0?`<span><b>${minutes}</b><em>min</em></span>`:""}
       </div>`:""}
-      ${isRunning&&Array.isArray(x.gps_track)&&x.gps_track.length>1
+      ${(isRunning||isGolf)&&Array.isArray(x.gps_track)&&x.gps_track.length>1
         ?`<button type="button" class="route-map-btn" data-session-id="${x.id}">🗺 Vis rute</button>`
         :""}
       ${x.comment?`<p>${esc(x.comment)}</p>`:""}
@@ -1596,7 +1904,18 @@ e.continueSessionBtn.onclick=async()=>{
   unlockAudio().catch(()=>{});
   requestWakeLock().catch(()=>{});
   await launchRunner();
-};e.runningPauseBtn.onclick=toggleRunningPause;e.runningFinishBtn.onclick=finishRunning;e.runningDiscardBtn.onclick=discardActive;e.twentyPauseBtn.onclick=toggleTwentyPause;e.twentyFinishBtn.onclick=finishTwenty;e.twentyDiscardBtn.onclick=discardActive;e.freeWorkoutFinishBtn.onclick=finishFreeWorkout;e.freeWorkoutDiscardBtn.onclick=discardActive;e.discardSessionBtn.onclick=discardActive;e.intervalSkipBtn.onclick=()=>runnerMode==="intervalSequence"?skipIntervalSequence():skipInterval();e.runnerAbortBtn.onclick=discardActive;e.sequenceCompleteBtn.onclick=seqComplete;e.sequenceSkipBtn.onclick=seqSkip;e.sequencePostponeBtn.onclick=seqPostpone;e.sequenceAbortBtn.onclick=discardActive;
+};e.runningPauseBtn.onclick=toggleRunningPause;e.runningFinishBtn.onclick=finishRunning;e.runningDiscardBtn.onclick=discardActive;e.twentyPauseBtn.onclick=toggleTwentyPause;e.twentyFinishBtn.onclick=finishTwenty;e.twentyDiscardBtn.onclick=discardActive;e.freeWorkoutFinishBtn.onclick=finishFreeWorkout;e.freeWorkoutDiscardBtn.onclick=discardActive;
+e.golfSetupClose.onclick=()=>closeModal(e.golfSetupModal);
+e.golfStartRoundBtn.onclick=createGolfSession;
+e.golfMinusStrokeBtn.onclick=()=>changeGolfStrokes(-1);
+e.golfPlusStrokeBtn.onclick=()=>changeGolfStrokes(1);
+e.golfCompleteBtn.onclick=golfCompleteHole;
+e.golfSkipBtn.onclick=golfSkipHole;
+e.golfPostponeBtn.onclick=golfPostponeHole;
+e.golfMapBtn.onclick=openGolfCurrentMap;
+e.golfFinishRoundBtn.onclick=openGolfFinish;
+e.golfDiscardBtn.onclick=discardActive;
+e.discardSessionBtn.onclick=discardActive;e.intervalSkipBtn.onclick=()=>runnerMode==="intervalSequence"?skipIntervalSequence():skipInterval();e.runnerAbortBtn.onclick=discardActive;e.sequenceCompleteBtn.onclick=seqComplete;e.sequenceSkipBtn.onclick=seqSkip;e.sequencePostponeBtn.onclick=seqPostpone;e.sequenceAbortBtn.onclick=discardActive;
 e.cancelFinishBtn.onclick=()=>closeModal(e.finishModal);e.saveFinishBtn.onclick=saveFinish;e.finishStars.querySelectorAll("button").forEach(b=>b.onclick=()=>{finishRating=Number(b.dataset.rating);renderStars()});e.prevMonthBtn.onclick=()=>{currentMonth.setMonth(currentMonth.getMonth()-1);renderCalendar()};e.nextMonthBtn.onclick=()=>{currentMonth.setMonth(currentMonth.getMonth()+1);renderCalendar()};e.calendarAthleteSelect.onchange=renderCalendar;e.statsAthleteSelect.onchange=renderStats;
 
 sb.auth.onAuthStateChange(async(_event,newSession)=>{session=newSession;user=newSession?.user||null;await loadProfile();closeModal(e.accountModal);await route()});
