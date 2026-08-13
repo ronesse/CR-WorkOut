@@ -277,3 +277,15 @@ alter table public.cr_workout_sessions
   add column if not exists gps_track jsonb;
 
 NOTIFY pgrst, 'reload schema';
+
+
+-- v8.9: live-status for coach
+alter table public.cr_workout_sessions
+  add column if not exists progress_percent numeric,
+  add column if not exists current_activity text,
+  add column if not exists current_pace_seconds_per_km numeric,
+  add column if not exists live_distance_meters numeric,
+  add column if not exists live_gps_track jsonb,
+  add column if not exists last_live_update timestamptz;
+
+NOTIFY pgrst, 'reload schema';

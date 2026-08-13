@@ -548,3 +548,101 @@
     min-height:320px;
   }
 }
+
+/* v8.9: Coach live dashboard */
+.coach-live-section{
+  margin-top:16px;
+  padding:16px;
+  border:1px solid var(--line);
+  border-radius:20px;
+  background:var(--panel);
+}
+.section-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:12px;
+}
+.section-head h2{margin:2px 0 4px}
+.section-head p{margin:0;color:var(--muted)}
+.compact-btn{padding:9px 12px!important;min-height:auto!important}
+.coach-live-summary{margin-bottom:10px}
+.coach-live-list{display:grid;gap:10px}
+.coach-live-card{
+  padding:14px;
+  border-radius:16px;
+  border:1px solid var(--line);
+  background:rgba(255,255,255,.035);
+}
+.coach-live-top{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+}
+.coach-live-athlete{
+  font-size:.78rem;
+  font-weight:900;
+  color:#93c5fd;
+  text-transform:uppercase;
+  letter-spacing:.05em;
+}
+.coach-live-card h3{margin:3px 0 4px}
+.coach-live-card p{margin:0;color:var(--muted);font-size:.82rem}
+.live-pill{
+  flex:0 0 auto;
+  height:max-content;
+  padding:5px 8px;
+  border-radius:999px;
+  background:rgba(34,197,94,.14);
+  border:1px solid rgba(34,197,94,.35);
+  color:#bbf7d0;
+  font-size:.7rem;
+  font-weight:950;
+}
+.coach-progress-wrap{margin-top:12px}
+.coach-progress-label{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:5px;
+  font-size:.78rem;
+}
+.coach-progress-track{
+  height:10px;
+  border-radius:999px;
+  overflow:hidden;
+  background:rgba(148,163,184,.18);
+}
+.coach-progress-track>div{
+  height:100%;
+  border-radius:999px;
+  background:#22c55e;
+}
+.coach-live-run-metrics{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-top:12px;
+}
+.coach-live-run-metrics span{
+  padding:10px;
+  border-radius:12px;
+  background:rgba(255,255,255,.045);
+  border:1px solid var(--line);
+}
+.coach-live-run-metrics small{
+  display:block;
+  color:var(--muted);
+  font-size:.72rem;
+}
+.coach-live-run-metrics strong{
+  display:block;
+  margin-top:3px;
+  font-size:1.05rem;
+}
+.coach-live-actions{margin-top:10px}
+.route-dot.current{background:#3b82f6}
+@media(min-width:760px){
+  .coach-live-list{grid-template-columns:repeat(2,minmax(0,1fr))}
+}

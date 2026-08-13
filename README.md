@@ -243,3 +243,12 @@ Merk: Tabellen som ble oppgitt har 15 arbeidsøkter + 15 hvileøkter, altså 22:
 - Fungerer både for utøverens egen kalender og coachens kalender når coach velger en utøver.
 - Hvis kartbiblioteket ikke kan lastes, vises en enkel rute-tegning som fallback.
 - Ingen ny SQL nødvendig.
+
+## v8.9 – Coach Live
+- Coach-dashboardet viser alle aktive økter for godkjente utøvere.
+- Oppgavebaserte/intervallbaserte økter viser progresjonsbar og aktuell aktivitet.
+- Løping viser live distanse og current pace.
+- Løping får `🗺 Kartplassering`, som viser ruten så langt og siste GPS-posisjon.
+- Utøverappen publiserer live-status til `cr_workout_sessions` omtrent hvert 5. sekund.
+- Coach-listen oppdateres automatisk omtrent hvert 5. sekund.
+- Kjør v8.9-delen i SQL_SETUP.sql før testing.

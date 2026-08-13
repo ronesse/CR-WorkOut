@@ -15,7 +15,7 @@ const $=id=>document.getElementById(id),e={};
 "registerModal","closeRegisterBtn","regName","regPhone","regEmail","regPassword","registerBtn","registerMessage","programModal","programAthleteName","closeProgramBtn","programChecklist","saveProgramsBtn",
 "finishModal","finishSummary","finishStars","finishComment","saveFinishBtn","cancelFinishBtn",
 "intervalCard","intervalProgramName","intervalElapsed","intervalRound","intervalRemainingTotal","intervalPhase","intervalMessage","intervalTime","intervalProgressBar","intervalNext","intervalSkipBtn","runnerAbortBtn",
-"sequenceProgramName","sequenceGroupRound","sequenceElapsed","sequenceProgressText","sequenceProgressBar","sequenceActivity","sequenceReps","sequenceLoad","sequenceDesc","sequenceNextActivity","sequenceNextMeta","sequenceCompleteBtn","sequenceSkipBtn","sequencePostponeBtn","sequenceAbortBtn","runningScreen","runningProgramName","gpsStatus","runningElapsed","runningDistance","runningAvgPace","runningCurrentPace","runningGpsAccuracy","runningPointCount","runningPauseBtn","runningFinishBtn","runningDiscardBtn","twentyScreen","twentyCard","twentyProgramName","twentyRemaining","twentyBigTime","twentyPhaseText","twentyProgressBar","twentyPauseBtn","twentyFinishBtn","twentyDiscardBtn","freeWorkoutScreen","freeWorkoutProgramName","freeWorkoutElapsed","freeWorkoutBigTime","freeWorkoutFinishBtn","freeWorkoutDiscardBtn","finishDistanceWrap","finishDistance","programInfoModal","programInfoTitle","programInfoDescription","programInfoSummary","programInfoList","programInfoClose","routeMapModal","routeMapTitle","routeMapMeta","routeMap","routeMapClose"].forEach(id=>e[id]=$(id));
+"sequenceProgramName","sequenceGroupRound","sequenceElapsed","sequenceProgressText","sequenceProgressBar","sequenceActivity","sequenceReps","sequenceLoad","sequenceDesc","sequenceNextActivity","sequenceNextMeta","sequenceCompleteBtn","sequenceSkipBtn","sequencePostponeBtn","sequenceAbortBtn","runningScreen","runningProgramName","gpsStatus","runningElapsed","runningDistance","runningAvgPace","runningCurrentPace","runningGpsAccuracy","runningPointCount","runningPauseBtn","runningFinishBtn","runningDiscardBtn","twentyScreen","twentyCard","twentyProgramName","twentyRemaining","twentyBigTime","twentyPhaseText","twentyProgressBar","twentyPauseBtn","twentyFinishBtn","twentyDiscardBtn","freeWorkoutScreen","freeWorkoutProgramName","freeWorkoutElapsed","freeWorkoutBigTime","freeWorkoutFinishBtn","freeWorkoutDiscardBtn","finishDistanceWrap","finishDistance","programInfoModal","programInfoTitle","programInfoDescription","programInfoSummary","programInfoList","programInfoClose","routeMapModal","routeMapTitle","routeMapMeta","routeMap","routeMapClose","coachLiveSection","coachLiveSummary","coachLiveList","coachLiveRefreshBtn","liveRouteMapModal","liveRouteMapTitle","liveRouteMapMeta","liveRouteMap","liveRouteMapClose"].forEach(id=>e[id]=$(id));
 
 let session=null,user=null,profile=null,athletes=[],programs=[],programAthleteId=null,activeSession=null,homeTimer=null,runnerTimer=null,finishRating=4,currentMonth=new Date(),realtimeChannel=null,runnerMode=null,intervalState=null,sequenceState=null,lastCueKey="";
 let wakeLock=null;
@@ -337,7 +337,7 @@ function renderActiveSession(){
 }
 async function discardActive(){
  if(!activeSession||!confirm(`Forkaste den aktive økten «${activeSession.program_name}»?`))return;
- const id=activeSession.id;const {error}=await sb.from("cr_workout_sessions").update({status:"cancelled",completed_at:new Date().toISOString(),duration_seconds:elapsed(activeSession.started_at)}).eq("id",id);if(error){alert(error.message);return}if(activeSession?.program_id==="running"){clearRunningState();stopGeolocation();runningState=null}if(activeSession?.program_id==="twenty_minutes"){clearTwentyState();twentyState=null}clearRunnerState();activeSession=null;await releaseWakeLock();stopRunnerTick();await loadAthleteData();showOnly("athlete")
+ const id=activeSession.id;const {error}=await sb.from("cr_workout_sessions").update({status:"cancelled",completed_at:new Date().toISOString(),duration_seconds:elapsed(activeSession.started_at)}).eq("id",id);if(error){alert(error.message);return}if(activeSession?.program_id==="running"){clearRunningState();stopGeolocation();runningState=null}if(activeSession?.program_id==="twenty_minutes"){clearTwentyState();twentyState=null}stopLivePublishing();clearRunnerState();activeSession=null;stopLivePublishing();await releaseWakeLock();stopRunnerTick();await loadAthleteData();showOnly("athlete")
 }
 
 async function launchRunner(){
@@ -357,6 +357,8 @@ async function launchRunner(){
    alert("Programmotor mangler for denne økten.");
    return;
  }
+
+ startLivePublishing();
 
  if(runnerMode==="freeWorkout"){showOnly("freeWorkout");await startFreeWorkoutRunner();return}
  if(runnerMode==="twenty"){showOnly("twenty");await startTwentyRunner();return}
@@ -561,7 +563,7 @@ async function saveFinish(){
   const {error}=await sb.from("cr_workout_sessions").update(updates).eq("id",activeSession.id);
   if(error){alert(error.message);return}
   if(isRunning){clearRunningState();stopGeolocation();runningState=null}if(isTwenty){clearTwentyState();twentyState=null}
-  clearRunnerState();activeSession=null;await releaseWakeLock();stopRunnerTick();closeModal(e.finishModal);await loadAthleteData();showOnly("athlete")
+  stopLivePublishing();clearRunnerState();activeSession=null;stopLivePublishing();await releaseWakeLock();stopRunnerTick();closeModal(e.finishModal);await loadAthleteData();showOnly("athlete")
 }
 
 async function ensureProgramActivitiesSeeded(programId){
@@ -957,6 +959,274 @@ function renderFreeWorkout(){if(!activeSession)return;const sec=elapsed(activeSe
 async function startFreeWorkoutRunner(){requestWakeLock().catch(()=>{});renderFreeWorkout();stopRunnerTick();runnerTimer=setInterval(renderFreeWorkout,500)}
 async function finishFreeWorkout(){if(!activeSession)return;stopRunnerTick();const sec=elapsed(activeSession.started_at);activeSession._freeDuration=sec;e.finishSummary.textContent=`${activeSession.program_name} · ${fmtElapsed(sec)}`;finishRating=4;e.finishComment.value="";e.finishDistance.value="";e.finishDistanceWrap.classList.remove("hidden");renderStars();openModal(e.finishModal)}
 
+
+let livePublishTimer=null;
+let lastLivePublishAt=0;
+
+function stopLivePublishing(){
+  if(livePublishTimer){clearInterval(livePublishTimer);livePublishTimer=null}
+}
+
+function currentWorkoutLivePayload(){
+  if(!activeSession)return null;
+
+  const payload={
+    last_live_update:new Date().toISOString()
+  };
+
+  if(activeSession.program_id==="running"){
+    const sec=runningElapsedSeconds();
+    payload.progress_percent=null;
+    payload.current_activity="Løping";
+    payload.current_pace_seconds_per_km=Number.isFinite(Number(runningState?.currentPace))?Number(runningState.currentPace):null;
+    payload.live_distance_meters=Number(runningState?.distanceMeters)||0;
+    payload.live_gps_track=Array.isArray(runningState?.track)?runningState.track.slice(-1000):[];
+    return payload;
+  }
+
+  if(activeSession.program_id==="twenty_minutes"){
+    const elapsedSec=twentyElapsedSeconds();
+    payload.progress_percent=Math.min(100,Math.max(0,(elapsedSec/1200)*100));
+    payload.current_activity=e.twentyPhaseText?.textContent||"20 minutes Workout";
+    return payload;
+  }
+
+  if(activeSession.program_id==="free_workout"){
+    payload.progress_percent=null;
+    payload.current_activity="Fri økt";
+    return payload;
+  }
+
+  if(runnerMode==="sequence" && sequenceState){
+    const done=(sequenceState.completed?.length||0)+(sequenceState.skipped?.length||0);
+    const total=done+(sequenceState.queue?.length||0);
+    payload.progress_percent=total?Math.min(100,(done/total)*100):0;
+    payload.current_activity=sequenceState.queue?.[0]?.activity||"";
+    return payload;
+  }
+
+  if(runnerMode==="intervalSequence" && intervalSequenceState){
+    const total=intervalSequenceState.items?.length||0;
+    const idx=Number(intervalSequenceState.index)||0;
+    payload.progress_percent=total?Math.min(100,(idx/total)*100):0;
+    payload.current_activity=intervalSequenceState.items?.[idx]?.activity||"";
+    return payload;
+  }
+
+  if(runnerMode==="interval"){
+    const cfg=INTERVAL_PROGRAMS[activeSession.program_id];
+    const total=(cfg?.rounds||0)*((cfg?.work||0)+(cfg?.rest||0));
+    const sec=elapsed(activeSession.started_at);
+    payload.progress_percent=total?Math.min(100,(sec/total)*100):0;
+    payload.current_activity=e.intervalPhase?.textContent||activeSession.program_name||"";
+    return payload;
+  }
+
+  payload.progress_percent=null;
+  payload.current_activity=activeSession.program_name||"";
+  return payload;
+}
+
+async function publishLiveWorkout(force=false){
+  if(!activeSession)return;
+  const now=Date.now();
+  if(!force && now-lastLivePublishAt<4000)return;
+  lastLivePublishAt=now;
+  const payload=currentWorkoutLivePayload();
+  if(!payload)return;
+  try{
+    await sb.from("cr_workout_sessions").update(payload).eq("id",activeSession.id);
+  }catch(err){
+    console.warn("Live-oppdatering feilet:",err);
+  }
+}
+
+function startLivePublishing(){
+  stopLivePublishing();
+  publishLiveWorkout(true);
+  livePublishTimer=setInterval(()=>publishLiveWorkout(false),5000);
+}
+
+
+let coachLiveSessions=[];
+let coachLiveInterval=null;
+let liveLeafletMap=null;
+let liveLeafletLayer=null;
+
+function destroyLiveRouteMap(){
+  try{
+    if(liveLeafletMap){liveLeafletMap.remove();liveLeafletMap=null;liveLeafletLayer=null}
+  }catch(err){console.warn(err)}
+}
+
+function liveSessionProgress(session){
+  const p=Number(session.progress_percent);
+  return Number.isFinite(p)?Math.min(100,Math.max(0,p)):null;
+}
+
+function liveSessionSubtitle(session){
+  const parts=[];
+  if(session.current_activity)parts.push(session.current_activity);
+  if(session.started_at)parts.push(`Startet ${fmtDate(session.started_at)}`);
+  return parts.join(" · ");
+}
+
+function liveSessionMetrics(session){
+  const isRun=session.program_id==="running" || String(session.program_name||"").toLowerCase()==="løping";
+  if(!isRun)return "";
+  const km=(Number(session.live_distance_meters)||0)/1000;
+  const pace=Number(session.current_pace_seconds_per_km)||0;
+  return `<div class="coach-live-run-metrics">
+    <span><small>Distanse</small><strong>${km.toLocaleString("nb-NO",{minimumFractionDigits:2,maximumFractionDigits:2})} km</strong></span>
+    <span><small>Current pace</small><strong>${pace>0?formatPace(pace):"– /km"}</strong></span>
+  </div>`;
+}
+
+function renderCoachLive(){
+  const list=coachLiveSessions||[];
+  e.coachLiveSummary.innerHTML=list.length
+    ? `<span class="viz-badge">${list.length} aktive økter</span>`
+    : "";
+
+  e.coachLiveList.innerHTML=list.length?list.map(s=>{
+    const progress=liveSessionProgress(s);
+    const isRun=s.program_id==="running" || String(s.program_name||"").toLowerCase()==="løping";
+    const hasMap=isRun && Array.isArray(s.live_gps_track) && s.live_gps_track.length>1;
+    return `<article class="coach-live-card">
+      <div class="coach-live-top">
+        <div>
+          <div class="coach-live-athlete">${esc(s.athlete_name||"Utøver")}</div>
+          <h3>${esc(s.program_name||"Aktiv økt")}</h3>
+          <p>${esc(liveSessionSubtitle(s))}</p>
+        </div>
+        <span class="live-pill">LIVE</span>
+      </div>
+
+      ${progress!=null?`<div class="coach-progress-wrap">
+        <div class="coach-progress-label"><span>Progresjon</span><strong>${Math.round(progress)} %</strong></div>
+        <div class="coach-progress-track"><div style="width:${progress}%"></div></div>
+      </div>`:""}
+
+      ${liveSessionMetrics(s)}
+
+      <div class="coach-live-actions">
+        ${hasMap?`<button class="secondary-btn compact-btn live-map-btn" data-id="${s.id}">🗺 Kartplassering</button>`:""}
+      </div>
+    </article>`;
+  }).join(""):`<div class="empty">Ingen aktive økter.</div>`;
+
+  e.coachLiveList.querySelectorAll(".live-map-btn").forEach(btn=>{
+    btn.onclick=()=>{
+      const session=coachLiveSessions.find(x=>String(x.id)===String(btn.dataset.id));
+      if(session)openLiveRouteMap(session);
+    };
+  });
+}
+
+async function loadCoachLiveSessions(){
+  if(!profile || profile.role!=="coach")return;
+
+  const {data:links,error:linksError}=await sb
+    .from("cr_coach_athletes")
+    .select("athlete_id")
+    .eq("coach_id",user.id)
+    .eq("status","approved");
+
+  if(linksError){
+    console.warn("Kunne ikke hente coach-utøvere:",linksError);
+    return;
+  }
+
+  const athleteIds=(links||[]).map(x=>x.athlete_id);
+  if(!athleteIds.length){
+    coachLiveSessions=[];
+    renderCoachLive();
+    return;
+  }
+
+  const {data:sessions,error}=await sb
+    .from("cr_workout_sessions")
+    .select("id,athlete_id,program_id,program_name,started_at,status,progress_percent,current_activity,current_pace_seconds_per_km,live_distance_meters,live_gps_track,last_live_update")
+    .in("athlete_id",athleteIds)
+    .eq("status","started")
+    .order("started_at",{ascending:false});
+
+  if(error){
+    console.warn("Kunne ikke hente aktive økter:",error);
+    return;
+  }
+
+  const {data:profiles}=await sb
+    .from("cr_profiles")
+    .select("id,full_name,email")
+    .in("id",athleteIds);
+
+  const names=new Map((profiles||[]).map(p=>[p.id,p.full_name||p.email||"Utøver"]));
+
+  coachLiveSessions=(sessions||[]).map(s=>({
+    ...s,
+    athlete_name:names.get(s.athlete_id)||"Utøver"
+  }));
+
+  renderCoachLive();
+}
+
+function startCoachLivePolling(){
+  if(coachLiveInterval)clearInterval(coachLiveInterval);
+  loadCoachLiveSessions();
+  coachLiveInterval=setInterval(loadCoachLiveSessions,5000);
+}
+
+function openLiveRouteMap(session){
+  const points=normalizeGpsTrack(session?.live_gps_track);
+  e.liveRouteMapTitle.textContent=`${session.athlete_name||"Utøver"} · ${session.program_name||"Løping"}`;
+  e.liveRouteMapMeta.textContent=[
+    `${((Number(session.live_distance_meters)||0)/1000).toLocaleString("nb-NO",{minimumFractionDigits:2,maximumFractionDigits:2})} km`,
+    Number(session.current_pace_seconds_per_km)>0?formatPace(Number(session.current_pace_seconds_per_km)):null
+  ].filter(Boolean).join(" · ");
+
+  e.liveRouteMap.innerHTML='<div class="route-map-loading">Laster live-kart…</div>';
+  openModal(e.liveRouteMapModal);
+
+  setTimeout(()=>{
+    destroyLiveRouteMap();
+
+    if(!points.length){
+      e.liveRouteMap.innerHTML='<div class="route-map-empty">Ingen GPS-posisjon tilgjengelig ennå.</div>';
+      return;
+    }
+
+    if(!window.L){
+      e.liveRouteMap.innerHTML='<div class="route-map-empty">Kartbiblioteket kunne ikke lastes.</div>';
+      return;
+    }
+
+    try{
+      liveLeafletMap=L.map(e.liveRouteMap,{zoomControl:true,attributionControl:true});
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{
+        maxZoom:19,
+        attribution:"© OpenStreetMap"
+      }).addTo(liveLeafletMap);
+
+      const latlngs=points.map(p=>[p.lat,p.lon]);
+      liveLeafletLayer=L.polyline(latlngs,{weight:5,opacity:.9}).addTo(liveLeafletMap);
+
+      L.circleMarker(latlngs[0],{radius:8,weight:3,fillOpacity:1})
+        .bindTooltip("Start").addTo(liveLeafletMap);
+
+      L.circleMarker(latlngs[latlngs.length-1],{radius:9,weight:3,fillOpacity:1})
+        .bindTooltip("Nå").addTo(liveLeafletMap);
+
+      liveLeafletMap.fitBounds(liveLeafletLayer.getBounds(),{padding:[24,24],maxZoom:17});
+      setTimeout(()=>liveLeafletMap?.invalidateSize(),100);
+    }catch(err){
+      console.error(err);
+      destroyLiveRouteMap();
+      e.liveRouteMap.innerHTML='<div class="route-map-empty">Kunne ikke vise kartet.</div>';
+    }
+  },80);
+}
+
 async function loadCoachData(){await loadPrograms();const {data:links}=await sb.from("cr_coach_athletes").select("athlete_id,status,cr_profiles!cr_coach_athletes_athlete_id_fkey(*)").eq("coach_id",user.id).order("created_at");athletes=(links||[]).map(x=>({...x.cr_profiles,link_status:x.status}));const ids=athletes.map(a=>a.id);e.pendingCount.textContent=athletes.filter(a=>!a.approved).length;e.activeAthletesCount.textContent=athletes.filter(a=>a.approved).length;let today=0;if(ids.length){const from=new Date();from.setHours(0,0,0,0);const {count}=await sb.from("cr_workout_sessions").select("*",{count:"exact",head:true}).in("athlete_id",ids).gte("started_at",from.toISOString());today=count||0}e.sessionsTodayCount.textContent=today;renderAthletes();fillAthleteSelectors()}
 function renderAthletes(){e.athletesList.innerHTML=athletes.length?athletes.map(a=>`<div class="athlete-item"><div class="athlete-row"><div><strong>${esc(a.full_name||a.email)}</strong><small>${esc(a.phone||"")} · ${esc(a.email||"")}</small><small>${a.approved?"✅ Godkjent":"⏳ Venter på godkjenning"}</small></div><div class="athlete-actions">${!a.approved?`<button class="approve-btn" data-id="${a.id}">Godkjenn</button>`:""}<button class="programs-btn" data-id="${a.id}">Programmer</button></div></div></div>`).join(""):`<div class="empty">Ingen utøvere har registrert seg ennå.</div>`;e.athletesList.querySelectorAll(".approve-btn").forEach(b=>b.onclick=()=>approveAthlete(b.dataset.id));e.athletesList.querySelectorAll(".programs-btn").forEach(b=>b.onclick=()=>openPrograms(b.dataset.id))}
 async function approveAthlete(id){const {error}=await sb.from("cr_profiles").update({approved:true}).eq("id",id);if(error){alert(error.message);return}await sb.from("cr_coach_athletes").update({status:"approved"}).eq("coach_id",user.id).eq("athlete_id",id);await loadCoachData()}
@@ -987,6 +1257,8 @@ function normalizeGpsTrack(track){
     accuracy:Number(p.accuracy)||null,
     ts:p.ts||null
   })).filter(p=>Number.isFinite(p.lat)&&Number.isFinite(p.lon));
+
+  startCoachLivePolling();
 }
 
 function runningSessionMapMeta(session){
@@ -1168,5 +1440,5 @@ e.cancelFinishBtn.onclick=()=>closeModal(e.finishModal);e.saveFinishBtn.onclick=
 sb.auth.onAuthStateChange(async(_event,newSession)=>{session=newSession;user=newSession?.user||null;await loadProfile();closeModal(e.accountModal);await route()});
 (async function init(){const {data}=await sb.auth.getSession();session=data.session;user=session?.user||null;await loadProfile();if(new URLSearchParams(location.search).get("register")==="1"&&!user)openModal(e.registerModal);await route()})();
 
-e.programInfoClose.onclick=()=>closeModal(e.programInfoModal);e.routeMapClose.onclick=()=>{destroyRouteMap();closeModal(e.routeMapModal)};
+e.programInfoClose.onclick=()=>closeModal(e.programInfoModal);e.routeMapClose.onclick=()=>{destroyRouteMap();closeModal(e.routeMapModal)};e.liveRouteMapClose.onclick=()=>{destroyLiveRouteMap();closeModal(e.liveRouteMapModal)};e.coachLiveRefreshBtn.onclick=loadCoachLiveSessions;
 })();
