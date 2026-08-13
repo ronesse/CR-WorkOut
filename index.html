@@ -7,7 +7,7 @@
   <meta name="description" content="CR-Workout – coach og utøver">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="style.css?v=9.3.3">
+  <link rel="stylesheet" href="style.css?v=9.4">
   <title>CR-Workout</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     crossorigin="">
@@ -313,34 +313,32 @@
 </div>
 </section>
 
-      <section id="golfScreen" class="screen hidden">
-        <div class="golf-runner-card">
+      
+<section id="golfScreen" class="screen hidden">
+  <div class="golf-runner-shell">
+    <div id="golfSwipe" class="golf-swipe">
+      <section class="golf-swipe-page" data-golf-page="0">
+        <div class="golf-runner-card golf-page-card">
           <div class="runner-top">
-            <div>
-              <div class="eyebrow">GOLF</div>
-              <h2 id="golfCourseName">Golf</h2>
-              <p id="golfRoundMeta"></p>
-            </div>
-            <div class="elapsed-box">
-              <small>Total tid</small>
-              <strong id="golfElapsed">00:00</strong>
-            </div>
+            <div><div class="eyebrow">GOLF</div><h2 id="golfCourseName">Golf</h2><p id="golfRoundMeta"></p></div>
+            <div class="elapsed-box"><small>Total tid</small><strong id="golfElapsed">00:00</strong></div>
           </div>
-
           <div class="golf-progress-wrap">
-            <div class="golf-progress-label">
-              <span id="golfProgressText">Hull 1 av 18</span>
-              <strong id="golfTotalStrokes">0 slag</strong>
-            </div>
+            <div class="golf-progress-label"><span id="golfProgressText">Hull 1 av 18</span><strong id="golfTotalStrokes">0 slag</strong></div>
             <div class="progress-track"><div id="golfProgressBar"></div></div>
           </div>
-
           <div class="golf-metrics">
             <div><small>Distanse</small><strong id="golfDistance">0,00 km</strong></div>
             <div><small>GPS</small><strong id="golfGpsStatus">Starter…</strong></div>
             <div><small>GPS-spor</small><strong id="golfTrackCount">0 punkter</strong></div>
           </div>
+          <div class="golf-overview-now"><small>Aktuelt hull</small><strong id="golfOverviewHole">Hull 1</strong><span id="golfOverviewPar">Par –</span></div>
+          <div class="swipe-hint">Sveip → for hullkort</div>
+        </div>
+      </section>
 
+      <section class="golf-swipe-page" data-golf-page="1">
+        <div class="golf-runner-card golf-page-card">
           <div class="golf-hole-card">
             <span class="task-label">NÅ</span>
             <div class="golf-hole-nav">
@@ -349,44 +347,52 @@
               <button id="golfNextBtn" type="button" class="secondary-btn compact-btn">Next ›</button>
             </div>
             <h2 id="golfCurrentHole">Hull 1</h2>
-            <div class="golf-hole-facts">
-              <span id="golfPar">Par –</span>
-              <span id="golfPinDistance">Flagg: –</span>
-            </div>
+            <div class="golf-hole-facts"><span id="golfPar">Par –</span><span id="golfPinDistance">Flagg: –</span></div>
             <p id="golfHoleStatus">Registrer antall slag når hullet er ferdig.</p>
-
             <div class="golf-strokes-box">
               <button id="golfMinusStrokeBtn" type="button" class="stroke-btn">−</button>
-              <label>
-                <span>Slag</span>
-                <input id="golfStrokesInput" type="number" min="1" max="30" inputmode="numeric" value="4">
-              </label>
+              <label><span>Slag</span><input id="golfStrokesInput" type="number" min="1" max="30" inputmode="numeric" value="4"></label>
               <button id="golfPlusStrokeBtn" type="button" class="stroke-btn">+</button>
             </div>
           </div>
-
-          <div class="task-card next-task golf-next-card">
-            <span class="task-label">NESTE</span>
-            <h3 id="golfNextHole">Hull 2</h3>
-            <p id="golfNextMeta"></p>
-          </div>
-
+          <div class="task-card next-task golf-next-card"><span class="task-label">NESTE</span><h3 id="golfNextHole">Hull 2</h3><p id="golfNextMeta"></p></div>
           <div class="golf-actions">
             <button id="golfCompleteBtn" class="primary-btn complete-btn">✓ Fullført hull</button>
             <button id="golfSkipBtn" class="secondary-btn">⏭ Skip</button>
             <button id="golfPostponeBtn" class="secondary-btn postpone-btn">↻ Postpone</button>
           </div>
-
-          <button id="golfMapBtn" class="secondary-btn full golf-map-btn">🗺 Vis GPS-spor</button>
-          <button id="golfFinishRoundBtn" class="secondary-btn full">Avslutt runden</button>
-          <button id="golfDiscardBtn" class="link-btn danger-link">Avslutt / forkast økten</button>
+          <div class="swipe-hint">← oversikt · kart →</div>
         </div>
       </section>
 
-<section id="golfCoursesScreen" class="screen hidden">
-<div class="screen-head"><button id="golfCoursesBackBtn" class="icon-btn">←</button><div><div class="eyebrow">COACH / ADMIN</div><h2>Golfbaner</h2></div></div>
-<div class="panel"><div class="golf-admin-top"><label>Golfbane<select id="golfAdminCourseSelect"></select></label><button id="golfAdminNewCourseBtn" class="secondary-btn">+ Ny bane</button></div>
-<div id="golfAdminCourseMeta" class="golf-course-status"></div><div id="golfAdminHoles" class="golf-admin-holes"></div><button id="golfAdminSaveBtn" class="primary-btn full">Lagre bane</button></div></section>
+      <section class="golf-swipe-page" data-golf-page="2">
+        <div class="golf-runner-card golf-page-card golf-map-page-card">
+          <div class="runner-top golf-map-head">
+            <div><div class="eyebrow">LIVE KART</div><h2 id="golfMapHoleTitle">Hull 1</h2><p id="golfMapCourseTitle"></p></div>
+            <div class="elapsed-box"><small>Til green</small><strong id="golfMapDistance">–</strong></div>
+          </div>
+          <div id="golfInlineMap" class="golf-inline-map"></div>
+          <div class="golf-map-status"><span>🔵 Din posisjon</span><span>⛳ Green</span></div>
+          <div id="golfInlineMapMessage" class="golf-inline-map-message"></div>
+          <button id="golfMapBtn" class="secondary-btn full">🗺 Åpne stort kart</button>
+          <div class="swipe-hint">← sveip tilbake til hullkort</div>
+        </div>
+      </section>
+    </div>
+
+    <div id="golfSwipeDots" class="golf-swipe-dots">
+      <button type="button" data-page="0" class="active" aria-label="Rundeoversikt"></button>
+      <button type="button" data-page="1" aria-label="Hullkort"></button>
+      <button type="button" data-page="2" aria-label="Kart"></button>
+    </div>
+
+    <div class="golf-bottom-actions">
+      <button id="golfFinishRoundBtn" class="secondary-btn full">Avslutt runden</button>
+      <button id="golfDiscardBtn" class="link-btn danger-link">Avslutt / forkast økten</button>
+    </div>
+  </div>
+</section>
+
 <section id="calendarScreen" class="screen hidden">
         <div class="section-heading">
           <div><h2>Kalender</h2><p id="calendarSubtitle">Mine økter</p></div>
@@ -597,8 +603,8 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="programs.js?v=9.3.3"></script>
-  <script src="app.js?v=9.3.3"></script>
+  <script src="programs.js?v=9.4"></script>
+  <script src="app.js?v=9.4"></script>
 <script>if("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js").catch(()=>{});</script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
   crossorigin=""></script>

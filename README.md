@@ -338,3 +338,8 @@ Merk: Tabellen som ble oppgitt har 15 arbeidsøkter + 15 hvileøkter, altså 22:
 - På en allerede aktiv Golf-runde uten `courseData` hentes banedata automatisk og lagres tilbake på økten.
 - Hvis databasen bare inneholder én bane, velges den automatisk i Golf-oppsettet.
 - Ingen ny SQL nødvendig.
+
+## v9.4 – Golf swipe
+- Golf delt i tre horisontale swipe-sider: oversikt, hullkort og live kart.
+- Kartet viser spillerposisjon, GPS-spor, green og løpende avstand når green-koordinater finnes.
+- Ingen ny SQL nødvendig.
