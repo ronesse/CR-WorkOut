@@ -234,3 +234,12 @@ Merk: Tabellen som ble oppgitt har 15 arbeidsøkter + 15 hvileøkter, altså 22:
 - Punkter med nøyaktighet dårligere enn 50 m eller åpenbare GPS-hopp filtreres bort.
 - Sporet lagres lokalt under økten og skrives til Supabase når økten fullføres.
 - Kjør v8.7-delen i SQL_SETUP.sql før testing.
+
+## v8.8 – kartvisning av GPS-spor
+- Fullførte løpeøkter med `gps_track` får knappen `🗺 Vis rute` i Kalender.
+- Ruten vises på interaktivt OpenStreetMap-kart via Leaflet.
+- Start- og sluttpunkt markeres.
+- Kartet zoomer automatisk til hele ruten.
+- Fungerer både for utøverens egen kalender og coachens kalender når coach velger en utøver.
+- Hvis kartbiblioteket ikke kan lastes, vises en enkel rute-tegning som fallback.
+- Ingen ny SQL nødvendig.

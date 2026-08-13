@@ -15,7 +15,7 @@ const $=id=>document.getElementById(id),e={};
 "registerModal","closeRegisterBtn","regName","regPhone","regEmail","regPassword","registerBtn","registerMessage","programModal","programAthleteName","closeProgramBtn","programChecklist","saveProgramsBtn",
 "finishModal","finishSummary","finishStars","finishComment","saveFinishBtn","cancelFinishBtn",
 "intervalCard","intervalProgramName","intervalElapsed","intervalRound","intervalRemainingTotal","intervalPhase","intervalMessage","intervalTime","intervalProgressBar","intervalNext","intervalSkipBtn","runnerAbortBtn",
-"sequenceProgramName","sequenceGroupRound","sequenceElapsed","sequenceProgressText","sequenceProgressBar","sequenceActivity","sequenceReps","sequenceLoad","sequenceDesc","sequenceNextActivity","sequenceNextMeta","sequenceCompleteBtn","sequenceSkipBtn","sequencePostponeBtn","sequenceAbortBtn","runningScreen","runningProgramName","gpsStatus","runningElapsed","runningDistance","runningAvgPace","runningCurrentPace","runningGpsAccuracy","runningPointCount","runningPauseBtn","runningFinishBtn","runningDiscardBtn","twentyScreen","twentyCard","twentyProgramName","twentyRemaining","twentyBigTime","twentyPhaseText","twentyProgressBar","twentyPauseBtn","twentyFinishBtn","twentyDiscardBtn","freeWorkoutScreen","freeWorkoutProgramName","freeWorkoutElapsed","freeWorkoutBigTime","freeWorkoutFinishBtn","freeWorkoutDiscardBtn","finishDistanceWrap","finishDistance","programInfoModal","programInfoTitle","programInfoDescription","programInfoSummary","programInfoList","programInfoClose"].forEach(id=>e[id]=$(id));
+"sequenceProgramName","sequenceGroupRound","sequenceElapsed","sequenceProgressText","sequenceProgressBar","sequenceActivity","sequenceReps","sequenceLoad","sequenceDesc","sequenceNextActivity","sequenceNextMeta","sequenceCompleteBtn","sequenceSkipBtn","sequencePostponeBtn","sequenceAbortBtn","runningScreen","runningProgramName","gpsStatus","runningElapsed","runningDistance","runningAvgPace","runningCurrentPace","runningGpsAccuracy","runningPointCount","runningPauseBtn","runningFinishBtn","runningDiscardBtn","twentyScreen","twentyCard","twentyProgramName","twentyRemaining","twentyBigTime","twentyPhaseText","twentyProgressBar","twentyPauseBtn","twentyFinishBtn","twentyDiscardBtn","freeWorkoutScreen","freeWorkoutProgramName","freeWorkoutElapsed","freeWorkoutBigTime","freeWorkoutFinishBtn","freeWorkoutDiscardBtn","finishDistanceWrap","finishDistance","programInfoModal","programInfoTitle","programInfoDescription","programInfoSummary","programInfoList","programInfoClose","routeMapModal","routeMapTitle","routeMapMeta","routeMap","routeMapClose"].forEach(id=>e[id]=$(id));
 
 let session=null,user=null,profile=null,athletes=[],programs=[],programAthleteId=null,activeSession=null,homeTimer=null,runnerTimer=null,finishRating=4,currentMonth=new Date(),realtimeChannel=null,runnerMode=null,intervalState=null,sequenceState=null,lastCueKey="";
 let wakeLock=null;
@@ -975,6 +975,123 @@ function handleRealtime(row){if(!athletes.some(a=>a.id===row.athlete_id))return;
 
 function fillAthleteSelectors(){const opts=[`<option value="">Alle utøvere</option>`,...athletes.filter(a=>a.approved).map(a=>`<option value="${a.id}">${esc(a.full_name||a.email)}</option>`)].join("");e.calendarAthleteSelect.innerHTML=opts;e.statsAthleteSelect.innerHTML=opts}
 async function sessionsForView(selected=""){if(profile?.role==="coach"){const ids=selected?[selected]:athletes.filter(a=>a.approved).map(a=>a.id);if(!ids.length)return[];const {data}=await sb.from("cr_workout_sessions").select("*").in("athlete_id",ids).order("started_at",{ascending:false});return data||[]}const {data}=await sb.from("cr_workout_sessions").select("*").eq("athlete_id",user.id).order("started_at",{ascending:false});return data||[]}
+
+let routeLeafletMap=null;
+let routeLeafletLayer=null;
+
+function normalizeGpsTrack(track){
+  if(!Array.isArray(track))return [];
+  return track.map(p=>({
+    lat:Number(p.lat),
+    lon:Number(p.lon),
+    accuracy:Number(p.accuracy)||null,
+    ts:p.ts||null
+  })).filter(p=>Number.isFinite(p.lat)&&Number.isFinite(p.lon));
+}
+
+function runningSessionMapMeta(session){
+  const parts=[];
+  const km=Number(session.distance_meters)>0?Number(session.distance_meters)/1000:0;
+  const sec=Number(session.duration_seconds)||0;
+  const pace=Number(session.avg_pace_seconds_per_km)||0;
+  if(km>0)parts.push(`${km.toLocaleString("nb-NO",{minimumFractionDigits:2,maximumFractionDigits:2})} km`);
+  if(sec>0)parts.push(`${Math.max(1,Math.round(sec/60))} min`);
+  if(pace>0)parts.push(formatPace(pace));
+  return parts.join(" · ");
+}
+
+function destroyRouteMap(){
+  try{
+    if(routeLeafletMap){
+      routeLeafletMap.remove();
+      routeLeafletMap=null;
+      routeLeafletLayer=null;
+    }
+  }catch(err){console.warn("Kunne ikke lukke kart:",err)}
+}
+
+function showRouteFallback(points){
+  if(!points.length){
+    e.routeMap.innerHTML='<div class="route-map-empty">Ingen GPS-spor er lagret for denne økten.</div>';
+    return;
+  }
+
+  const w=800,h=420,pad=24;
+  const lats=points.map(p=>p.lat),lons=points.map(p=>p.lon);
+  const minLat=Math.min(...lats),maxLat=Math.max(...lats),minLon=Math.min(...lons),maxLon=Math.max(...lons);
+  const latSpan=Math.max(.000001,maxLat-minLat),lonSpan=Math.max(.000001,maxLon-minLon);
+
+  const xy=points.map(p=>{
+    const x=pad+((p.lon-minLon)/lonSpan)*(w-pad*2);
+    const y=pad+(1-(p.lat-minLat)/latSpan)*(h-pad*2);
+    return [x,y];
+  });
+  const line=xy.map(p=>p.join(",")).join(" ");
+  const s=xy[0],f=xy[xy.length-1];
+
+  e.routeMap.innerHTML=`<svg class="route-fallback-svg" viewBox="0 0 ${w} ${h}" role="img" aria-label="GPS-rute">
+    <rect x="0" y="0" width="${w}" height="${h}" rx="18"></rect>
+    <polyline points="${line}" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"></polyline>
+    <circle cx="${s[0]}" cy="${s[1]}" r="10" class="route-start"></circle>
+    <circle cx="${f[0]}" cy="${f[1]}" r="10" class="route-finish"></circle>
+  </svg>`;
+}
+
+function openRouteMap(session){
+  const points=normalizeGpsTrack(session?.gps_track);
+  e.routeMapTitle.textContent=session?.program_name||"Løping";
+  e.routeMapMeta.textContent=runningSessionMapMeta(session);
+  e.routeMap.innerHTML='<div class="route-map-loading">Laster kart…</div>';
+  openModal(e.routeMapModal);
+
+  setTimeout(()=>{
+    destroyRouteMap();
+
+    if(!points.length){
+      showRouteFallback(points);
+      return;
+    }
+
+    if(!window.L){
+      showRouteFallback(points);
+      return;
+    }
+
+    try{
+      routeLeafletMap=L.map(e.routeMap,{zoomControl:true,attributionControl:true});
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{
+        maxZoom:19,
+        attribution:"© OpenStreetMap"
+      }).addTo(routeLeafletMap);
+
+      const latlngs=points.map(p=>[p.lat,p.lon]);
+      routeLeafletLayer=L.polyline(latlngs,{
+        weight:5,
+        opacity:.9
+      }).addTo(routeLeafletMap);
+
+      L.circleMarker(latlngs[0],{
+        radius:8,
+        weight:3,
+        fillOpacity:1
+      }).bindTooltip("Start").addTo(routeLeafletMap);
+
+      L.circleMarker(latlngs[latlngs.length-1],{
+        radius:8,
+        weight:3,
+        fillOpacity:1
+      }).bindTooltip("Slutt").addTo(routeLeafletMap);
+
+      routeLeafletMap.fitBounds(routeLeafletLayer.getBounds(),{padding:[24,24],maxZoom:17});
+      setTimeout(()=>routeLeafletMap?.invalidateSize(),100);
+    }catch(err){
+      console.error("Kartfeil:",err);
+      destroyRouteMap();
+      showRouteFallback(points);
+    }
+  },80);
+}
+
 async function renderCalendar(){const selected=e.calendarAthleteSelect.value||"",sessions=await sessionsForView(selected),y=currentMonth.getFullYear(),m=currentMonth.getMonth();e.calendarSubtitle.textContent=profile?.role==="coach"?(selected?(athletes.find(a=>a.id===selected)?.full_name||"Utøver"):"Alle utøvere"):"Mine økter";e.calendarTitle.textContent=new Intl.DateTimeFormat("nb-NO",{month:"long",year:"numeric"}).format(currentMonth);e.calendarGrid.innerHTML="";const first=new Date(y,m,1),offset=(first.getDay()+6)%7,days=new Date(y,m+1,0).getDate(),prev=new Date(y,m,0).getDate();for(let i=0;i<42;i++){let day,dm=m;if(i<offset){day=prev-offset+i+1;dm=m-1}else if(i>=offset+days){day=i-offset-days+1;dm=m+1}else day=i-offset+1;const d=new Date(y,dm,day),key=dateKey(d),count=sessions.filter(x=>dateKey(new Date(x.started_at))===key).length,b=document.createElement("button");b.className="calendar-day"+(key===dateKey(new Date())?" today":"");b.innerHTML=`${day}${count?`<span class="day-count">${count}</span>`:""}`;b.onclick=()=>renderCalendarDetails(key,sessions);e.calendarGrid.appendChild(b)}e.calendarDetails.innerHTML=""}
 function renderCalendarDetails(key,sessions){
   const list=sessions.filter(x=>dateKey(new Date(x.started_at))===key);
@@ -998,9 +1115,19 @@ function renderCalendarDetails(key,sessions){
         ${km>0?`<span><b>${km.toLocaleString("nb-NO",{minimumFractionDigits:2,maximumFractionDigits:2})}</b><em>km</em></span>`:""}
         ${minutes>0?`<span><b>${minutes}</b><em>min</em></span>`:""}
       </div>`:""}
+      ${isRunning&&Array.isArray(x.gps_track)&&x.gps_track.length>1
+        ?`<button type="button" class="route-map-btn" data-session-id="${x.id}">🗺 Vis rute</button>`
+        :""}
       ${x.comment?`<p>${esc(x.comment)}</p>`:""}
     </div>`;
-  }).join(""):`<div class="empty">Ingen økter.</div>`
+  }).join(""):`<div class="empty">Ingen økter.</div>`;
+
+  e.calendarDetails.querySelectorAll(".route-map-btn").forEach(btn=>{
+    btn.onclick=()=>{
+      const session=list.find(x=>String(x.id)===String(btn.dataset.sessionId));
+      if(session)openRouteMap(session);
+    };
+  });
 }
 async function renderStats(){const selected=e.statsAthleteSelect.value||"",sessions=await sessionsForView(selected),valid=sessions.filter(x=>x.status!=="cancelled"),completed=valid.filter(x=>x.status==="completed"),ratings=completed.filter(x=>x.rating).map(x=>x.rating);e.statsSubtitle.textContent=profile?.role==="coach"?(selected?(athletes.find(a=>a.id===selected)?.full_name||"Utøver"):"Alle utøvere"):"Mine økter";e.statSessions.textContent=valid.length;e.statMinutes.textContent=Math.round(completed.reduce((s,x)=>s+(x.duration_seconds||0),0)/60);e.statRating.textContent=ratings.length?(ratings.reduce((a,b)=>a+b,0)/ratings.length).toFixed(1):"–";e.statCompleted.textContent=valid.length?`${Math.round(completed.length/valid.length*100)}%`:"0%";const counts={};completed.forEach(x=>counts[x.program_name]=(counts[x.program_name]||0)+1);const entries=Object.entries(counts),max=Math.max(1,...entries.map(x=>x[1]));e.programStats.innerHTML=entries.length?entries.map(([n,v])=>`<div class="bar-row"><span>${esc(n)}</span><div class="bar-track"><div class="bar-fill" style="width:${v/max*100}%"></div></div><strong>${v}</strong></div>`).join(""):`<div class="empty">Ingen fullførte økter ennå.</div>`}
 
@@ -1041,5 +1168,5 @@ e.cancelFinishBtn.onclick=()=>closeModal(e.finishModal);e.saveFinishBtn.onclick=
 sb.auth.onAuthStateChange(async(_event,newSession)=>{session=newSession;user=newSession?.user||null;await loadProfile();closeModal(e.accountModal);await route()});
 (async function init(){const {data}=await sb.auth.getSession();session=data.session;user=session?.user||null;await loadProfile();if(new URLSearchParams(location.search).get("register")==="1"&&!user)openModal(e.registerModal);await route()})();
 
-e.programInfoClose.onclick=()=>closeModal(e.programInfoModal);
+e.programInfoClose.onclick=()=>closeModal(e.programInfoModal);e.routeMapClose.onclick=()=>{destroyRouteMap();closeModal(e.routeMapModal)};
 })();

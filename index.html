@@ -7,8 +7,10 @@
   <meta name="description" content="CR-Workout – coach og utøver">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="style.css?v=8.7">
+  <link rel="stylesheet" href="style.css?v=8.8">
   <title>CR-Workout</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    crossorigin="">
 </head>
 <body>
   <div class="app-shell">
@@ -374,6 +376,27 @@
     </div>
 
     
+
+<div id="routeMapModal" class="modal hidden" aria-hidden="true">
+  <div class="modal-card route-map-modal-card">
+    <div class="modal-head">
+      <div>
+        <div class="eyebrow">LØPERUTE</div>
+        <h2 id="routeMapTitle">Løping</h2>
+        <p id="routeMapMeta" class="route-map-meta"></p>
+      </div>
+      <button id="routeMapClose" class="icon" aria-label="Lukk">✕</button>
+    </div>
+
+    <div id="routeMap" class="route-map"></div>
+
+    <div class="route-map-legend">
+      <span><i class="route-dot start"></i> Start</span>
+      <span><i class="route-dot finish"></i> Slutt</span>
+    </div>
+  </div>
+</div>
+
 <div id="programInfoModal" class="modal hidden" aria-hidden="true">
   <div class="modal-card program-info-modal-card">
     <div class="modal-head">
@@ -411,8 +434,10 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="programs.js?v=8.7"></script>
-  <script src="app.js?v=8.7"></script>
+  <script src="programs.js?v=8.8"></script>
+  <script src="app.js?v=8.8"></script>
 <script>if("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js").catch(()=>{});</script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+  crossorigin=""></script>
 </body>
 </html>
