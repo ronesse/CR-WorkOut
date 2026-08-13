@@ -271,3 +271,9 @@ values ('free_workout','Fri økt','Fri timer · rating · kommentar · valgfri d
 on conflict (id) do update
 set name=excluded.name,description=excluded.description,icon=excluded.icon,active=true,sort_order=excluded.sort_order;
 NOTIFY pgrst, 'reload schema';
+
+-- v8.7: lagring av GPS-spor
+alter table public.cr_workout_sessions
+  add column if not exists gps_track jsonb;
+
+NOTIFY pgrst, 'reload schema';

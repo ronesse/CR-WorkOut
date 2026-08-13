@@ -226,3 +226,11 @@ Merk: Tabellen som ble oppgitt har 15 arbeidsøkter + 15 hvileøkter, altså 22:
 - Aktiv-session timer tåler at session blir null under refresh/auth-event.
 - Fortsett-knappen laster aktiv session på nytt hvis nødvendig.
 - Ingen ny SQL nødvendig.
+
+## v8.7 – GPS-spor
+- Løping lagrer nå selve GPS-sporet i tillegg til distanse og pace.
+- Sporet lagres i `cr_workout_sessions.gps_track` som JSON.
+- Hvert punkt inneholder latitude, longitude, accuracy og timestamp.
+- Punkter med nøyaktighet dårligere enn 50 m eller åpenbare GPS-hopp filtreres bort.
+- Sporet lagres lokalt under økten og skrives til Supabase når økten fullføres.
+- Kjør v8.7-delen i SQL_SETUP.sql før testing.

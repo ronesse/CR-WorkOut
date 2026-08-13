@@ -553,7 +553,11 @@ async function saveFinish(){
   const distance=isRunning?(activeSession._runningDistance??runningState?.distanceMeters??0):null;
   const avgPace=isRunning?(activeSession._runningAvgPace??(distance>=50?duration/(distance/1000):null)):null;
   const updates={status:"completed",completed_at:ended.toISOString(),duration_seconds:duration,rating:finishRating,comment:e.finishComment.value.trim()};
-  if(isRunning){updates.distance_meters=distance;updates.avg_pace_seconds_per_km=avgPace}if(isFree){const km=Number(String(e.finishDistance?.value||"").replace(",","."));if(km>0)updates.distance_meters=km*1000}
+  if(isRunning){
+    updates.distance_meters=distance;
+    updates.avg_pace_seconds_per_km=avgPace;
+    updates.gps_track=activeSession?._runningTrack??(Array.isArray(runningState?.track)?runningState.track:[]);
+  }if(isFree){const km=Number(String(e.finishDistance?.value||"").replace(",","."));if(km>0)updates.distance_meters=km*1000}
   const {error}=await sb.from("cr_workout_sessions").update(updates).eq("id",activeSession.id);
   if(error){alert(error.message);return}
   if(isRunning){clearRunningState();stopGeolocation();runningState=null}if(isTwenty){clearTwentyState();twentyState=null}
@@ -806,13 +810,53 @@ function loadRunningState(){try{return JSON.parse(localStorage.getItem(runningSt
 function clearRunningState(){if(activeSession)localStorage.removeItem(runningStorageKey())}
 function stopGeolocation(){if(runningWatchId!==null&&navigator.geolocation){navigator.geolocation.clearWatch(runningWatchId);runningWatchId=null}}
 function updateGpsStatus(a){if(!Number.isFinite(a)){e.gpsStatus.textContent="Venter på GPS…";e.gpsStatus.className="gps-status";return}if(a<=15){e.gpsStatus.textContent="God GPS";e.gpsStatus.className="gps-status good"}else if(a<=35){e.gpsStatus.textContent="Svak GPS";e.gpsStatus.className="gps-status weak"}else{e.gpsStatus.textContent="Dårlig GPS";e.gpsStatus.className="gps-status bad"}e.runningGpsAccuracy.textContent=`GPS-nøyaktighet: ±${Math.round(a)} m`}
-function handleRunningPosition(pos){if(runningPaused||!runningState)return;const c=pos.coords,p={lat:c.latitude,lon:c.longitude,accuracy:c.accuracy,ts:pos.timestamp},prev=runningState.lastPoint;updateGpsStatus(c.accuracy);if(prev){const dt=(p.ts-prev.ts)/1000,dist=haversineMeters(prev,p),speed=dt>0?(dist/dt)*3.6:0,good=Math.max(p.accuracy||999,prev.accuracy||999)<=50;if(good&&dist>=3&&speed<=25){runningState.distanceMeters+=dist;if(dt>0&&dist>=5){const pace=dt/(dist/1000);if(pace>120&&pace<1800)runningState.currentPace=pace}}}runningState.lastPoint=p;runningState.pointCount=(runningState.pointCount||0)+1;saveRunningState();renderRunning()}
+function handleRunningPosition(pos){
+  if(runningPaused||!runningState)return;
+  const c=pos.coords;
+  const p={lat:c.latitude,lon:c.longitude,accuracy:c.accuracy,ts:pos.timestamp};
+  const prev=runningState.lastPoint;
+  updateGpsStatus(c.accuracy);
+
+  let acceptedForTrack=(p.accuracy||999)<=50;
+
+  if(prev){
+    const dt=(p.ts-prev.ts)/1000;
+    const dist=haversineMeters(prev,p);
+    const speed=dt>0?(dist/dt)*3.6:0;
+    const good=Math.max(p.accuracy||999,prev.accuracy||999)<=50;
+
+    if(good&&dist>=3&&speed<=25){
+      runningState.distanceMeters+=dist;
+      if(dt>0&&dist>=5){
+        const pace=dt/(dist/1000);
+        if(pace>120&&pace<1800)runningState.currentPace=pace;
+      }
+    }
+
+    // Reject obvious GPS jumps from saved route as well.
+    if(speed>25)acceptedForTrack=false;
+  }
+
+  if(acceptedForTrack){
+    runningState.track.push({
+      lat:p.lat,
+      lon:p.lon,
+      accuracy:p.accuracy,
+      ts:p.ts
+    });
+  }
+
+  runningState.lastPoint=p;
+  runningState.pointCount=(runningState.pointCount||0)+1;
+  saveRunningState();
+  renderRunning();
+}
 function runningElapsedSeconds(){if(!activeSession||!runningState)return 0;const raw=elapsed(activeSession.started_at),paused=Number(runningState.pausedSeconds||0),cur=runningPaused&&runningPauseStartedAt?elapsed(runningPauseStartedAt):0;return Math.max(0,raw-paused-cur)}
-function renderRunning(){if(!activeSession||!runningState)return;const sec=runningElapsedSeconds(),km=(runningState.distanceMeters||0)/1000;e.runningProgramName.textContent=activeSession.program_name||"Løping";e.runningElapsed.textContent=fmtElapsed(sec);e.runningDistance.textContent=`${km.toLocaleString("nb-NO",{minimumFractionDigits:2,maximumFractionDigits:2})} km`;e.runningAvgPace.textContent=km>.05?formatPace(sec/km):"– /km";e.runningCurrentPace.textContent=formatPace(runningState.currentPace);e.runningPointCount.textContent=`${runningState.pointCount||0} GPS-punkter`;e.runningPauseBtn.textContent=runningPaused?"▶ Fortsett":"⏸ Pause"}
+function renderRunning(){if(!activeSession||!runningState)return;const sec=runningElapsedSeconds(),km=(runningState.distanceMeters||0)/1000;e.runningProgramName.textContent=activeSession.program_name||"Løping";e.runningElapsed.textContent=fmtElapsed(sec);e.runningDistance.textContent=`${km.toLocaleString("nb-NO",{minimumFractionDigits:2,maximumFractionDigits:2})} km`;e.runningAvgPace.textContent=km>.05?formatPace(sec/km):"– /km";e.runningCurrentPace.textContent=formatPace(runningState.currentPace);e.runningPointCount.textContent=`${runningState.track?.length||0} lagrede GPS-punkter`;e.runningPauseBtn.textContent=runningPaused?"▶ Fortsett":"⏸ Pause"}
 function startRunningGeolocation(){if(!navigator.geolocation){e.gpsStatus.textContent="GPS støttes ikke";e.gpsStatus.className="gps-status bad";return}stopGeolocation();runningWatchId=navigator.geolocation.watchPosition(handleRunningPosition,err=>{e.gpsStatus.textContent=err.code===1?"GPS-tillatelse avslått":"Kunne ikke hente GPS";e.gpsStatus.className="gps-status bad"},{enableHighAccuracy:true,maximumAge:1000,timeout:15000})}
-async function startRunningRunner(){await requestWakeLock();runningState=loadRunningState()||{distanceMeters:0,pointCount:0,lastPoint:null,currentPace:null,pausedSeconds:0};runningPaused=!!runningState.paused;runningPauseStartedAt=runningState.pauseStartedAt||null;renderRunning();stopRunnerTick();runnerTimer=setInterval(renderRunning,500);if(!runningPaused)startRunningGeolocation()}
+async function startRunningRunner(){await requestWakeLock();runningState=loadRunningState()||{distanceMeters:0,pointCount:0,lastPoint:null,currentPace:null,pausedSeconds:0,track:[]};if(!Array.isArray(runningState.track))runningState.track=[];runningPaused=!!runningState.paused;runningPauseStartedAt=runningState.pauseStartedAt||null;renderRunning();stopRunnerTick();runnerTimer=setInterval(renderRunning,500);if(!runningPaused)startRunningGeolocation()}
 function toggleRunningPause(){if(!runningState)return;if(!runningPaused){runningPaused=true;runningPauseStartedAt=new Date().toISOString();runningState.paused=true;runningState.pauseStartedAt=runningPauseStartedAt;stopGeolocation()}else{if(runningPauseStartedAt)runningState.pausedSeconds=(runningState.pausedSeconds||0)+elapsed(runningPauseStartedAt);runningPaused=false;runningPauseStartedAt=null;runningState.paused=false;runningState.pauseStartedAt=null;runningState.lastPoint=null;startRunningGeolocation()}saveRunningState();renderRunning()}
-async function finishRunning(){if(!activeSession||!runningState)return;stopGeolocation();stopRunnerTick();const sec=runningElapsedSeconds(),distance=runningState.distanceMeters||0,avgPace=distance>=50?sec/(distance/1000):null;activeSession._runningDuration=sec;activeSession._runningDistance=distance;activeSession._runningAvgPace=avgPace;e.finishSummary.textContent=`${activeSession.program_name} · ${fmtElapsed(sec)} · ${(distance/1000).toLocaleString("nb-NO",{minimumFractionDigits:2,maximumFractionDigits:2})} km${avgPace?` · ${formatPace(avgPace)}`:""}`;finishRating=4;e.finishComment.value="";renderStars();openModal(e.finishModal)}
+async function finishRunning(){if(!activeSession||!runningState)return;stopGeolocation();stopRunnerTick();const sec=runningElapsedSeconds(),distance=runningState.distanceMeters||0,avgPace=distance>=50?sec/(distance/1000):null;activeSession._runningDuration=sec;activeSession._runningDistance=distance;activeSession._runningAvgPace=avgPace;activeSession._runningTrack=Array.isArray(runningState?.track)?runningState.track:[];e.finishSummary.textContent=`${activeSession.program_name} · ${fmtElapsed(sec)} · ${(distance/1000).toLocaleString("nb-NO",{minimumFractionDigits:2,maximumFractionDigits:2})} km${avgPace?` · ${formatPace(avgPace)}`:""}`;finishRating=4;e.finishComment.value="";renderStars();openModal(e.finishModal)}
 
 
 let twentyState=null,twentyPaused=false,twentyPauseStartedAt=null,twentyBeepDone=false,twentyBeepTimeout=null;
