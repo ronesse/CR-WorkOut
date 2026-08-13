@@ -15,7 +15,7 @@ const $=id=>document.getElementById(id),e={};
 "registerModal","closeRegisterBtn","regName","regPhone","regEmail","regPassword","registerBtn","registerMessage","programModal","programAthleteName","closeProgramBtn","programChecklist","saveProgramsBtn",
 "finishModal","finishSummary","finishStars","finishComment","saveFinishBtn","cancelFinishBtn",
 "intervalCard","intervalProgramName","intervalElapsed","intervalRound","intervalRemainingTotal","intervalPhase","intervalMessage","intervalTime","intervalProgressBar","intervalNext","intervalSkipBtn","runnerAbortBtn",
-"sequenceProgramName","sequenceGroupRound","sequenceElapsed","sequenceProgressText","sequenceProgressBar","sequenceActivity","sequenceReps","sequenceLoad","sequenceDesc","sequenceNextActivity","sequenceNextMeta","sequenceCompleteBtn","sequenceSkipBtn","sequencePostponeBtn","sequenceAbortBtn","runningScreen","runningProgramName","gpsStatus","runningElapsed","runningDistance","runningAvgPace","runningCurrentPace","runningGpsAccuracy","runningPointCount","runningPauseBtn","runningFinishBtn","runningDiscardBtn","twentyScreen","twentyCard","twentyProgramName","twentyRemaining","twentyBigTime","twentyPhaseText","twentyProgressBar","twentyPauseBtn","twentyFinishBtn","twentyDiscardBtn","freeWorkoutScreen","freeWorkoutProgramName","freeWorkoutElapsed","freeWorkoutBigTime","freeWorkoutFinishBtn","freeWorkoutDiscardBtn","finishDistanceWrap","finishDistance","programInfoModal","programInfoTitle","programInfoDescription","programInfoSummary","programInfoList","programInfoClose","routeMapModal","routeMapTitle","routeMapMeta","routeMap","routeMapClose","coachLiveSection","coachLiveSummary","coachLiveList","coachLiveRefreshBtn","liveRouteMapModal","liveRouteMapTitle","liveRouteMapMeta","liveRouteMap","liveRouteMapClose","coachLiveUpdated","golfScreen","golfCourseName","golfRoundMeta","golfElapsed","golfProgressText","golfTotalStrokes","golfProgressBar","golfDistance","golfGpsStatus","golfCurrentHole","golfHoleStatus","golfStrokesInput","golfMinusStrokeBtn","golfPlusStrokeBtn","golfNextHole","golfNextMeta","golfCompleteBtn","golfSkipBtn","golfPostponeBtn","golfMapBtn","golfFinishRoundBtn","golfDiscardBtn","golfSetupModal","golfSetupClose","golfSetupCourse","golfSetupHoles","golfSetupStartHole","golfStartRoundBtn","golfPreviousBtn","golfNextBtn","golfHistoryLabel","golfPar","golfPinDistance","golfFindCourseBtn","golfNearbyCourseBtn","golfCourseResultsWrap","golfCourseResults","golfCourseLookupStatus"].forEach(id=>e[id]=$(id));
+"sequenceProgramName","sequenceGroupRound","sequenceElapsed","sequenceProgressText","sequenceProgressBar","sequenceActivity","sequenceReps","sequenceLoad","sequenceDesc","sequenceNextActivity","sequenceNextMeta","sequenceCompleteBtn","sequenceSkipBtn","sequencePostponeBtn","sequenceAbortBtn","runningScreen","runningProgramName","gpsStatus","runningElapsed","runningDistance","runningAvgPace","runningCurrentPace","runningGpsAccuracy","runningPointCount","runningPauseBtn","runningFinishBtn","runningDiscardBtn","twentyScreen","twentyCard","twentyProgramName","twentyRemaining","twentyBigTime","twentyPhaseText","twentyProgressBar","twentyPauseBtn","twentyFinishBtn","twentyDiscardBtn","freeWorkoutScreen","freeWorkoutProgramName","freeWorkoutElapsed","freeWorkoutBigTime","freeWorkoutFinishBtn","freeWorkoutDiscardBtn","finishDistanceWrap","finishDistance","programInfoModal","programInfoTitle","programInfoDescription","programInfoSummary","programInfoList","programInfoClose","routeMapModal","routeMapTitle","routeMapMeta","routeMap","routeMapClose","coachLiveSection","coachLiveSummary","coachLiveList","coachLiveRefreshBtn","liveRouteMapModal","liveRouteMapTitle","liveRouteMapMeta","liveRouteMap","liveRouteMapClose","coachLiveUpdated","golfScreen","golfCourseName","golfRoundMeta","golfElapsed","golfProgressText","golfTotalStrokes","golfProgressBar","golfDistance","golfGpsStatus","golfCurrentHole","golfHoleStatus","golfStrokesInput","golfMinusStrokeBtn","golfPlusStrokeBtn","golfNextHole","golfNextMeta","golfCompleteBtn","golfSkipBtn","golfPostponeBtn","golfMapBtn","golfFinishRoundBtn","golfDiscardBtn","golfSetupModal","golfSetupClose","golfSetupCourse","golfSetupHoles","golfSetupStartHole","golfStartRoundBtn","golfPreviousBtn","golfNextBtn","golfHistoryLabel","golfPar","golfPinDistance","golfFindCourseBtn","golfNearbyCourseBtn","golfCourseResultsWrap","golfCourseResults","golfCourseLookupStatus","golfTrackCount"].forEach(id=>e[id]=$(id));
 
 let session=null,user=null,profile=null,athletes=[],programs=[],programAthleteId=null,activeSession=null,homeTimer=null,runnerTimer=null,finishRating=4,currentMonth=new Date(),realtimeChannel=null,runnerMode=null,intervalState=null,sequenceState=null,lastCueKey="";
 let wakeLock=null;
@@ -1050,10 +1050,24 @@ function currentWorkoutLivePayload(){
   if(activeSession.program_id==="golf"){
     const done=golfProcessedCount();
     const total=Number(golfState?.holes)||Number(activeSession.golf_holes)||18;
+    const track=Array.isArray(golfState?.track)?golfState.track:[];
     payload.progress_percent=total?Math.min(100,(done/total)*100):0;
     payload.current_activity=golfState?.queue?.[0]?`Hull ${golfState.queue[0]}`:"Golf";
     payload.live_distance_meters=Number(golfState?.distanceMeters)||0;
-    payload.live_gps_track=Array.isArray(golfState?.track)?golfState.track.slice(-1000):[];
+    payload.live_gps_track=track.slice(-1000);
+
+    // Golf-runden lagres fortløpende, ikke bare ved avslutning.
+    payload.distance_meters=Number(golfState?.distanceMeters)||0;
+    payload.gps_track=track;
+    payload.golf_scorecard={
+      course:golfState?.course||activeSession.golf_course||"Golf",
+      holes:golfState?.holes||activeSession.golf_holes||18,
+      start_hole:golfState?.startHole||activeSession.golf_start_hole||1,
+      completed:golfState?.completed||[],
+      skipped:golfState?.skipped||[],
+      total_strokes:golfTotalStrokes(),
+      course_data:golfState?.courseData||activeSession.golf_course_data||null
+    };
     return payload;
   }
 
@@ -1701,7 +1715,7 @@ function updateGolfGpsStatus(accuracy){
   if(!e.golfGpsStatus)return;
   if(!Number.isFinite(Number(accuracy))){e.golfGpsStatus.textContent="Søker…";return}
   const a=Math.round(Number(accuracy));
-  e.golfGpsStatus.textContent=`±${a} m`;
+  e.golfGpsStatus.textContent=`Aktiv · ±${a} m`;
 }
 
 function handleGolfPosition(pos){
@@ -1729,6 +1743,10 @@ function handleGolfPosition(pos){
   golfState.pointCount=(golfState.pointCount||0)+1;
   saveGolfState();
   renderGolf();
+
+  if(golfState.track.length===1 || golfState.track.length%10===0){
+    publishLiveWorkout(true);
+  }
 }
 
 function startGolfGeolocation(){
@@ -1843,6 +1861,7 @@ function renderGolf(){
   e.golfTotalStrokes.textContent=`${golfTotalStrokes()} slag`;
   e.golfProgressBar.style.width=`${pct}%`;
   e.golfDistance.textContent=`${km.toLocaleString("nb-NO",{minimumFractionDigits:2,maximumFractionDigits:2})} km`;
+  e.golfTrackCount.textContent=`${golfState.track?.length||0} punkter`;
 
   const entries=golfBrowseEntries();
   const idx=golfState.viewIndex??Math.max(0,entries.length-1);

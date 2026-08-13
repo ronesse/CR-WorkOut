@@ -305,3 +305,10 @@ Merk: Tabellen som ble oppgitt har 15 arbeidsøkter + 15 hvileøkter, altså 22:
 - Golfkartet viser GPS-spor, hullets kartlagte linje og flaggposisjon når data finnes.
 - Kartdekning varierer mellom golfbaner; runden fungerer også uten eksterne banedata.
 - Kjør v9.1-delen i SQL_SETUP.sql før testing.
+
+## v9.2 – Golf tracking
+- Golf GPS-spor lagres nå fortløpende i `cr_workout_sessions.gps_track`, ikke bare når runden avsluttes.
+- `distance_meters` og `golf_scorecard` lagres også fortløpende.
+- `live_gps_track` brukes fortsatt for Coach Live.
+- Golf-skjermen viser antall lagrede GPS-punkter og tydelig `GPS Aktiv`.
+- Ingen ny SQL nødvendig dersom v9.1-SQL er kjørt.

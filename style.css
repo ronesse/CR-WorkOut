@@ -758,3 +758,6 @@ body:not(.coach-mode) #coachLiveSection{
   .golf-course-search-actions{grid-template-columns:1fr}
   .golf-hole-nav .compact-btn{padding:8px 9px!important;font-size:.76rem!important}
 }
+
+.golf-metrics{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media(max-width:560px){.golf-metrics{grid-template-columns:1fr 1fr}.golf-metrics>div:last-child{grid-column:1/-1}}
