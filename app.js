@@ -15,7 +15,7 @@ const $=id=>document.getElementById(id),e={};
 "registerModal","closeRegisterBtn","regName","regPhone","regEmail","regPassword","registerBtn","registerMessage","programModal","programAthleteName","closeProgramBtn","programChecklist","saveProgramsBtn",
 "finishModal","finishSummary","finishStars","finishComment","saveFinishBtn","cancelFinishBtn",
 "intervalCard","intervalProgramName","intervalElapsed","intervalRound","intervalRemainingTotal","intervalPhase","intervalMessage","intervalTime","intervalProgressBar","intervalNext","intervalSkipBtn","runnerAbortBtn",
-"sequenceProgramName","sequenceGroupRound","sequenceElapsed","sequenceProgressText","sequenceProgressBar","sequenceActivity","sequenceReps","sequenceLoad","sequenceDesc","sequenceNextActivity","sequenceNextMeta","sequenceCompleteBtn","sequenceSkipBtn","sequencePostponeBtn","sequenceAbortBtn","runningScreen","runningProgramName","gpsStatus","runningElapsed","runningDistance","runningAvgPace","runningCurrentPace","runningGpsAccuracy","runningPointCount","runningPauseBtn","runningFinishBtn","runningDiscardBtn","twentyScreen","twentyCard","twentyProgramName","twentyRemaining","twentyBigTime","twentyPhaseText","twentyProgressBar","twentyPauseBtn","twentyFinishBtn","twentyDiscardBtn","freeWorkoutScreen","freeWorkoutProgramName","freeWorkoutElapsed","freeWorkoutBigTime","freeWorkoutFinishBtn","freeWorkoutDiscardBtn","finishDistanceWrap","finishDistance","programInfoModal","programInfoTitle","programInfoDescription","programInfoSummary","programInfoList","programInfoClose","routeMapModal","routeMapTitle","routeMapMeta","routeMap","routeMapClose","coachLiveSection","coachLiveSummary","coachLiveList","coachLiveRefreshBtn","liveRouteMapModal","liveRouteMapTitle","liveRouteMapMeta","liveRouteMap","liveRouteMapClose"].forEach(id=>e[id]=$(id));
+"sequenceProgramName","sequenceGroupRound","sequenceElapsed","sequenceProgressText","sequenceProgressBar","sequenceActivity","sequenceReps","sequenceLoad","sequenceDesc","sequenceNextActivity","sequenceNextMeta","sequenceCompleteBtn","sequenceSkipBtn","sequencePostponeBtn","sequenceAbortBtn","runningScreen","runningProgramName","gpsStatus","runningElapsed","runningDistance","runningAvgPace","runningCurrentPace","runningGpsAccuracy","runningPointCount","runningPauseBtn","runningFinishBtn","runningDiscardBtn","twentyScreen","twentyCard","twentyProgramName","twentyRemaining","twentyBigTime","twentyPhaseText","twentyProgressBar","twentyPauseBtn","twentyFinishBtn","twentyDiscardBtn","freeWorkoutScreen","freeWorkoutProgramName","freeWorkoutElapsed","freeWorkoutBigTime","freeWorkoutFinishBtn","freeWorkoutDiscardBtn","finishDistanceWrap","finishDistance","programInfoModal","programInfoTitle","programInfoDescription","programInfoSummary","programInfoList","programInfoClose","routeMapModal","routeMapTitle","routeMapMeta","routeMap","routeMapClose","coachLiveSection","coachLiveSummary","coachLiveList","coachLiveRefreshBtn","liveRouteMapModal","liveRouteMapTitle","liveRouteMapMeta","liveRouteMap","liveRouteMapClose","coachLiveUpdated"].forEach(id=>e[id]=$(id));
 
 let session=null,user=null,profile=null,athletes=[],programs=[],programAthleteId=null,activeSession=null,homeTimer=null,runnerTimer=null,finishRating=4,currentMonth=new Date(),realtimeChannel=null,runnerMode=null,intervalState=null,sequenceState=null,lastCueKey="";
 let wakeLock=null;
@@ -62,7 +62,23 @@ function fmtDate(iso){return new Intl.DateTimeFormat("nb-NO",{dateStyle:"medium"
 function dateKey(d){const p=n=>String(n).padStart(2,"0");return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`}
 function elapsed(from,to=new Date()){return Math.max(0,Math.floor((new Date(to)-new Date(from))/1000))}
 function fmtElapsed(sec){const h=Math.floor(sec/3600),m=Math.floor((sec%3600)/60),s=sec%60;return h?`${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`:`${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`}
-function showOnly(name){["landing","athlete","coach","athletes","programs","runner","running","twenty","freeWorkout","calendar","stats"].forEach(n=>e[n+"Screen"]?.classList.toggle("hidden",n!==name));document.querySelectorAll(".nav-btn").forEach(b=>b.classList.toggle("active",(name==="athlete"&&b.dataset.screen==="home")||(name==="coach"&&b.dataset.screen==="home")||(name==="athletes"&&b.dataset.screen==="coach")||b.dataset.screen===name))}
+function showOnly(name){
+  ["landing","athlete","coach","athletes","programs","runner","running","twenty","freeWorkout","calendar","stats"]
+    .forEach(n=>e[n+"Screen"]?.classList.toggle("hidden",n!==name));
+
+  document.querySelectorAll(".nav-btn").forEach(b=>
+    b.classList.toggle("active",
+      (name==="athlete"&&b.dataset.screen==="home")||
+      (name==="coach"&&b.dataset.screen==="home")||
+      (name==="athletes"&&b.dataset.screen==="coach")||
+      b.dataset.screen===name
+    )
+  );
+
+  const isCoachDashboard=profile?.role==="coach"&&name==="coach";
+  document.body.classList.toggle("coach-mode",profile?.role==="coach");
+  if(!isCoachDashboard)stopCoachLivePolling();
+}
 function openModal(m){m.classList.remove("hidden")}function closeModal(m){m.classList.add("hidden")}
 function stateKey(){return activeSession?`cr_runner_${activeSession.id}`:""}
 function saveRunnerState(obj){if(activeSession)localStorage.setItem(stateKey(),JSON.stringify(obj))}
@@ -76,9 +92,6 @@ function getAudioContext(){
   if(!sharedAudioContext)sharedAudioContext=new C();
   return sharedAudioContext;
 
-  const coachScreens=["coach","athletes","programs"];
-  document.body.classList.toggle("coach-mode",profile?.role==="coach"&&coachScreens.includes(name));
-  if(!(profile?.role==="coach"&&name==="coach"))stopCoachLivePolling();
 }
 
 
@@ -136,7 +149,15 @@ function countdownBeep(){
 
 async function loadProfile(){if(!user){profile=null;return}const {data}=await sb.from("cr_profiles").select("*").eq("id",user.id).maybeSingle();profile=data||null}
 function updateAccount(){const logged=!!user;e.authLoggedOut.classList.toggle("hidden",logged);e.authLoggedIn.classList.toggle("hidden",!logged);if(logged){e.accountName.textContent=profile?.full_name||user.email;e.accountEmail.textContent=user.email;e.accountTitle.textContent=profile?.role==="coach"?"Coach-konto":"Min konto"}}
-async function route(){updateAccount();stopRunnerTick();if(!user){e.bottomNav.classList.add("hidden");showOnly("landing");return}e.bottomNav.classList.remove("hidden");const coach=profile?.role==="coach";e.athletesNavBtn?.classList.toggle("hidden",!coach);e.programsNavBtn?.classList.toggle("hidden",!coach);e.calendarAthleteSelect.classList.toggle("hidden",!coach);e.statsAthleteSelect.classList.toggle("hidden",!coach);if(coach){await loadCoachData();showOnly("coach");startRealtime()}else{await loadAthleteData();showOnly("athlete")}}
+async function route(){updateAccount();stopRunnerTick();if(!user){e.bottomNav.classList.add("hidden");showOnly("landing");return}e.bottomNav.classList.remove("hidden");const coach=profile?.role==="coach";e.athletesNavBtn?.classList.toggle("hidden",!coach);e.programsNavBtn?.classList.toggle("hidden",!coach);e.calendarAthleteSelect.classList.toggle("hidden",!coach);e.statsAthleteSelect.classList.toggle("hidden",!coach);if(coach){
+  await loadCoachData();
+  showOnly("coach");
+  startCoachLivePolling();
+  startRealtime();
+}else{
+  await loadAthleteData();
+  showOnly("athlete");
+}}
 
 async function login(){e.loginMessage.textContent="Logger inn…";const {error}=await sb.auth.signInWithPassword({email:e.loginEmail.value.trim(),password:e.loginPassword.value});e.loginMessage.textContent=error?error.message:""}
 function coachIdFromUrl(){return new URLSearchParams(location.search).get("coach")||""}
@@ -1148,6 +1169,7 @@ async function loadCoachLiveSessions(){
   if(!athleteIds.length){
     coachLiveSessions=[];
     renderCoachLive();
+    if(e.coachLiveUpdated)e.coachLiveUpdated.textContent=`Oppdatert ${new Date().toLocaleTimeString("nb-NO",{hour:"2-digit",minute:"2-digit",second:"2-digit"})}`;
     return;
   }
 
@@ -1176,6 +1198,7 @@ async function loadCoachLiveSessions(){
   }));
 
   renderCoachLive();
+  if(e.coachLiveUpdated)e.coachLiveUpdated.textContent=`Oppdatert ${new Date().toLocaleTimeString("nb-NO",{hour:"2-digit",minute:"2-digit",second:"2-digit"})}`;
 }
 
 function stopCoachLivePolling(){
@@ -1274,8 +1297,42 @@ e.programChecklist.querySelectorAll(".program-enabled").forEach(cb=>cb.onchange=
 async function savePrograms(){const rows=[...e.programChecklist.querySelectorAll(".program-order-row")].map((row,idx)=>{const enabled=row.querySelector(".program-enabled").checked;return{athlete_id:programAthleteId,program_id:row.dataset.programId,enabled,sort_order:enabled?Math.max(1,Number(row.querySelector(".program-order-input").value)||idx+1):null}});const en=rows.filter(x=>x.enabled).sort((a,b)=>(a.sort_order??9999)-(b.sort_order??9999));en.forEach((r,i)=>r.sort_order=i+1);const {error}=await sb.from("cr_athlete_programs").upsert(rows,{onConflict:"athlete_id,program_id"});if(error){alert("Kunne ikke lagre programrekkefølge. Kjør v7.6 SQL først.\n\n"+error.message);return}closeModal(e.programModal)}
 
 function inviteUrl(){return `${location.origin}${location.pathname}?register=1&coach=${user.id}`}async function copyInvite(){await navigator.clipboard.writeText(inviteUrl());alert("Registreringslenken er kopiert.")}
-function startRealtime(){if(realtimeChannel)sb.removeChannel(realtimeChannel);realtimeChannel=sb.channel("cr-workout-coach-v2").on("postgres_changes",{event:"INSERT",schema:"public",table:"cr_workout_sessions"},p=>handleRealtime(p.new)).on("postgres_changes",{event:"UPDATE",schema:"public",table:"cr_workout_sessions"},p=>handleRealtime(p.new)).subscribe()}
-function handleRealtime(row){if(!athletes.some(a=>a.id===row.athlete_id))return;const a=athletes.find(x=>x.id===row.athlete_id),completed=row.status==="completed";if(row.status==="cancelled")return;const div=document.createElement("div");div.className="notification-item";div.innerHTML=`<strong>${completed?"✅":"🟢"} ${esc(a.full_name||a.email)} ${completed?"fullførte":"startet"} ${esc(row.program_name)}</strong><small>${completed&&row.rating?`Rating ${"★".repeat(row.rating)} · `:""}${fmtDate(completed?row.completed_at:row.started_at)}</small>`;if(e.notificationFeed.querySelector(".empty"))e.notificationFeed.innerHTML="";e.notificationFeed.prepend(div);loadCoachData()}
+const realtimeNoticeKeys=new Set();
+
+function startRealtime(){
+  if(realtimeChannel)sb.removeChannel(realtimeChannel);
+  realtimeChannel=sb.channel("cr-workout-coach-v3")
+    .on("postgres_changes",{event:"INSERT",schema:"public",table:"cr_workout_sessions"},
+      p=>handleRealtime("INSERT",p.new))
+    .on("postgres_changes",{event:"UPDATE",schema:"public",table:"cr_workout_sessions"},
+      p=>handleRealtime("UPDATE",p.new))
+    .subscribe();
+}
+
+function handleRealtime(eventType,row){
+  if(!athletes.some(a=>a.id===row.athlete_id))return;
+  if(row.status==="cancelled")return;
+
+  const isStart=eventType==="INSERT"&&row.status==="started";
+  const isCompleted=eventType==="UPDATE"&&row.status==="completed";
+  if(!isStart&&!isCompleted)return;
+
+  const key=`${row.id}:${isCompleted?"completed":"started"}`;
+  if(realtimeNoticeKeys.has(key))return;
+  realtimeNoticeKeys.add(key);
+
+  const a=athletes.find(x=>x.id===row.athlete_id);
+  const div=document.createElement("div");
+  div.className="notification-item";
+  div.innerHTML=`<strong>${isCompleted?"✅":"🟢"} ${esc(a.full_name||a.email)} ${isCompleted?"fullførte":"startet"} ${esc(row.program_name)}</strong>
+    <small>${isCompleted&&row.rating?`Rating ${"★".repeat(row.rating)} · `:""}${fmtDate(isCompleted?row.completed_at:row.started_at)}</small>`;
+
+  if(e.notificationFeed.querySelector(".empty"))e.notificationFeed.innerHTML="";
+  e.notificationFeed.prepend(div);
+
+  // Live-listen håndteres separat av polling; ingen full dashboard-reload her.
+  if(isCompleted)loadCoachLiveSessions();
+}
 
 function fillAthleteSelectors(){const opts=[`<option value="">Alle utøvere</option>`,...athletes.filter(a=>a.approved).map(a=>`<option value="${a.id}">${esc(a.full_name||a.email)}</option>`)].join("");e.calendarAthleteSelect.innerHTML=opts;e.statsAthleteSelect.innerHTML=opts}
 async function sessionsForView(selected=""){if(profile?.role==="coach"){const ids=selected?[selected]:athletes.filter(a=>a.approved).map(a=>a.id);if(!ids.length)return[];const {data}=await sb.from("cr_workout_sessions").select("*").in("athlete_id",ids).order("started_at",{ascending:false});return data||[]}const {data}=await sb.from("cr_workout_sessions").select("*").eq("athlete_id",user.id).order("started_at",{ascending:false});return data||[]}
@@ -1441,8 +1498,14 @@ document.querySelectorAll(".nav-btn").forEach(b=>b.onclick=async()=>{
   const n=b.dataset.screen;
   try{
     if(n==="home"){
-      if(profile?.role==="coach"){await loadCoachData();showOnly("coach")}
-      else{await loadAthleteData();showOnly("athlete")}
+      if(profile?.role==="coach"){
+        await loadCoachData();
+        showOnly("coach");
+        startCoachLivePolling();
+      }else{
+        await loadAthleteData();
+        showOnly("athlete");
+      }
     }else if(n==="coach"){
       await loadCoachData();showOnly("athletes");
     }else if(n==="programs"){

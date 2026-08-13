@@ -7,7 +7,7 @@
   <meta name="description" content="CR-Workout – coach og utøver">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="style.css?v=8.10">
+  <link rel="stylesheet" href="style.css?v=8.11">
   <title>CR-Workout</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     crossorigin="">
@@ -101,7 +101,7 @@
         <button id="coachLiveRefreshBtn" class="secondary-btn compact-btn">↻ Oppdater</button>
       </div>
 
-      <div id="coachLiveSummary" class="coach-live-summary"></div>
+      <div class="coach-live-status-row"><div id="coachLiveSummary" class="coach-live-summary"></div><small id="coachLiveUpdated"></small></div>
       <div id="coachLiveList" class="coach-live-list">
         <div class="empty">Ingen aktive økter.</div>
       </div>
@@ -470,8 +470,8 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="programs.js?v=8.10"></script>
-  <script src="app.js?v=8.10"></script>
+  <script src="programs.js?v=8.11"></script>
+  <script src="app.js?v=8.11"></script>
 <script>if("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js").catch(()=>{});</script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
   crossorigin=""></script>

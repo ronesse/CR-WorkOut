@@ -260,3 +260,13 @@ Merk: Tabellen som ble oppgitt har 15 arbeidsøkter + 15 hvileøkter, altså 22:
 - Polling stopper når coach går til en annen side/fane eller nettleserfanen skjules.
 - Når coach kommer tilbake til dashboardet, oppdateres listen umiddelbart og polling starter igjen.
 - Ingen ny SQL nødvendig.
+
+## v8.11 – Coach Live fix
+- Rettet feil som gjorde at `Pågående økter` ble skjult: coach-mode-koden lå ved en feil inne i audio-funksjonen.
+- `Pågående økter` ligger fortsatt over `Varsler` og vises kun for coach.
+- Automatisk oppdatering starter nå etter at Coach Dashboard faktisk er synlig.
+- Live-listen oppdateres hvert 5. sekund kun mens dashboardet er åpent.
+- Varsler dupliseres ikke lenger av live-oppdateringene: UPDATE hvert 5. sekund ignoreres som varsel.
+- Varsel vises kun ved faktisk start (INSERT) og faktisk fullføring (UPDATE til completed).
+- Viser tidspunkt for siste live-oppdatering.
+- Ingen ny SQL nødvendig.
