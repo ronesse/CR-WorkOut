@@ -361,3 +361,19 @@ Merk: Tabellen som ble oppgitt har 15 arbeidsøkter + 15 hvileøkter, altså 22:
 - Rundeoversikten viser valgt tee og lengde for aktuelt hull.
 - Scorekortet lagrer tee og hullengde per fullført hull.
 - Kjør v9.6-delen i SQL_SETUP.sql før testing.
+
+## v9.7 – dynamiske utslagssteder
+- Tee-valg er ikke lenger hardkodet til 39/43/48/50.
+- Nye tabeller: `cr_golf_tees` og `cr_golf_hole_lengths`.
+- Hver bane kan ha egne tee-koder/navn og egne hullengder.
+- Norefjell migreres automatisk til den nye modellen.
+- Grenland & Omegn Golfklubb legges inn med gjeldende Par 71 og 2026-baneguide.
+- Grenland: Tee 48, 53, 57 og 59 har komplette hullengder. Tee 31 registreres fordi den finnes i gjeldende slope, men hull-for-hull-lengder er ikke publisert i klubbens baneguide og er derfor ikke gjettet.
+- Klubben opplyser at fysiske/Gimmie-merkinger kan avvike: 50→48, 55→53, 57→58 og 59→60.
+- Kjør v9.7-delen i SQL_SETUP.sql før testing.
+
+## v9.7.1 – Grenland hullengde fix
+- Golf-runden verifiserer nå at valgt tee faktisk har hullengder i `courseData`.
+- Hvis en aktiv eller ny runde har gammel/ufullstendig `golf_course_data`, lastes banedata på nytt fra `cr_golf_tees` og `cr_golf_hole_lengths`.
+- Golf-oppsettet viser nå også hvor mange hull-lengder som er lastet fra databasen.
+- Ingen ny SQL nødvendig dersom v9.7-SQL er kjørt.

@@ -374,3 +374,212 @@ alter table public.cr_workout_sessions
   add column if not exists golf_tee text;
 
 NOTIFY pgrst, 'reload schema';
+
+
+-- ================================================================
+-- v9.7: dynamiske utslagssteder per golfbane
+-- ================================================================
+
+create table if not exists public.cr_golf_tees (
+  course_id text not null references public.cr_golf_courses(id) on delete cascade,
+  tee_code text not null,
+  tee_name text not null,
+  sort_order integer not null default 100,
+  total_length_m integer,
+  active boolean not null default true,
+  notes text,
+  primary key(course_id,tee_code)
+);
+
+create table if not exists public.cr_golf_hole_lengths (
+  course_id text not null,
+  hole_no integer not null,
+  tee_code text not null,
+  length_m integer,
+  primary key(course_id,hole_no,tee_code),
+  foreign key(course_id,hole_no)
+    references public.cr_golf_holes(course_id,hole_no) on delete cascade,
+  foreign key(course_id,tee_code)
+    references public.cr_golf_tees(course_id,tee_code) on delete cascade
+);
+
+alter table public.cr_golf_tees enable row level security;
+alter table public.cr_golf_hole_lengths enable row level security;
+
+drop policy if exists "golf_tees_read" on public.cr_golf_tees;
+create policy "golf_tees_read" on public.cr_golf_tees
+for select to authenticated using(true);
+
+drop policy if exists "golf_hole_lengths_read" on public.cr_golf_hole_lengths;
+create policy "golf_hole_lengths_read" on public.cr_golf_hole_lengths
+for select to authenticated using(true);
+
+drop policy if exists "golf_tees_coach_all" on public.cr_golf_tees;
+create policy "golf_tees_coach_all" on public.cr_golf_tees
+for all to authenticated
+using(exists(select 1 from public.cr_profiles p where p.id=auth.uid() and p.role='coach'))
+with check(exists(select 1 from public.cr_profiles p where p.id=auth.uid() and p.role='coach'));
+
+drop policy if exists "golf_hole_lengths_coach_all" on public.cr_golf_hole_lengths;
+create policy "golf_hole_lengths_coach_all" on public.cr_golf_hole_lengths
+for all to authenticated
+using(exists(select 1 from public.cr_profiles p where p.id=auth.uid() and p.role='coach'))
+with check(exists(select 1 from public.cr_profiles p where p.id=auth.uid() and p.role='coach'));
+
+-- Migrer Norefjell fra tidligere tee-kolonner
+insert into public.cr_golf_tees(course_id,tee_code,tee_name,sort_order,total_length_m)
+values
+('norefjell-gk','39','39',10,null),
+('norefjell-gk','43','43',20,null),
+('norefjell-gk','48','48',30,null),
+('norefjell-gk','50','50',40,null)
+on conflict(course_id,tee_code) do update set
+ tee_name=excluded.tee_name,sort_order=excluded.sort_order,active=true;
+
+insert into public.cr_golf_hole_lengths(course_id,hole_no,tee_code,length_m)
+select course_id,hole_no,'39',tee_39_m from public.cr_golf_holes
+where course_id='norefjell-gk' and tee_39_m is not null
+on conflict(course_id,hole_no,tee_code) do update set length_m=excluded.length_m;
+
+insert into public.cr_golf_hole_lengths(course_id,hole_no,tee_code,length_m)
+select course_id,hole_no,'43',tee_43_m from public.cr_golf_holes
+where course_id='norefjell-gk' and tee_43_m is not null
+on conflict(course_id,hole_no,tee_code) do update set length_m=excluded.length_m;
+
+insert into public.cr_golf_hole_lengths(course_id,hole_no,tee_code,length_m)
+select course_id,hole_no,'48',tee_48_m from public.cr_golf_holes
+where course_id='norefjell-gk' and tee_48_m is not null
+on conflict(course_id,hole_no,tee_code) do update set length_m=excluded.length_m;
+
+insert into public.cr_golf_hole_lengths(course_id,hole_no,tee_code,length_m)
+select course_id,hole_no,'50',tee_50_m from public.cr_golf_holes
+where course_id='norefjell-gk' and tee_50_m is not null
+on conflict(course_id,hole_no,tee_code) do update set length_m=excluded.length_m;
+
+-- Grenland & Omegn Golfklubb – gjeldende Par 71
+insert into public.cr_golf_courses
+(id,name,country,location,holes,source_name,source_url,active)
+values
+('grenland-og-omegn-gk','Grenland & Omegn Golfklubb','NO','Skien, Telemark',18,
+ 'Grenland & Omegn Golfklubb','https://grenlandgolf.no/nyheter/baneguide/',true)
+on conflict(id) do update set
+ name=excluded.name,location=excluded.location,holes=18,
+ source_name=excluded.source_name,source_url=excluded.source_url,
+ active=true,updated_at=now();
+
+insert into public.cr_golf_holes(course_id,hole_no,par,stroke_index)
+values
+('grenland-og-omegn-gk',1,4,11),
+('grenland-og-omegn-gk',2,4,5),
+('grenland-og-omegn-gk',3,3,17),
+('grenland-og-omegn-gk',4,5,13),
+('grenland-og-omegn-gk',5,4,9),
+('grenland-og-omegn-gk',6,3,7),
+('grenland-og-omegn-gk',7,4,1),
+('grenland-og-omegn-gk',8,4,3),
+('grenland-og-omegn-gk',9,4,15),
+('grenland-og-omegn-gk',10,3,2),
+('grenland-og-omegn-gk',11,5,14),
+('grenland-og-omegn-gk',12,4,6),
+('grenland-og-omegn-gk',13,4,10),
+('grenland-og-omegn-gk',14,4,8),
+('grenland-og-omegn-gk',15,3,16),
+('grenland-og-omegn-gk',16,5,18),
+('grenland-og-omegn-gk',17,4,4),
+('grenland-og-omegn-gk',18,4,12)
+on conflict(course_id,hole_no) do update set
+ par=excluded.par,stroke_index=excluded.stroke_index,updated_at=now();
+
+-- Gjeldende utslagssteder i 2026.
+-- Tee 31 finnes i den offisielle slope-tabellen, men klubbens baneguide
+-- publiserer ikke hull-for-hull-lengder for Tee 31. Derfor lagres tee-en,
+-- men uten oppdiktede lengder.
+insert into public.cr_golf_tees
+(course_id,tee_code,tee_name,sort_order,total_length_m,notes)
+values
+('grenland-og-omegn-gk','31','31',10,null,'Offisiell slope-tee; hullengder ikke publisert i baneguiden'),
+('grenland-og-omegn-gk','48','48',20,4799,'Rød / fysisk teekloss kan være merket 50'),
+('grenland-og-omegn-gk','53','53',30,5325,'Blå / fysisk teekloss kan være merket 55'),
+('grenland-og-omegn-gk','57','57',40,5650,'Gul / Gimmie kan vise 58'),
+('grenland-og-omegn-gk','59','59',50,5888,'Hvit / Gimmie kan vise 60')
+on conflict(course_id,tee_code) do update set
+ tee_name=excluded.tee_name,sort_order=excluded.sort_order,
+ total_length_m=excluded.total_length_m,notes=excluded.notes,active=true;
+
+insert into public.cr_golf_hole_lengths(course_id,hole_no,tee_code,length_m)
+values
+('grenland-og-omegn-gk',1,'48',283),
+('grenland-og-omegn-gk',2,'48',285),
+('grenland-og-omegn-gk',3,'48',100),
+('grenland-og-omegn-gk',4,'48',367),
+('grenland-og-omegn-gk',5,'48',272),
+('grenland-og-omegn-gk',6,'48',124),
+('grenland-og-omegn-gk',7,'48',281),
+('grenland-og-omegn-gk',8,'48',299),
+('grenland-og-omegn-gk',9,'48',257),
+('grenland-og-omegn-gk',10,'48',123),
+('grenland-og-omegn-gk',11,'48',359),
+('grenland-og-omegn-gk',12,'48',322),
+('grenland-og-omegn-gk',13,'48',271),
+('grenland-og-omegn-gk',14,'48',333),
+('grenland-og-omegn-gk',15,'48',106),
+('grenland-og-omegn-gk',16,'48',384),
+('grenland-og-omegn-gk',17,'48',305),
+('grenland-og-omegn-gk',18,'48',328),
+('grenland-og-omegn-gk',1,'53',327),
+('grenland-og-omegn-gk',2,'53',321),
+('grenland-og-omegn-gk',3,'53',100),
+('grenland-og-omegn-gk',4,'53',450),
+('grenland-og-omegn-gk',5,'53',317),
+('grenland-og-omegn-gk',6,'53',144),
+('grenland-og-omegn-gk',7,'53',325),
+('grenland-og-omegn-gk',8,'53',305),
+('grenland-og-omegn-gk',9,'53',305),
+('grenland-og-omegn-gk',10,'53',133),
+('grenland-og-omegn-gk',11,'53',393),
+('grenland-og-omegn-gk',12,'53',338),
+('grenland-og-omegn-gk',13,'53',276),
+('grenland-og-omegn-gk',14,'53',333),
+('grenland-og-omegn-gk',15,'53',133),
+('grenland-og-omegn-gk',16,'53',445),
+('grenland-og-omegn-gk',17,'53',342),
+('grenland-og-omegn-gk',18,'53',338),
+('grenland-og-omegn-gk',1,'57',330),
+('grenland-og-omegn-gk',2,'57',335),
+('grenland-og-omegn-gk',3,'57',120),
+('grenland-og-omegn-gk',4,'57',455),
+('grenland-og-omegn-gk',5,'57',326),
+('grenland-og-omegn-gk',6,'57',144),
+('grenland-og-omegn-gk',7,'57',339),
+('grenland-og-omegn-gk',8,'57',356),
+('grenland-og-omegn-gk',9,'57',317),
+('grenland-og-omegn-gk',10,'57',144),
+('grenland-og-omegn-gk',11,'57',429),
+('grenland-og-omegn-gk',12,'57',352),
+('grenland-og-omegn-gk',13,'57',320),
+('grenland-og-omegn-gk',14,'57',384),
+('grenland-og-omegn-gk',15,'57',133),
+('grenland-og-omegn-gk',16,'57',458),
+('grenland-og-omegn-gk',17,'57',350),
+('grenland-og-omegn-gk',18,'57',358),
+('grenland-og-omegn-gk',1,'59',338),
+('grenland-og-omegn-gk',2,'59',358),
+('grenland-og-omegn-gk',3,'59',120),
+('grenland-og-omegn-gk',4,'59',455),
+('grenland-og-omegn-gk',5,'59',336),
+('grenland-og-omegn-gk',6,'59',170),
+('grenland-og-omegn-gk',7,'59',379),
+('grenland-og-omegn-gk',8,'59',366),
+('grenland-og-omegn-gk',9,'59',322),
+('grenland-og-omegn-gk',10,'59',152),
+('grenland-og-omegn-gk',11,'59',429),
+('grenland-og-omegn-gk',12,'59',379),
+('grenland-og-omegn-gk',13,'59',351),
+('grenland-og-omegn-gk',14,'59',384),
+('grenland-og-omegn-gk',15,'59',147),
+('grenland-og-omegn-gk',16,'59',487),
+('grenland-og-omegn-gk',17,'59',357),
+('grenland-og-omegn-gk',18,'59',358)
+on conflict(course_id,hole_no,tee_code) do update set length_m=excluded.length_m;
+
+NOTIFY pgrst,'reload schema';

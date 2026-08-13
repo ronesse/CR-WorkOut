@@ -911,3 +911,7 @@ body:not(.coach-mode) #coachLiveSection{
   border-color:rgba(34,197,94,.24);
   color:#dcfce7;
 }
+
+/* v9.7 dynamiske tees */
+.golf-admin-tee-list{display:flex;flex-wrap:wrap;gap:7px;align-items:center;margin:8px 0 12px}
+.golf-admin-tee-list span{padding:6px 9px;border-radius:999px;background:rgba(59,130,246,.11);border:1px solid rgba(96,165,250,.22);font-size:.76rem;font-weight:850}
