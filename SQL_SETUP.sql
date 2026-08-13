@@ -308,3 +308,10 @@ set name=excluded.name,
     sort_order=excluded.sort_order;
 
 NOTIFY pgrst, 'reload schema';
+
+
+-- v9.1: kartdata for Golf
+alter table public.cr_workout_sessions
+  add column if not exists golf_course_data jsonb;
+
+NOTIFY pgrst, 'reload schema';

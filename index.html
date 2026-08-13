@@ -7,7 +7,7 @@
   <meta name="description" content="CR-Workout – coach og utøver">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="style.css?v=9.0">
+  <link rel="stylesheet" href="style.css?v=9.1">
   <title>CR-Workout</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     crossorigin="">
@@ -340,7 +340,16 @@
 
           <div class="golf-hole-card">
             <span class="task-label">NÅ</span>
+            <div class="golf-hole-nav">
+              <button id="golfPreviousBtn" type="button" class="secondary-btn compact-btn">‹ Previous</button>
+              <span id="golfHistoryLabel"></span>
+              <button id="golfNextBtn" type="button" class="secondary-btn compact-btn">Next ›</button>
+            </div>
             <h2 id="golfCurrentHole">Hull 1</h2>
+            <div class="golf-hole-facts">
+              <span id="golfPar">Par –</span>
+              <span id="golfPinDistance">Flagg: –</span>
+            </div>
             <p id="golfHoleStatus">Registrer antall slag når hullet er ferdig.</p>
 
             <div class="golf-strokes-box">
@@ -525,6 +534,19 @@
       <input id="golfSetupCourse" type="text" placeholder="f.eks. Tyrifjord Golfklubb">
     </label>
 
+    <div class="golf-course-search-actions">
+      <button id="golfFindCourseBtn" type="button" class="secondary-btn">🔎 Finn bane</button>
+      <button id="golfNearbyCourseBtn" type="button" class="secondary-btn">📍 Finn bane nær meg</button>
+    </div>
+
+    <label id="golfCourseResultsWrap" class="hidden">Treff
+      <select id="golfCourseResults"></select>
+    </label>
+
+    <div id="golfCourseLookupStatus" class="golf-course-status">
+      Du kan starte uten kartdata, eller la appen forsøke å hente hull, par og flagg fra OpenStreetMap.
+    </div>
+
     <div class="golf-setup-grid">
       <label>Antall hull
         <select id="golfSetupHoles">
@@ -567,8 +589,8 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="programs.js?v=9.0"></script>
-  <script src="app.js?v=9.0"></script>
+  <script src="programs.js?v=9.1"></script>
+  <script src="app.js?v=9.1"></script>
 <script>if("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js").catch(()=>{});</script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
   crossorigin=""></script>

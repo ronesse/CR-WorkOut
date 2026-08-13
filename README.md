@@ -293,3 +293,15 @@ Merk: Tabellen som ble oppgitt har 15 arbeidsøkter + 15 hvileøkter, altså 22:
 - Pågående Golf publiserer progresjon og live GPS til Coach Live.
 - Golf-ruter kan vises på kart både under runden og fra Kalender.
 - Kjør v9.0-delen i SQL_SETUP.sql før testing.
+
+## v9.1 – Golf banedata + Previous/Next + Kalenderfix
+- Rettet kalenderfeilen fra v9.0: `isGolf` manglet og stoppet visning av utførte økter.
+- Golfkortet har Previous/Next for å bla tilbake til tidligere spilte hull.
+- Tidligere fullførte hull kan åpnes og antall slag kan redigeres og lagres.
+- Golf-oppsettet kan søke etter bane ved navn via Nominatim eller finne golfbaner nær GPS-posisjonen via Overpass/OpenStreetMap.
+- Etter valg av bane forsøker appen å hente `golf=hole`, `par` og `golf=pin`.
+- Dersom eksplisitt pin ikke finnes, brukes endepunktet på den kartlagte `golf=hole`-linjen som mulig flagg/greenposisjon.
+- Under aktivt hull vises Par og automatisk luftlinjeavstand fra spillerens GPS-posisjon til kartlagt flagg/green.
+- Golfkartet viser GPS-spor, hullets kartlagte linje og flaggposisjon når data finnes.
+- Kartdekning varierer mellom golfbaner; runden fungerer også uten eksterne banedata.
+- Kjør v9.1-delen i SQL_SETUP.sql før testing.

@@ -698,3 +698,63 @@ body:not(.coach-mode) #coachLiveSection{
   .golf-actions .complete-btn{grid-column:1/-1}
   .golf-strokes-box{grid-template-columns:54px minmax(100px,140px) 54px}
 }
+
+/* v9.1 Golf: navigasjon og banedata */
+.golf-hole-nav{
+  width:100%;
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  gap:8px;
+  align-items:center;
+  margin-bottom:6px;
+}
+#golfHistoryLabel{
+  text-align:center;
+  color:var(--muted);
+  font-size:.72rem;
+  font-weight:850;
+}
+.golf-hole-facts{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:8px;
+  margin:-2px 0 8px;
+}
+.golf-hole-facts span{
+  padding:6px 10px;
+  border-radius:999px;
+  background:rgba(59,130,246,.11);
+  border:1px solid rgba(96,165,250,.22);
+  font-size:.78rem;
+  font-weight:850;
+}
+.golf-course-search-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin:-2px 0 10px;
+}
+.golf-course-status{
+  min-height:42px;
+  padding:10px 11px;
+  border-radius:12px;
+  background:rgba(255,255,255,.04);
+  border:1px solid var(--line);
+  color:var(--muted);
+  font-size:.8rem;
+  line-height:1.35;
+  margin-bottom:10px;
+}
+.golf-course-status[data-state="ok"]{
+  border-color:rgba(34,197,94,.35);
+  color:#bbf7d0;
+}
+.golf-course-status[data-state="warn"]{
+  border-color:rgba(245,158,11,.35);
+  color:#fde68a;
+}
+@media(max-width:520px){
+  .golf-course-search-actions{grid-template-columns:1fr}
+  .golf-hole-nav .compact-btn{padding:8px 9px!important;font-size:.76rem!important}
+}
