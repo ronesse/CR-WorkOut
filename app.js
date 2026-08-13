@@ -1078,6 +1078,7 @@ function startLivePublishing(){
 
 let coachLiveSessions=[];
 let coachLiveInterval=null;
+let coachLiveClockInterval=null;
 let liveLeafletMap=null;
 let liveLeafletLayer=null;
 
@@ -1087,7 +1088,43 @@ function destroyLiveRouteMap(){
   }catch(err){console.warn(err)}
 }
 
+
+function isOpenEndedLiveSession(session){
+  const id=String(session?.program_id||"").toLowerCase();
+  const name=String(session?.program_name||"").trim().toLowerCase();
+  return id==="running" || id==="free_workout" || name==="løping" || name==="fri økt";
+}
+
+function rollingHourProgress(session){
+  const started=session?.started_at?new Date(session.started_at).getTime():NaN;
+  if(!Number.isFinite(started))return null;
+
+  const elapsedMinutes=Math.max(0,(Date.now()-started)/60000);
+  const block=Math.floor(elapsedMinutes/60);
+  const startMin=block*60;
+  const goalMin=(block+1)*60;
+  const within=elapsedMinutes-startMin;
+  const percent=Math.min(100,Math.max(0,(within/60)*100));
+
+  return {
+    elapsedMinutes,
+    startMin,
+    goalMin,
+    percent
+  };
+}
+
+function formatElapsedMinutes(mins){
+  const total=Math.max(0,Math.floor(mins));
+  const h=Math.floor(total/60);
+  const m=total%60;
+  return h>0?`${h} t ${String(m).padStart(2,"0")} min`:`${m} min`;
+}
+
 function liveSessionProgress(session){
+  if(isOpenEndedLiveSession(session)){
+    return rollingHourProgress(session)?.percent ?? null;
+  }
   const p=Number(session.progress_percent);
   return Number.isFinite(p)?Math.min(100,Math.max(0,p)):null;
 }
@@ -1130,10 +1167,26 @@ function renderCoachLive(){
         <span class="live-pill">LIVE</span>
       </div>
 
-      ${progress!=null?`<div class="coach-progress-wrap">
-        <div class="coach-progress-label"><span>Progresjon</span><strong>${Math.round(progress)} %</strong></div>
-        <div class="coach-progress-track"><div style="width:${progress}%"></div></div>
-      </div>`:""}
+      ${progress!=null?(()=>{
+        if(isOpenEndedLiveSession(s)){
+          const tp=rollingHourProgress(s);
+          return tp?`<div class="coach-progress-wrap rolling-time-progress">
+            <div class="coach-progress-label">
+              <span>Påløpt tid</span>
+              <strong>${formatElapsedMinutes(tp.elapsedMinutes)}</strong>
+            </div>
+            <div class="coach-progress-track"><div style="width:${tp.percent}%"></div></div>
+            <div class="coach-progress-scale">
+              <span>${tp.startMin} min</span>
+              <span>${tp.goalMin} min</span>
+            </div>
+          </div>`:"";
+        }
+        return `<div class="coach-progress-wrap">
+          <div class="coach-progress-label"><span>Progresjon</span><strong>${Math.round(progress)} %</strong></div>
+          <div class="coach-progress-track"><div style="width:${progress}%"></div></div>
+        </div>`;
+      })():""}
 
       ${liveSessionMetrics(s)}
 
@@ -1206,6 +1259,10 @@ function stopCoachLivePolling(){
     clearInterval(coachLiveInterval);
     coachLiveInterval=null;
   }
+  if(coachLiveClockInterval){
+    clearInterval(coachLiveClockInterval);
+    coachLiveClockInterval=null;
+  }
 }
 
 function coachDashboardVisible(){
@@ -1221,8 +1278,7 @@ function startCoachLivePolling(){
 
   loadCoachLiveSessions();
 
-  // 5 sekunder er lett nok for denne datamengden, men vi poller kun
-  // mens coach faktisk ser dashboardet.
+  // Database oppdateres hvert 5. sekund.
   coachLiveInterval=setInterval(()=>{
     if(!coachDashboardVisible()){
       stopCoachLivePolling();
@@ -1230,6 +1286,15 @@ function startCoachLivePolling(){
     }
     loadCoachLiveSessions();
   },5000);
+
+  // Kun lokal visning oppdateres hvert sekund, slik at tidsbaren flyter jevnt.
+  coachLiveClockInterval=setInterval(()=>{
+    if(!coachDashboardVisible()){
+      stopCoachLivePolling();
+      return;
+    }
+    if(coachLiveSessions.some(isOpenEndedLiveSession))renderCoachLive();
+  },1000);
 }
 
 function openLiveRouteMap(session){

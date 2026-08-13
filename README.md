@@ -270,3 +270,12 @@ Merk: Tabellen som ble oppgitt har 15 arbeidsøkter + 15 hvileøkter, altså 22:
 - Varsel vises kun ved faktisk start (INSERT) og faktisk fullføring (UPDATE til completed).
 - Viser tidspunkt for siste live-oppdatering.
 - Ingen ny SQL nødvendig.
+
+## v8.12 – rullerende tidsprogresjon
+- Løping og Fri økt bruker tidsbasert progresjonsbar i Coach Live.
+- 0–60 min: bar fra 0 til 60.
+- Etter 60 min starter baren på nytt med skala 60–120.
+- Etter 120 min fortsetter den 120–180 osv.
+- Påløpt tid vises over baren.
+- Selve tidsbaren oppdateres lokalt hvert sekund; databasepolling er fortsatt bare hvert 5. sekund.
+- Ingen ny SQL nødvendig.
