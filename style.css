@@ -763,3 +763,141 @@ body:not(.coach-mode) #coachLiveSection{
 @media(max-width:560px){.golf-metrics{grid-template-columns:1fr 1fr}.golf-metrics>div:last-child{grid-column:1/-1}}
 .golf-admin-top{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:end}.golf-admin-holes{display:grid;gap:10px;margin:12px 0}.golf-admin-hole{display:grid;grid-template-columns:75px repeat(4,minmax(80px,1fr));gap:8px;padding:12px;border:1px solid var(--line);border-radius:14px}.golf-admin-hole label{font-size:.7rem;color:var(--muted);margin:0}.golf-admin-hole input{padding:7px!important;margin-top:3px}@media(max-width:700px){.golf-admin-top{grid-template-columns:1fr}.golf-admin-hole{grid-template-columns:65px repeat(2,minmax(90px,1fr))}}
 .golf-runner-shell{width:100%;overflow:hidden}.golf-swipe{display:flex;width:100%;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;scrollbar-width:none;overscroll-behavior-x:contain}.golf-swipe::-webkit-scrollbar{display:none}.golf-swipe-page{flex:0 0 100%;width:100%;scroll-snap-align:start;scroll-snap-stop:always;padding:2px;box-sizing:border-box}.golf-page-card{min-height:calc(100dvh - 150px);box-sizing:border-box}.golf-overview-now{margin-top:auto;padding:20px;border-radius:18px;border:1px solid var(--line);background:rgba(255,255,255,.035);text-align:center}.golf-overview-now small{display:block;color:var(--muted);font-weight:800}.golf-overview-now strong{display:block;font-size:2.2rem;margin:5px 0}.golf-overview-now span{font-weight:900;color:#bfdbfe}.golf-swipe-dots{display:flex;justify-content:center;gap:8px;padding:10px 0 4px}.golf-swipe-dots button{width:9px;height:9px;min-width:9px;padding:0;border:0;border-radius:50%;background:rgba(148,163,184,.35)}.golf-swipe-dots button.active{width:24px;border-radius:999px;background:#3b82f6}.swipe-hint{margin-top:auto;padding-top:14px;text-align:center;color:var(--muted);font-size:.75rem;font-weight:750}.golf-inline-map{flex:1;min-height:430px;width:100%;border-radius:18px;overflow:hidden;border:1px solid var(--line);background:#172033}.golf-map-page-card{gap:10px}.golf-map-status{display:flex;justify-content:center;gap:16px;color:var(--muted);font-size:.75rem;font-weight:800}.golf-inline-map-message{min-height:22px;text-align:center;color:var(--muted);font-size:.78rem}.golf-bottom-actions{padding:0 2px 8px}@media(max-width:600px){.golf-page-card{min-height:calc(100dvh - 128px);border-radius:18px;padding:12px}.golf-inline-map{min-height:52dvh}}
+
+/* v9.5 – mobil/PWA og kompakt golf */
+@media(max-width:600px){
+  body.golf-active-screen .topbar{
+    display:none;
+  }
+
+  body.golf-active-screen .app-shell{
+    padding-top:0;
+  }
+
+  body.golf-active-screen main{
+    padding-top:4px;
+  }
+
+  body.golf-active-screen #golfScreen{
+    margin-top:0;
+  }
+
+  body.golf-active-screen .golf-runner-shell{
+    height:calc(100dvh - 76px);
+    display:flex;
+    flex-direction:column;
+  }
+
+  body.golf-active-screen .golf-swipe{
+    flex:1;
+    min-height:0;
+  }
+
+  body.golf-active-screen .golf-swipe-page{
+    height:100%;
+  }
+
+  body.golf-active-screen .golf-page-card{
+    min-height:0;
+    height:100%;
+    padding:10px;
+    border-radius:14px;
+    overflow-y:auto;
+  }
+
+  body.golf-active-screen .golf-hole-card{
+    min-height:0;
+    flex:1 1 auto;
+    padding:10px 12px;
+    border-radius:16px;
+  }
+
+  body.golf-active-screen .golf-hole-card h2{
+    font-size:clamp(2.5rem,14vw,4.2rem);
+    margin:4px 0;
+  }
+
+  body.golf-active-screen .golf-hole-card p{
+    margin:8px 0;
+  }
+
+  body.golf-active-screen .golf-hole-nav{
+    margin-bottom:2px;
+  }
+
+  body.golf-active-screen .golf-strokes-box{
+    margin-top:6px;
+  }
+
+  body.golf-active-screen .golf-next-card{
+    min-height:0!important;
+    margin-top:6px;
+    padding:8px 12px!important;
+    display:grid!important;
+    grid-template-columns:auto 1fr;
+    grid-template-rows:auto auto;
+    column-gap:10px;
+    align-items:center;
+  }
+
+  body.golf-active-screen .golf-next-card .task-label{
+    grid-row:1 / span 2;
+    align-self:center;
+    margin:0;
+  }
+
+  body.golf-active-screen .golf-next-card h3{
+    margin:0!important;
+    font-size:1.05rem!important;
+    line-height:1.1;
+  }
+
+  body.golf-active-screen .golf-next-card p{
+    margin:2px 0 0!important;
+    font-size:.72rem!important;
+    min-height:0!important;
+  }
+
+  body.golf-active-screen .golf-actions{
+    margin-top:6px;
+    gap:6px;
+  }
+
+  body.golf-active-screen .golf-actions button{
+    min-height:44px;
+    padding:9px 8px;
+  }
+
+  body.golf-active-screen .golf-swipe-dots{
+    padding:5px 0 2px;
+  }
+
+  body.golf-active-screen .golf-bottom-actions{
+    padding:2px 2px 4px;
+  }
+
+  body.golf-active-screen .golf-bottom-actions #golfFinishRoundBtn{
+    min-height:40px;
+    padding:8px;
+  }
+
+  body.golf-active-screen .golf-bottom-actions #golfDiscardBtn{
+    padding:5px;
+  }
+
+  body.golf-active-screen .swipe-hint{
+    padding-top:5px;
+    font-size:.68rem;
+  }
+
+  body.golf-active-screen .golf-inline-map{
+    min-height:0;
+    height:100%;
+  }
+}
+
+/* Installed PWA: use every available pixel */
+@media(display-mode:standalone){
+  html,body{overscroll-behavior:none}
+  .topbar{padding-top:max(8px,env(safe-area-inset-top))}
+}

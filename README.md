@@ -343,3 +343,12 @@ Merk: Tabellen som ble oppgitt har 15 arbeidsøkter + 15 hvileøkter, altså 22:
 - Golf delt i tre horisontale swipe-sider: oversikt, hullkort og live kart.
 - Kartet viser spillerposisjon, GPS-spor, green og løpende avstand når green-koordinater finnes.
 - Ingen ny SQL nødvendig.
+
+## v9.5 – mobil/PWA
+- Golfkortet utnytter mobilskjermen bedre og skjuler app-headeren under aktiv golfrunde.
+- Neste hull er gjort betydelig mer kompakt.
+- Tre swipe-sider beholdes, men høyden tilpasses tilgjengelig skjerm.
+- PWA-metadata er forbedret for Android/iPhone og portrait-visning.
+- Når nettleseren støtter installasjon, vises `Installer CR-Workout` i kontomenyen.
+- Når appen installeres på hjemskjermen, åpnes den i standalone-modus uten vanlig URL-linje.
+- Ingen ny SQL nødvendig.
