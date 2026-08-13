@@ -2362,12 +2362,12 @@ e.continueSessionBtn.onclick=async()=>{
   await launchRunner();
 };e.runningPauseBtn.onclick=toggleRunningPause;e.runningFinishBtn.onclick=finishRunning;e.runningDiscardBtn.onclick=discardActive;e.twentyPauseBtn.onclick=toggleTwentyPause;e.twentyFinishBtn.onclick=finishTwenty;e.twentyDiscardBtn.onclick=discardActive;e.freeWorkoutFinishBtn.onclick=finishFreeWorkout;e.freeWorkoutDiscardBtn.onclick=discardActive;
 e.golfSetupClose.onclick=()=>closeModal(e.golfSetupModal);
-e.golfSavedCourseSelect.onchange=chooseSavedGolfCourse;
-e.coachGolfCoursesBtn.onclick=openGolfCourseAdmin;
-e.golfCoursesBackBtn.onclick=()=>showOnly("coach");
-e.golfAdminCourseSelect.onchange=renderGolfCourseAdmin;
-e.golfAdminNewCourseBtn.onclick=createGolfCourseAdmin;
-e.golfAdminSaveBtn.onclick=saveGolfCourseAdmin;
+if(e.golfSavedCourseSelect)e.golfSavedCourseSelect.onchange=chooseSavedGolfCourse;
+if(e.coachGolfCoursesBtn)e.coachGolfCoursesBtn.onclick=openGolfCourseAdmin;
+if(e.golfCoursesBackBtn)e.golfCoursesBackBtn.onclick=()=>showOnly("coach");
+if(e.golfAdminCourseSelect)e.golfAdminCourseSelect.onchange=renderGolfCourseAdmin;
+if(e.golfAdminNewCourseBtn)e.golfAdminNewCourseBtn.onclick=createGolfCourseAdmin;
+if(e.golfAdminSaveBtn)e.golfAdminSaveBtn.onclick=saveGolfCourseAdmin;
 e.golfFindCourseBtn.onclick=searchGolfCourseByName;
 e.golfNearbyCourseBtn.onclick=findNearbyGolfCourses;
 e.golfCourseResults.onchange=selectGolfCourseCandidate;

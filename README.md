@@ -324,3 +324,10 @@ Merk: Tabellen som ble oppgitt har 15 arbeidsøkter + 15 hvileøkter, altså 22:
 - Rettet JavaScript parse-feil rundt `openGolfSetup()` i v9.3.
 - Hele app.js valideres nå med Node syntax check.
 - Ingen ny SQL nødvendig utover v9.3.
+
+## v9.3.2 – login/bootstrap fix
+- Fant den faktiske runtime-feilen: `coachGolfCoursesBtn` var registrert i JavaScript, men manglet i HTML.
+- Dette ga `Cannot set properties of null (setting 'onclick')` før auth-init, og innloggingen startet derfor aldri.
+- Knappen er nå lagt inn i Coach-visningen.
+- Nye Golf-admin bindings er gjort defensive slik at manglende UI-element aldri kan stoppe innlogging igjen.
+- Ingen ny SQL nødvendig.
