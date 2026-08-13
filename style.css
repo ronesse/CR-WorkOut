@@ -761,3 +761,4 @@ body:not(.coach-mode) #coachLiveSection{
 
 .golf-metrics{grid-template-columns:repeat(3,minmax(0,1fr))}
 @media(max-width:560px){.golf-metrics{grid-template-columns:1fr 1fr}.golf-metrics>div:last-child{grid-column:1/-1}}
+.golf-admin-top{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:end}.golf-admin-holes{display:grid;gap:10px;margin:12px 0}.golf-admin-hole{display:grid;grid-template-columns:75px repeat(4,minmax(80px,1fr));gap:8px;padding:12px;border:1px solid var(--line);border-radius:14px}.golf-admin-hole label{font-size:.7rem;color:var(--muted);margin:0}.golf-admin-hole input{padding:7px!important;margin-top:3px}@media(max-width:700px){.golf-admin-top{grid-template-columns:1fr}.golf-admin-hole{grid-template-columns:65px repeat(2,minmax(90px,1fr))}}

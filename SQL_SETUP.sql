@@ -315,3 +315,55 @@ alter table public.cr_workout_sessions
   add column if not exists golf_course_data jsonb;
 
 NOTIFY pgrst, 'reload schema';
+
+-- v9.3 Golfbanedatabase
+create table if not exists public.cr_golf_courses (
+ id text primary key,name text not null,country text default 'NO',location text,
+ holes integer not null default 18,source_name text,source_url text,
+ center_lat double precision,center_lon double precision,active boolean not null default true,
+ updated_at timestamptz not null default now());
+create table if not exists public.cr_golf_holes (
+ course_id text not null references public.cr_golf_courses(id) on delete cascade,
+ hole_no integer not null,par integer,stroke_index integer,
+ tee_39_m integer,tee_43_m integer,tee_48_m integer,tee_50_m integer,
+ green_lat double precision,green_lon double precision,notes text,
+ updated_at timestamptz not null default now(),primary key(course_id,hole_no));
+alter table public.cr_golf_courses enable row level security;
+alter table public.cr_golf_holes enable row level security;
+drop policy if exists "golf_courses_read" on public.cr_golf_courses;
+create policy "golf_courses_read" on public.cr_golf_courses for select to authenticated using(true);
+drop policy if exists "golf_holes_read" on public.cr_golf_holes;
+create policy "golf_holes_read" on public.cr_golf_holes for select to authenticated using(true);
+drop policy if exists "golf_courses_coach_all" on public.cr_golf_courses;
+create policy "golf_courses_coach_all" on public.cr_golf_courses for all to authenticated
+ using(exists(select 1 from public.cr_profiles p where p.id=auth.uid() and p.role='coach'))
+ with check(exists(select 1 from public.cr_profiles p where p.id=auth.uid() and p.role='coach'));
+drop policy if exists "golf_holes_coach_all" on public.cr_golf_holes;
+create policy "golf_holes_coach_all" on public.cr_golf_holes for all to authenticated
+ using(exists(select 1 from public.cr_profiles p where p.id=auth.uid() and p.role='coach'))
+ with check(exists(select 1 from public.cr_profiles p where p.id=auth.uid() and p.role='coach'));
+insert into public.cr_golf_courses(id,name,country,location,holes,source_name,source_url,active)
+values('norefjell-gk','Norefjell Golfklubb','NO','Noresund, Krødsherad',18,'Norefjell Golfklubb','https://www.norefjell-golf.no/banen/',true)
+on conflict(id) do update set name=excluded.name,location=excluded.location,holes=18,source_name=excluded.source_name,source_url=excluded.source_url,active=true,updated_at=now();
+insert into public.cr_golf_holes(course_id,hole_no,par,stroke_index,tee_39_m,tee_43_m,tee_48_m,tee_50_m)
+values ('norefjell-gk',1,3,17,101,101,101,101),
+('norefjell-gk',2,4,5,188,250,264,278),
+('norefjell-gk',3,5,9,331,401,446,455),
+('norefjell-gk',4,4,7,243,286,325,335),
+('norefjell-gk',5,4,1,213,264,315,320),
+('norefjell-gk',6,4,13,215,224,257,265),
+('norefjell-gk',7,5,15,370,380,418,425),
+('norefjell-gk',8,4,3,284,308,331,348),
+('norefjell-gk',9,4,11,177,225,288,297),
+('norefjell-gk',10,3,4,130,130,130,130),
+('norefjell-gk',11,3,12,124,125,130,132),
+('norefjell-gk',12,4,6,280,323,365,380),
+('norefjell-gk',13,4,18,210,218,223,228),
+('norefjell-gk',14,3,2,145,145,160,160),
+('norefjell-gk',15,4,8,222,222,264,274),
+('norefjell-gk',16,4,16,186,186,221,231),
+('norefjell-gk',17,3,14,121,121,121,121),
+('norefjell-gk',18,5,10,364,411,443,471)
+on conflict(course_id,hole_no) do update set par=excluded.par,stroke_index=excluded.stroke_index,
+ tee_39_m=excluded.tee_39_m,tee_43_m=excluded.tee_43_m,tee_48_m=excluded.tee_48_m,tee_50_m=excluded.tee_50_m,updated_at=now();
+NOTIFY pgrst,'reload schema';

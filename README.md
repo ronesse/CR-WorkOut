@@ -312,3 +312,10 @@ Merk: Tabellen som ble oppgitt har 15 arbeidsøkter + 15 hvileøkter, altså 22:
 - `live_gps_track` brukes fortsatt for Coach Live.
 - Golf-skjermen viser antall lagrede GPS-punkter og tydelig `GPS Aktiv`.
 - Ingen ny SQL nødvendig dersom v9.1-SQL er kjørt.
+
+## v9.3 – Golfbanedatabase
+- Norefjell Golfklubb ferdig registrert med 18 hull, Par, Index og Tee 39/43/48/50 fra klubbens offisielle scorekort.
+- Ny Coach → Golfbaner-side for redigering av hull og green-koordinater.
+- Lagrede baner kan velges direkte før golfrunden.
+- Green-koordinater kan legges inn senere; da beregnes GPS-avstand automatisk.
+- Kjør v9.3-delen i SQL_SETUP.sql.
