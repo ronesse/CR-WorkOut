@@ -75,7 +75,12 @@ function getAudioContext(){
   if(!C)return null;
   if(!sharedAudioContext)sharedAudioContext=new C();
   return sharedAudioContext;
+
+  const coachScreens=["coach","athletes","programs"];
+  document.body.classList.toggle("coach-mode",profile?.role==="coach"&&coachScreens.includes(name));
+  if(!(profile?.role==="coach"&&name==="coach"))stopCoachLivePolling();
 }
+
 
 async function unlockAudio(){
   try{
@@ -140,6 +145,8 @@ async function logout(){await releaseWakeLock();await sb.auth.signOut();closeMod
 
 async function loadPrograms(){const {data}=await sb.from("cr_programs").select("*").eq("active",true).order("sort_order");programs=data||[]}
 async function loadAthleteData(){
+  if(e.coachLiveSection)e.coachLiveSection.classList.add("hidden");
+
  await loadPrograms();const {data:sessions}=await sb.from("cr_workout_sessions").select("*").eq("athlete_id",user.id).order("started_at",{ascending:false});const all=sessions||[];activeSession=all.find(x=>x.status==="started")||null;
  const completed=all.filter(x=>x.status==="completed");e.athleteSessionCount.textContent=completed.length;e.athleteMinutes.textContent=Math.round(completed.reduce((s,x)=>s+(x.duration_seconds||0),0)/60);const ratings=completed.filter(x=>x.rating).map(x=>x.rating);e.athleteAvgRating.textContent=ratings.length?(ratings.reduce((a,b)=>a+b,0)/ratings.length).toFixed(1):"–";
  const approved=!!profile?.approved;e.athleteStatusCard.className="status-card "+(approved?"approved":"pending");e.athleteStatusTitle.textContent=approved?"Godkjent utøver":"Venter på godkjenning";e.athleteStatusText.textContent=approved?"Du har tilgang til programmene coachen har tildelt deg.":"Coachen må godkjenne kontoen før programmene blir tilgjengelige.";e.assignedProgramsWrap.classList.toggle("hidden",!approved);
@@ -1171,10 +1178,35 @@ async function loadCoachLiveSessions(){
   renderCoachLive();
 }
 
+function stopCoachLivePolling(){
+  if(coachLiveInterval){
+    clearInterval(coachLiveInterval);
+    coachLiveInterval=null;
+  }
+}
+
+function coachDashboardVisible(){
+  return profile?.role==="coach"
+    && e.coachScreen
+    && !e.coachScreen.classList.contains("hidden")
+    && document.visibilityState==="visible";
+}
+
 function startCoachLivePolling(){
-  if(coachLiveInterval)clearInterval(coachLiveInterval);
+  stopCoachLivePolling();
+  if(!coachDashboardVisible())return;
+
   loadCoachLiveSessions();
-  coachLiveInterval=setInterval(loadCoachLiveSessions,5000);
+
+  // 5 sekunder er lett nok for denne datamengden, men vi poller kun
+  // mens coach faktisk ser dashboardet.
+  coachLiveInterval=setInterval(()=>{
+    if(!coachDashboardVisible()){
+      stopCoachLivePolling();
+      return;
+    }
+    loadCoachLiveSessions();
+  },5000);
 }
 
 function openLiveRouteMap(session){
@@ -1227,7 +1259,9 @@ function openLiveRouteMap(session){
   },80);
 }
 
-async function loadCoachData(){await loadPrograms();const {data:links}=await sb.from("cr_coach_athletes").select("athlete_id,status,cr_profiles!cr_coach_athletes_athlete_id_fkey(*)").eq("coach_id",user.id).order("created_at");athletes=(links||[]).map(x=>({...x.cr_profiles,link_status:x.status}));const ids=athletes.map(a=>a.id);e.pendingCount.textContent=athletes.filter(a=>!a.approved).length;e.activeAthletesCount.textContent=athletes.filter(a=>a.approved).length;let today=0;if(ids.length){const from=new Date();from.setHours(0,0,0,0);const {count}=await sb.from("cr_workout_sessions").select("*",{count:"exact",head:true}).in("athlete_id",ids).gte("started_at",from.toISOString());today=count||0}e.sessionsTodayCount.textContent=today;renderAthletes();fillAthleteSelectors()}
+async function loadCoachData(){
+  if(e.coachLiveSection)e.coachLiveSection.classList.remove("hidden");
+await loadPrograms();const {data:links}=await sb.from("cr_coach_athletes").select("athlete_id,status,cr_profiles!cr_coach_athletes_athlete_id_fkey(*)").eq("coach_id",user.id).order("created_at");athletes=(links||[]).map(x=>({...x.cr_profiles,link_status:x.status}));const ids=athletes.map(a=>a.id);e.pendingCount.textContent=athletes.filter(a=>!a.approved).length;e.activeAthletesCount.textContent=athletes.filter(a=>a.approved).length;let today=0;if(ids.length){const from=new Date();from.setHours(0,0,0,0);const {count}=await sb.from("cr_workout_sessions").select("*",{count:"exact",head:true}).in("athlete_id",ids).gte("started_at",from.toISOString());today=count||0}e.sessionsTodayCount.textContent=today;renderAthletes();fillAthleteSelectors()}
 function renderAthletes(){e.athletesList.innerHTML=athletes.length?athletes.map(a=>`<div class="athlete-item"><div class="athlete-row"><div><strong>${esc(a.full_name||a.email)}</strong><small>${esc(a.phone||"")} · ${esc(a.email||"")}</small><small>${a.approved?"✅ Godkjent":"⏳ Venter på godkjenning"}</small></div><div class="athlete-actions">${!a.approved?`<button class="approve-btn" data-id="${a.id}">Godkjenn</button>`:""}<button class="programs-btn" data-id="${a.id}">Programmer</button></div></div></div>`).join(""):`<div class="empty">Ingen utøvere har registrert seg ennå.</div>`;e.athletesList.querySelectorAll(".approve-btn").forEach(b=>b.onclick=()=>approveAthlete(b.dataset.id));e.athletesList.querySelectorAll(".programs-btn").forEach(b=>b.onclick=()=>openPrograms(b.dataset.id))}
 async function approveAthlete(id){const {error}=await sb.from("cr_profiles").update({approved:true}).eq("id",id);if(error){alert(error.message);return}await sb.from("cr_coach_athletes").update({status:"approved"}).eq("coach_id",user.id).eq("athlete_id",id);await loadCoachData()}
 async function openPrograms(id){

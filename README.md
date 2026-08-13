@@ -252,3 +252,11 @@ Merk: Tabellen som ble oppgitt har 15 arbeidsøkter + 15 hvileøkter, altså 22:
 - Utøverappen publiserer live-status til `cr_workout_sessions` omtrent hvert 5. sekund.
 - Coach-listen oppdateres automatisk omtrent hvert 5. sekund.
 - Kjør v8.9-delen i SQL_SETUP.sql før testing.
+
+## v8.10 – Coach Live plassering og automatisk oppdatering
+- `Pågående økter` er flyttet over `Varsler` på Coach Dashboard.
+- Seksjonen er kun synlig i coach-modus og skjules eksplisitt for utøvere.
+- Live-listen oppdateres automatisk hvert 5. sekund mens coach-dashboardet er synlig.
+- Polling stopper når coach går til en annen side/fane eller nettleserfanen skjules.
+- Når coach kommer tilbake til dashboardet, oppdateres listen umiddelbart og polling starter igjen.
+- Ingen ny SQL nødvendig.

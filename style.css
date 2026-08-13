@@ -646,3 +646,8 @@
 @media(min-width:760px){
   .coach-live-list{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
+
+/* v8.10: Coach Live er kun tilgjengelig i coach-modus */
+body:not(.coach-mode) #coachLiveSection{
+  display:none!important;
+}
