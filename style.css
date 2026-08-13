@@ -901,3 +901,13 @@ body:not(.coach-mode) #coachLiveSection{
   html,body{overscroll-behavior:none}
   .topbar{padding-top:max(8px,env(safe-area-inset-top))}
 }
+
+/* v9.6 Golf tee + hullengde */
+@media(min-width:561px){
+  .golf-setup-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+#golfHoleLength{
+  background:rgba(34,197,94,.10);
+  border-color:rgba(34,197,94,.24);
+  color:#dcfce7;
+}

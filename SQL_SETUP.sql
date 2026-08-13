@@ -367,3 +367,10 @@ values ('norefjell-gk',1,3,17,101,101,101,101),
 on conflict(course_id,hole_no) do update set par=excluded.par,stroke_index=excluded.stroke_index,
  tee_39_m=excluded.tee_39_m,tee_43_m=excluded.tee_43_m,tee_48_m=excluded.tee_48_m,tee_50_m=excluded.tee_50_m,updated_at=now();
 NOTIFY pgrst,'reload schema';
+
+
+-- v9.6: valgt utslagssted per golfrunde
+alter table public.cr_workout_sessions
+  add column if not exists golf_tee text;
+
+NOTIFY pgrst, 'reload schema';

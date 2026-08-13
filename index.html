@@ -10,9 +10,9 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="CR-Workout">
   <meta name="format-detection" content="telephone=no">
-  <link rel="manifest" href="manifest.webmanifest?v=9.5">
+  <link rel="manifest" href="manifest.webmanifest?v=9.6">
   <link rel="icon" href="icon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="style.css?v=9.5">
+  <link rel="stylesheet" href="style.css?v=9.6">
   <title>CR-Workout</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     crossorigin="">
@@ -337,7 +337,7 @@
             <div><small>GPS</small><strong id="golfGpsStatus">Starter…</strong></div>
             <div><small>GPS-spor</small><strong id="golfTrackCount">0 punkter</strong></div>
           </div>
-          <div class="golf-overview-now"><small>Aktuelt hull</small><strong id="golfOverviewHole">Hull 1</strong><span id="golfOverviewPar">Par –</span></div>
+          <div class="golf-overview-now"><small>Aktuelt hull</small><strong id="golfOverviewHole">Hull 1</strong><span id="golfOverviewPar">Par –</span><span id="golfOverviewLength"> · Lengde –</span></div>
           <div class="swipe-hint">Sveip → for hullkort</div>
         </div>
       </section>
@@ -352,7 +352,7 @@
               <button id="golfNextBtn" type="button" class="secondary-btn compact-btn">Next ›</button>
             </div>
             <h2 id="golfCurrentHole">Hull 1</h2>
-            <div class="golf-hole-facts"><span id="golfPar">Par –</span><span id="golfPinDistance">Flagg: –</span></div>
+            <div class="golf-hole-facts"><span id="golfPar">Par –</span><span id="golfHoleLength">Lengde –</span><span id="golfPinDistance">Flagg: –</span></div>
             <p id="golfHoleStatus">Registrer antall slag når hullet er ferdig.</p>
             <div class="golf-strokes-box">
               <button id="golfMinusStrokeBtn" type="button" class="stroke-btn">−</button>
@@ -568,6 +568,15 @@
     </div>
 
     <div class="golf-setup-grid">
+      <label>Utslagssted
+        <select id="golfSetupTee">
+          <option value="39">Tee 39</option>
+          <option value="43">Tee 43</option>
+          <option value="48" selected>Tee 48</option>
+          <option value="50">Tee 50</option>
+        </select>
+      </label>
+
       <label>Antall hull
         <select id="golfSetupHoles">
           <option value="9">9 hull</option>
@@ -609,8 +618,8 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="programs.js?v=9.5"></script>
-  <script src="app.js?v=9.5"></script>
+  <script src="programs.js?v=9.6"></script>
+  <script src="app.js?v=9.6"></script>
 <script>if("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js").catch(()=>{});</script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
   crossorigin=""></script>

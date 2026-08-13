@@ -352,3 +352,12 @@ Merk: Tabellen som ble oppgitt har 15 arbeidsøkter + 15 hvileøkter, altså 22:
 - Når nettleseren støtter installasjon, vises `Installer CR-Workout` i kontomenyen.
 - Når appen installeres på hjemskjermen, åpnes den i standalone-modus uten vanlig URL-linje.
 - Ingen ny SQL nødvendig.
+
+## v9.6 – Golf utslagssted og hullengde
+- Ved start av Golf velges Tee 39, 43, 48 eller 50.
+- Valgt tee lagres på golfrunden i `cr_workout_sessions.golf_tee`.
+- Hullkortet viser nå både Par og hullets lengde i meter fra valgt tee.
+- Neste hull viser Par, meter og valgt tee i den kompakte infolinjen.
+- Rundeoversikten viser valgt tee og lengde for aktuelt hull.
+- Scorekortet lagrer tee og hullengde per fullført hull.
+- Kjør v9.6-delen i SQL_SETUP.sql før testing.
