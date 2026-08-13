@@ -319,3 +319,8 @@ Merk: Tabellen som ble oppgitt har 15 arbeidsøkter + 15 hvileøkter, altså 22:
 - Lagrede baner kan velges direkte før golfrunden.
 - Green-koordinater kan legges inn senere; da beregnes GPS-avstand automatisk.
 - Kjør v9.3-delen i SQL_SETUP.sql.
+
+## v9.3.1 – kritisk login-fix
+- Rettet JavaScript parse-feil rundt `openGolfSetup()` i v9.3.
+- Hele app.js valideres nå med Node syntax check.
+- Ingen ny SQL nødvendig utover v9.3.
