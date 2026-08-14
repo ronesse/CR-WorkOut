@@ -441,3 +441,19 @@ Eksempel: Runde 1: Brystpress → Skrå brystpress → ... → Dips. Runde 2 sta
 - Beskrivelsene er korte parafraser/teknikk-cues, ikke kopiert tekst fra Hardworkout.
 - Programrekkefølgen fra v9.8.7 (sett = runde) er uendret.
 - Ingen SQL-endring nødvendig fra v9.8.7.
+
+## v9.8.8.1 – How To knapp-fix
+- Rettet X-knappen i How To-vinduet.
+- Rettet «Tilbake til økten».
+- Feilen var at event-handlerne i v9.8.8 lå utenfor appens JavaScript-scope.
+- Trykk på bakgrunnen utenfor How To-kortet lukker også vinduet.
+- Større touch-flate på X og tilbakeknappen.
+- Ingen SQL-endring nødvendig.
+
+## v9.8.8.2 – How To på Kroppsvekt-programmene
+- Kroppsvekt Dag 1/2/3 får nå samme `i`-knapp som Muskelvekst-programmene.
+- How To er lagt inn for alle 9 øvelsene:
+  Jump squat, Push-ups, Pull-ups / assisterte pull-ups, Gående utfall,
+  Pike push-ups, Omvendt roing, Ett-beins glute bridge, Planke og Sideplanke.
+- X, «Tilbake til økten» og trykk på bakgrunnen fungerer som i v9.8.8.1.
+- Ingen SQL-endring nødvendig.

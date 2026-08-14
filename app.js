@@ -588,7 +588,17 @@ const MUSCLE_GROWTH_HOWTO={
   "Sidebøy":["Stå høyt med én manual i hånden. Senk vekten kontrollert ned langs siden ved å bøye overkroppen sideveis, og trekk deg tilbake til oppreist.","Hold kroppen vendt rett frem uten å rotere."],
   "Planken":["Støtt på underarmer og tær. Stram mage og sete og hold kroppen i en rett linje.","Unngå at hoften synker eller løftes for høyt."],
   "Arnold Press":["Start manualene foran skuldrene med håndflatene mot deg. Roter armene utover samtidig som du presser vektene over hodet, og reverser bevegelsen ned.","Beveg kontrollert og hold magen aktiv gjennom hele presset."],
-  "Roing over benk":["Ligg med brystet støttet mot en skrå benk. La manualene henge ned, trekk albuene bakover mot kroppen og senk kontrollert.","Bryststøtten skal hindre at du bruker fart fra korsryggen."]
+  "Roing over benk":["Ligg med brystet støttet mot en skrå benk. La manualene henge ned, trekk albuene bakover mot kroppen og senk kontrollert.","Bryststøtten skal hindre at du bruker fart fra korsryggen."],
+
+  "Jump squat":["Stå omtrent i skulderbredde. Gå kontrollert ned i en knebøy, press eksplosivt gjennom føttene og hopp rett opp. Land mykt og gå direkte inn i neste repetisjon.","Land med myke knær. Bruk vanlig knebøy hvis hopp blir for belastende."],
+  "Push-ups":["Plasser hendene litt bredere enn skulderbredde og hold kroppen i en rett linje. Senk brystet kontrollert mot gulvet og press deg tilbake opp.","Stram mage og sete. Enklere variant: knær i gulvet eller hendene på en benk."],
+  "Pull-ups / assisterte pull-ups":["Grip stangen litt bredere enn skuldrene. Start med strake armer, trekk skulderbladene ned og dra brystet opp mot stangen før du senker kontrollert.","Bruk strikk eller assisteringsmaskin ved behov. Unngå å svinge kroppen."],
+  "Gående utfall":["Ta et kontrollert steg frem og senk kroppen til begge knær er omtrent 90 grader. Press gjennom fremre fot og gå direkte videre med motsatt bein.","Hold overkroppen høy og la fremre kne følge retningen til tærne."],
+  "Pike push-ups":["Start i en omvendt V med hoftene høyt og hendene i gulvet. Bøy albuene og senk hodet kontrollert mot gulvet mellom hendene, før du presser tilbake opp.","Hold hoftene høyt gjennom hele bevegelsen. Enklere: hendene på en benk."],
+  "Omvendt roing":["Grip en stang eller ringer og hold kroppen rett fra hode til hæl. Trekk brystet opp mot stangen ved å føre albuene bakover, og senk kontrollert.","Jo mer horisontal kroppen er, desto tyngre blir øvelsen."],
+  "Ett-beins glute bridge":["Ligg på ryggen med én fot i gulvet og det andre beinet løftet. Press gjennom hælen og løft hoften til kroppen danner en rett linje, før du senker kontrollert.","Hold hoftene parallelle og unngå å rotere bekkenet."],
+  "Planke":["Støtt på underarmer og tær. Stram mage og sete og hold kroppen i en rett linje fra hode til hæl.","Unngå at hoften synker eller løftes for høyt. Pust rolig."],
+  "Sideplanke":["Støtt på én underarm og siden av foten. Løft hoften slik at kroppen danner en rett linje og hold posisjonen kontrollert.","Hold skulderen stabil over albuen. Enklere: sett nederste kne i gulvet."]
 };
 
 function showExerciseHowTo(item){
@@ -3045,6 +3055,15 @@ sb.auth.onAuthStateChange(async(_event,newSession)=>{session=newSession;user=new
 (async function init(){const {data}=await sb.auth.getSession();session=data.session;user=session?.user||null;await loadProfile();if(new URLSearchParams(location.search).get("register")==="1"&&!user)openModal(e.registerModal);await route()})();
 
 e.programInfoClose.onclick=()=>closeModal(e.programInfoModal);e.routeMapClose.onclick=()=>{destroyRouteMap();closeModal(e.routeMapModal)};e.liveRouteMapClose.onclick=()=>{destroyLiveRouteMap();closeModal(e.liveRouteMapModal)};e.coachLiveRefreshBtn.onclick=loadCoachLiveSessions;
+
+// v9.8.8.1 – How To modal controls must be bound inside the application scope.
+if(e.exerciseHowToClose)e.exerciseHowToClose.onclick=closeExerciseHowTo;
+if(e.exerciseHowToOk)e.exerciseHowToOk.onclick=closeExerciseHowTo;
+
+// Also allow tapping the dark backdrop to close, but not taps inside the card.
+if(e.exerciseHowToModal)e.exerciseHowToModal.addEventListener("click",ev=>{
+  if(ev.target===e.exerciseHowToModal)closeExerciseHowTo();
+});
 })();
 
 document.addEventListener("visibilitychange",()=>{
@@ -3096,5 +3115,3 @@ document.addEventListener("click",(ev)=>{
   },5100);
 },true);
 
-if(e.exerciseHowToClose)e.exerciseHowToClose.addEventListener("click",closeExerciseHowTo);
-if(e.exerciseHowToOk)e.exerciseHowToOk.addEventListener("click",closeExerciseHowTo);

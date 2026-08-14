@@ -1063,3 +1063,26 @@ button.confirm-end{
   .exercise-howto-card{width:calc(100vw - 28px);max-height:85vh;overflow:auto}
   .task-card.current-task h2,.task-card.next-task h3{padding-right:42px}
 }
+
+/* v9.8.8.1 – How To close controls */
+.exercise-howto-card .modal-head{
+  position:relative;
+}
+#exerciseHowToClose{
+  position:relative;
+  z-index:5;
+  flex:0 0 auto;
+  width:46px;
+  height:46px;
+  min-width:46px;
+  min-height:46px;
+  display:grid;
+  place-items:center;
+  cursor:pointer;
+  touch-action:manipulation;
+}
+#exerciseHowToOk{
+  min-height:52px;
+  cursor:pointer;
+  touch-action:manipulation;
+}
