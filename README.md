@@ -545,3 +545,10 @@ Implementasjon følger eksisterende CR-Workout-prinsipp:
 - How To via description,
 - 5-min høy-rep som egen avsluttende aktivitet,
 - programmene er aktivert i sequence-treningsmotoren.
+
+## v9.9.7 – Balløkt-logoer
+- Balløkt viser nå fire overlappende symboler/logoer:
+  TIF Viking, TIF Volley, Jardar og Norge.
+- Logoene overlapper for å bruke minst mulig plass på programkortet.
+- Volleyballmarkøren på Balløkt beholdes.
+- Ingen SQL-endring.

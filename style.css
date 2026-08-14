@@ -1211,3 +1211,48 @@ button.confirm-end{
 .status-card.approved p.hidden{display:none!important}
 .status-card.approved{padding-top:16px!important;padding-bottom:16px!important}
 .status-card.approved h3{margin:0!important}
+
+/* v9.9.7 – Balløkt: overlappende klubblogoer */
+.ball-session-card .program-icon{
+  width:92px;
+  min-height:48px;
+  position:relative;
+  display:block;
+}
+.ball-logo-stack{
+  display:flex;
+  align-items:center;
+  position:relative;
+  height:48px;
+  width:88px;
+}
+.ball-logo-stack img{
+  width:42px;
+  height:42px;
+  object-fit:contain;
+  border-radius:9px;
+  background:#fff;
+  border:2px solid #142033;
+  box-shadow:0 2px 5px rgba(0,0,0,.28);
+  position:relative;
+}
+.ball-logo-stack img+img{
+  margin-left:-17px;
+}
+.ball-logo-stack img:nth-child(1){z-index:4}
+.ball-logo-stack img:nth-child(2){z-index:3}
+.ball-logo-stack img:nth-child(3){z-index:2}
+.ball-logo-stack img:nth-child(4){z-index:1}
+.ball-session-card .program-icon::after{
+  right:-5px;
+  bottom:-5px;
+  z-index:6;
+  font-size:21px;
+}
+@media(max-width:600px){
+  .ball-session-card .program-icon{width:82px;min-height:44px}
+  .ball-logo-stack{height:44px;width:78px}
+  .ball-logo-stack img{width:38px;height:38px;border-radius:8px}
+  .ball-logo-stack img+img{margin-left:-15px}
+  .ball-session-card .program-icon::after{font-size:19px}
+}

@@ -295,7 +295,14 @@ function normalizeProgramCategory(program){
 function renderProgramCards(container,list){
   container.innerHTML=list.length?list.map(p=>`<article class="program-card ${String(p.id)==="ball_session"?"ball-session-card":""}" data-program-id="${p.id}">
     <button type="button" class="program-info-btn" data-id="${p.id}" aria-label="Vis programinnhold" title="Vis programinnhold">i</button>
-    <span class="program-icon">${programIcon(p)?`<img src="${programIcon(p)}" alt="${esc(p.name)}">`:esc(p.icon||"🏋️")}</span>
+    <span class="program-icon">${String(p.id)==="ball_session"
+      ?`<span class="ball-logo-stack" aria-label="TIF Viking, TIF Volley, Jardar og Norge">
+          <img src="tif-viking-logo.png" alt="TIF Viking">
+          <img src="ball-logo-tif-volley.webp" alt="TIF Volley">
+          <img src="ball-logo-jardar.jpg" alt="Jardar">
+          <img src="ball-logo-norway.webp" alt="Norge">
+        </span>`
+      :(programIcon(p)?`<img src="${programIcon(p)}" alt="${esc(p.name)}">`:esc(p.icon||"🏋️"))}</span>
     <h3>${esc(p.name)}</h3>
     <p>${esc(p.description||"")}</p>
     <button class="primary-btn start-program" data-id="${p.id}">Start økt</button>
