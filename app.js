@@ -15,7 +15,7 @@ const $=id=>document.getElementById(id),e={};
 "registerModal","closeRegisterBtn","regName","regPhone","regEmail","regPassword","registerBtn","registerMessage","programModal","programAthleteName","closeProgramBtn","programChecklist","saveProgramsBtn",
 "finishModal","finishSummary","finishStars","finishComment","saveFinishBtn","cancelFinishBtn",
 "intervalCard","intervalProgramName","intervalElapsed","intervalRound","intervalRemainingTotal","intervalPhase","intervalMessage","intervalTime","intervalProgressBar","intervalNext","intervalSkipBtn","runnerAbortBtn",
-"sequenceProgramName","sequenceGroupRound","sequenceElapsed","sequenceProgressText","sequenceProgressBar","sequenceActivity","sequenceReps","sequenceLoad","sequenceDesc","sequenceNextActivity","sequenceNextMeta","sequenceCompleteBtn","sequenceSkipBtn","sequencePostponeBtn","sequenceAbortBtn","runningScreen","runningProgramName","gpsStatus","runningElapsed","runningDistance","runningAvgPace","runningCurrentPace","runningGpsAccuracy","runningPointCount","runningPauseBtn","runningFinishBtn","runningDiscardBtn","twentyScreen","twentyCard","twentyProgramName","twentyRemaining","twentyBigTime","twentyPhaseText","twentyProgressBar","twentyPauseBtn","twentyFinishBtn","twentyDiscardBtn","freeWorkoutScreen","freeWorkoutProgramName","freeWorkoutElapsed","freeWorkoutBigTime","freeWorkoutFinishBtn","freeWorkoutDiscardBtn","finishDistanceWrap","finishDistance","programInfoModal","programInfoTitle","programInfoDescription","programInfoSummary","programInfoList","programInfoClose","routeMapModal","routeMapTitle","routeMapMeta","routeMap","routeMapClose","coachLiveSection","coachLiveSummary","coachLiveList","coachLiveRefreshBtn","liveRouteMapModal","liveRouteMapTitle","liveRouteMapMeta","liveRouteMap","liveRouteMapClose","coachLiveUpdated","golfScreen","golfCourseName","golfRoundMeta","golfElapsed","golfProgressText","golfTotalStrokes","golfProgressBar","golfDistance","golfGpsStatus","golfCurrentHole","golfHoleStatus","golfStrokesInput","golfMinusStrokeBtn","golfPlusStrokeBtn","golfNextHole","golfNextMeta","golfCompleteBtn","golfSkipBtn","golfPostponeBtn","golfMapBtn","golfFinishRoundBtn","golfDiscardBtn","golfSetupModal","golfSetupClose","golfSetupCourse","golfSetupHoles","golfSetupStartHole","golfStartRoundBtn","golfPreviousBtn","golfNextBtn","golfHistoryLabel","golfPar","golfPinDistance","golfFindCourseBtn","golfNearbyCourseBtn","golfCourseResultsWrap","golfCourseResults","golfCourseLookupStatus","golfTrackCount","coachGolfCoursesBtn","golfCoursesScreen","golfCoursesBackBtn","golfAdminCourseSelect","golfAdminNewCourseBtn","golfAdminCourseMeta","golfAdminHoles","golfAdminSaveBtn","golfSavedCourseSelect","golfSwipe","golfSwipeDots","golfOverviewHole","golfOverviewPar","golfMapHoleTitle","golfMapCourseTitle","golfMapDistance","golfInlineMap","golfInlineMapMessage","installAppBtn","golfSetupTee","golfHoleLength","golfOverviewLength","golfAdminTees","golfImportCsvBtn","golfImportCsvFile","golfDownloadCsvTemplateBtn","golfImportStatus"].forEach(id=>e[id]=$(id));
+"sequenceProgramName","sequenceGroupRound","sequenceElapsed","sequenceProgressText","sequenceProgressBar","sequenceActivity","sequenceReps","sequenceLoad","sequenceDesc","sequenceNextActivity","sequenceNextMeta","sequenceCompleteBtn","sequenceSkipBtn","sequencePostponeBtn","sequenceHowToBtn","sequenceNextHowToBtn","exerciseHowToModal","exerciseHowToTitle","exerciseHowToBody","exerciseHowToTip","exerciseHowToClose","exerciseHowToOk","sequenceAbortBtn","runningScreen","runningProgramName","gpsStatus","runningElapsed","runningDistance","runningAvgPace","runningCurrentPace","runningGpsAccuracy","runningPointCount","runningPauseBtn","runningFinishBtn","runningDiscardBtn","twentyScreen","twentyCard","twentyProgramName","twentyRemaining","twentyBigTime","twentyPhaseText","twentyProgressBar","twentyPauseBtn","twentyFinishBtn","twentyDiscardBtn","freeWorkoutScreen","freeWorkoutProgramName","freeWorkoutElapsed","freeWorkoutBigTime","freeWorkoutFinishBtn","freeWorkoutDiscardBtn","finishDistanceWrap","finishDistance","programInfoModal","programInfoTitle","programInfoDescription","programInfoSummary","programInfoList","programInfoClose","routeMapModal","routeMapTitle","routeMapMeta","routeMap","routeMapClose","coachLiveSection","coachLiveSummary","coachLiveList","coachLiveRefreshBtn","liveRouteMapModal","liveRouteMapTitle","liveRouteMapMeta","liveRouteMap","liveRouteMapClose","coachLiveUpdated","golfScreen","golfCourseName","golfRoundMeta","golfElapsed","golfProgressText","golfTotalStrokes","golfProgressBar","golfDistance","golfGpsStatus","golfCurrentHole","golfHoleStatus","golfStrokesInput","golfMinusStrokeBtn","golfPlusStrokeBtn","golfNextHole","golfNextMeta","golfCompleteBtn","golfSkipBtn","golfPostponeBtn","golfMapBtn","golfFinishRoundBtn","golfDiscardBtn","golfSetupModal","golfSetupClose","golfSetupCourse","golfSetupHoles","golfSetupStartHole","golfStartRoundBtn","golfPreviousBtn","golfNextBtn","golfHistoryLabel","golfPar","golfPinDistance","golfFindCourseBtn","golfNearbyCourseBtn","golfCourseResultsWrap","golfCourseResults","golfCourseLookupStatus","golfTrackCount","coachGolfCoursesBtn","golfCoursesScreen","golfCoursesBackBtn","golfAdminCourseSelect","golfAdminNewCourseBtn","golfAdminCourseMeta","golfAdminHoles","golfAdminSaveBtn","golfSavedCourseSelect","golfSwipe","golfSwipeDots","golfOverviewHole","golfOverviewPar","golfMapHoleTitle","golfMapCourseTitle","golfMapDistance","golfInlineMap","golfInlineMapMessage","installAppBtn","golfSetupTee","golfHoleLength","golfOverviewLength","golfAdminTees","golfImportCsvBtn","golfImportCsvFile","golfDownloadCsvTemplateBtn","golfImportStatus"].forEach(id=>e[id]=$(id));
 
 let session=null,user=null,profile=null,athletes=[],programs=[],programAthleteId=null,activeSession=null,homeTimer=null,runnerTimer=null,finishRating=4,currentMonth=new Date(),realtimeChannel=null,runnerMode=null,intervalState=null,sequenceState=null,lastCueKey="";
 let wakeLock=null;
@@ -560,6 +560,47 @@ async function skipIntervalSequence(){
   }
 }
 
+
+const MUSCLE_GROWTH_HOWTO={
+  "Brystpress flatbenk":["Ligg stabilt på benken med føttene i gulvet. Hold manualene ved brystet, senk kontrollert og press dem opp til armene nesten er strake.","Hold skulderbladene lett trukket sammen og unngå å løfte skuldrene mot ørene."],
+  "Skrå brystpress":["Still benken i moderat skrå vinkel. Start manualene ved øvre del av brystet, senk kontrollert og press opp og litt inn.","Hold brystet oppe og skulderbladene stabile mot benken."],
+  "Brystpress fra gulv":["Ligg på ryggen med bøyde knær. Senk manualene til overarmene møter gulvet, stopp kort og press opp igjen.","Gulvet begrenser bevegelsen; hold håndleddene stabile over albuene."],
+  "Stående skulderpress":["Stå stødig med manualene ved skuldrene. Stram mage og sete og press manualene rett opp over hodet før du senker kontrollert.","Unngå å svaie i korsryggen."],
+  "Sidehev":["Stå med manualene langs siden og lett bøy i albuene. Løft armene kontrollert ut til siden omtrent til skulderhøyde, og senk rolig.","Bruk lett nok vekt til at skuldrene gjør jobben uten sving."],
+  "Enarms triceps press":["Hold én manual over hodet. Bøy albuen slik at manualen senkes bak hodet, og strekk deretter albuen helt ut igjen.","Hold overarmen mest mulig i ro og nær hodet."],
+  "Dips på benk (eller stol)":["Plasser hendene på kanten bak deg og føttene foran. Senk kroppen ved å bøye albuene, og press deg opp igjen.","Hold skuldrene nede og beveg deg kontrollert; kort ned bevegelsen hvis skuldrene blir ukomfortable."],
+  "Goblet squat":["Hold én manual tett foran brystet. Sett hoftene bak og ned mellom beina, hold brystet oppe og press gjennom hele foten tilbake til stående.","La knærne følge retningen til tærne og behold en stabil rygg."],
+  "Strake markløft":["Hold manualene foran lårene. Skyv hoftene bak med lett bøyde knær og senk vektene langs beina til du kjenner strekk bak på lårene. Strekk hoften frem igjen.","Hold ryggen nøytral og manualene nær kroppen."],
+  "Utfall bakover":["Stå høyt og ta et kontrollert steg bak. Senk bakre kne mot gulvet mens fremre fot står stabilt, og press deg tilbake til start.","Hold fremre kne i samme retning som foten."],
+  "Markløft":["Start med manualene nær beina. Bøy i hofte og knær, hold ryggen stabil og reis deg ved å presse gulvet bort og strekke hoften.","Hold vektene tett på kroppen gjennom hele løftet."],
+  "Tåhev":["Stå stødig og løft hælene så høyt du kan ved å presse gjennom forfoten. Hold kort på toppen og senk kontrollert.","Bruk full kontroll og unngå å sprette i bunnposisjonen."],
+  "Russian twist":["Sitt med lett bakoverlent overkropp og stram mage. Roter brystkassen kontrollert fra side til side med manualen foran kroppen.","La rotasjonen komme fra overkroppen, ikke bare armene."],
+  "Liggende beinhev":["Ligg på ryggen og hold korsryggen stabil mot underlaget. Senk strake eller lett bøyde bein kontrollert og løft dem tilbake.","Stopp før korsryggen begynner å løfte seg."],
+  "Fremoverlent roing":["Bøy i hoften med stabil rygg og manualene hengende ned. Trekk albuene bakover og manualene mot kroppen, og senk kontrollert.","Tenk at skulderbladene trekkes sammen uten at skuldrene løftes."],
+  "En-arms roing":["Støtt deg på benk eller lår. Trekk manualen mot hoften med albuen tett inn, og senk kontrollert til armen er lang.","Hold overkroppen stabil og unngå å rotere."],
+  "Pullover":["Ligg på benk og hold én manual over brystet. Før vekten kontrollert bak hodet med lett bøyde albuer, og trekk den tilbake over brystet.","Behold ribbeina kontrollert og unngå stor svai i korsryggen."],
+  "Renegade row":["Start i høy plankeposisjon med hendene på manualene. Hold kroppen stabil mens du ror én manual mot hoften, sett den ned og bytt side.","Stå gjerne litt bredt med føttene for å redusere rotasjon."],
+  "Bicepscurl":["Stå med armene langs siden. Hold albuene nær kroppen, bøy dem og løft manualene mot skuldrene før du senker rolig.","Unngå å svinge overkroppen for å få vekten opp."],
+  "Hammercurl":["Hold manualene med håndflatene vendt mot hverandre. Curl opp med albuene tett ved siden og senk kontrollert.","Behold nøytralt håndledd og rolig overkropp."],
+  "Knebøy":["Hold manualene stabilt og sett hoftene bak og ned. Hold brystet oppe, knærne i retning tærne og reis deg ved å presse gjennom føttene.","Velg dybde der du kan beholde kontroll og stabil rygg."],
+  "Splitt-knebøy":["Stå i splittstilling med føttene i samme posisjon gjennom settet. Senk kroppen rett ned og press opp gjennom fremre fot.","Hold bekken og kne stabilt; bytt side etter ønsket antall reps."],
+  "Hip Thrust":["Plasser øvre rygg mot benken og manualen over hoften. Senk hoften kontrollert og press den opp til hofte og overkropp danner en rett linje.","Stram setet på toppen uten å overdrive svai i korsryggen."],
+  "Sidebøy":["Stå høyt med én manual i hånden. Senk vekten kontrollert ned langs siden ved å bøye overkroppen sideveis, og trekk deg tilbake til oppreist.","Hold kroppen vendt rett frem uten å rotere."],
+  "Planken":["Støtt på underarmer og tær. Stram mage og sete og hold kroppen i en rett linje.","Unngå at hoften synker eller løftes for høyt."],
+  "Arnold Press":["Start manualene foran skuldrene med håndflatene mot deg. Roter armene utover samtidig som du presser vektene over hodet, og reverser bevegelsen ned.","Beveg kontrollert og hold magen aktiv gjennom hele presset."],
+  "Roing over benk":["Ligg med brystet støttet mot en skrå benk. La manualene henge ned, trekk albuene bakover mot kroppen og senk kontrollert.","Bryststøtten skal hindre at du bruker fart fra korsryggen."]
+};
+
+function showExerciseHowTo(item){
+  const data=MUSCLE_GROWTH_HOWTO[String(item?.activity||"")];
+  if(!data)return;
+  e.exerciseHowToTitle.textContent=item.activity||"Øvelse";
+  e.exerciseHowToBody.textContent=data[0];
+  e.exerciseHowToTip.textContent="Tips: "+data[1];
+  openModal(e.exerciseHowToModal);
+}
+function closeExerciseHowTo(){ closeModal(e.exerciseHowToModal); }
+
 async function startSequenceRunner(){
   const cfg=SEQUENCE_PROGRAMS[activeSession.program_id] || {
     name: programs.find(x=>String(x.id)===String(activeSession.program_id))?.name
@@ -633,6 +674,12 @@ async function startSequenceRunner(){
       `${Math.min(100,(done/Math.max(1,total))*100)}%`;
 
     e.sequenceActivity.textContent=cur.activity||"Aktivitet";
+    const curHowTo=MUSCLE_GROWTH_HOWTO[String(cur.activity||"")];
+    e.sequenceHowToBtn.classList.toggle("hidden",!curHowTo);
+    e.sequenceHowToBtn.onclick=curHowTo?()=>showExerciseHowTo(cur):null;
+    const nextHowTo=next?MUSCLE_GROWTH_HOWTO[String(next.activity||"")]:null;
+    e.sequenceNextHowToBtn.classList.toggle("hidden",!nextHowTo);
+    e.sequenceNextHowToBtn.onclick=nextHowTo?()=>showExerciseHowTo(next):null;
     e.sequenceReps.textContent=cur.reps||"–";
     e.sequenceLoad.textContent=cur.load||"–";
     e.sequenceDesc.textContent=cur.desc||"";
@@ -3048,3 +3095,6 @@ document.addEventListener("click",(ev)=>{
     }
   },5100);
 },true);
+
+if(e.exerciseHowToClose)e.exerciseHowToClose.addEventListener("click",closeExerciseHowTo);
+if(e.exerciseHowToOk)e.exerciseHowToOk.addEventListener("click",closeExerciseHowTo);

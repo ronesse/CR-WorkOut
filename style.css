@@ -1046,3 +1046,20 @@ button.confirm-end{
   outline:2px solid currentColor!important;
   font-weight:800!important;
 }
+
+/* v9.8.8 – exercise How To */
+.task-card{position:relative}
+.task-info-btn{
+  position:absolute;top:14px;right:14px;width:38px;height:38px;border-radius:50%;
+  border:1px solid rgba(255,255,255,.22);background:#101b30;color:#fff;
+  font-weight:900;font-size:20px;line-height:1;display:grid;place-items:center;z-index:2
+}
+.task-info-btn.small{width:34px;height:34px;font-size:18px;top:12px;right:12px}
+.task-info-btn:active{transform:scale(.95)}
+.exercise-howto-card{max-width:520px}
+.exercise-howto-body{font-size:1.08rem;line-height:1.55;margin:18px 0}
+.exercise-howto-tip{padding:14px 16px;border-radius:14px;background:rgba(45,106,255,.12);border:1px solid rgba(91,140,255,.28);line-height:1.45;margin-bottom:18px}
+@media(max-width:600px){
+  .exercise-howto-card{width:calc(100vw - 28px);max-height:85vh;overflow:auto}
+  .task-card.current-task h2,.task-card.next-task h3{padding-right:42px}
+}

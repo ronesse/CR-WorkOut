@@ -10,9 +10,9 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="CR-Workout">
   <meta name="format-detection" content="telephone=no">
-  <link rel="manifest" href="manifest.webmanifest?v=9.8.7">
+  <link rel="manifest" href="manifest.webmanifest?v=9.8.8">
   <link rel="icon" href="icon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="style.css?v=9.8.7">
+  <link rel="stylesheet" href="style.css?v=9.8.8">
   <title>CR-Workout</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     crossorigin="">
@@ -208,6 +208,7 @@
             </div>
             <div class="task-card current-task">
               <span class="task-label">NÅ</span>
+              <button id="sequenceHowToBtn" class="task-info-btn hidden" type="button" aria-label="Slik gjør du øvelsen">i</button>
               <h2 id="sequenceActivity"></h2>
               <div class="task-stats">
                 <div><small>Reps</small><strong id="sequenceReps">–</strong></div>
@@ -217,6 +218,7 @@
             </div>
             <div class="task-card next-task">
               <span class="task-label">NESTE</span>
+              <button id="sequenceNextHowToBtn" class="task-info-btn small hidden" type="button" aria-label="Slik gjør du neste øvelse">i</button>
               <h3 id="sequenceNextActivity"></h3>
               <p id="sequenceNextMeta"></p>
             </div>
@@ -471,7 +473,19 @@
         </div>
         <div class="panel"><h3>Programbruk</h3><div id="programStats"></div></div>
       </section>
-    </main>
+    
+      <div id="exerciseHowToModal" class="modal hidden">
+        <div class="modal-card exercise-howto-card">
+          <div class="modal-head">
+            <div><div class="eyebrow">HOW TO</div><h2 id="exerciseHowToTitle">Øvelse</h2></div>
+            <button id="exerciseHowToClose" class="icon-btn" type="button">✕</button>
+          </div>
+          <div id="exerciseHowToBody" class="exercise-howto-body"></div>
+          <div id="exerciseHowToTip" class="exercise-howto-tip"></div>
+          <button id="exerciseHowToOk" class="primary-btn full" type="button">Tilbake til økten</button>
+        </div>
+      </div>
+</main>
 
     <nav id="bottomNav" class="bottom-nav hidden">
       <button class="nav-btn active" data-screen="home"><span>🏠</span><small>Hjem</small></button>
@@ -660,8 +674,8 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="programs.js?v=9.8.7"></script>
-  <script src="app.js?v=9.8.7"></script>
+  <script src="programs.js?v=9.8.8"></script>
+  <script src="app.js?v=9.8.8"></script>
 <script>if("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js").catch(()=>{});</script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
   crossorigin=""></script>

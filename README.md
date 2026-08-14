@@ -434,3 +434,10 @@ SQL_v9_8_6_MUSCLE_GROWTH.sql registrerer både programmer og alle aktivitetene i
 Rettet rekkefølgen i Muskelvekst Dag 1–5. Ett sett av hver øvelse gjennomføres før neste runde.
 Eksempel: Runde 1: Brystpress → Skrå brystpress → ... → Dips. Runde 2 starter deretter på Brystpress igjen.
 Øvelser med færre sett hoppes over i senere runder.
+
+## v9.8.8 – How To på Muskelvekst-øvelser
+- Info-knapp (i) på NÅ- og NESTE-kort når øvelsen har en How To.
+- Åpner mobilvennlig modal med kort, egenformulert teknikkbeskrivelse og tips.
+- Beskrivelsene er korte parafraser/teknikk-cues, ikke kopiert tekst fra Hardworkout.
+- Programrekkefølgen fra v9.8.7 (sett = runde) er uendret.
+- Ingen SQL-endring nødvendig fra v9.8.7.
