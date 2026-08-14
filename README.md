@@ -524,3 +524,9 @@ Hopp, meter og sekunder uten `reps` beholdes i reps-feltet.
 - Celler med fullførte ratede økter viser gjennomsnittlig rating 1–5.
 - Sveip horisontalt mellom dags-, måneds- og årsvisning.
 - Ingen SQL-endring.
+
+## v9.9.5 – Statistikkside tilbakeført
+- Den sveipbare Dager/Måneder/År-visningen fra v9.9.4 er fjernet.
+- Statistikksiden er tilbake til tidligere oppsett med nøkkeltall og Programbruk.
+- Den kompakte velkomstboksen fra v9.9.4 beholdes.
+- Ingen SQL-endring.

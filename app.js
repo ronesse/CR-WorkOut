@@ -15,7 +15,7 @@ const $=id=>document.getElementById(id),e={};
 "registerModal","closeRegisterBtn","regName","regPhone","regEmail","regPassword","registerBtn","registerMessage","programModal","programAthleteName","closeProgramBtn","programChecklist","saveProgramsBtn",
 "finishModal","finishSummary","finishStars","finishComment","saveFinishBtn","cancelFinishBtn",
 "intervalCard","intervalProgramName","intervalElapsed","intervalRound","intervalRemainingTotal","intervalPhase","intervalMessage","intervalTime","intervalProgressBar","intervalNext","intervalSkipBtn","runnerAbortBtn",
-"sequenceProgramName","sequenceGroupRound","sequenceElapsed","sequenceProgressText","sequenceProgressBar","sequenceActivity","sequenceReps","sequenceLoad","sequenceDesc","sequenceNextActivity","sequenceNextMeta","sequenceCompleteBtn","sequenceSkipBtn","sequencePostponeBtn","sequenceHowToBtn","sequenceNextHowToBtn","exerciseHowToModal","exerciseHowToTitle","exerciseHowToBody","exerciseHowToTip","exerciseHowToClose","exerciseHowToOk","sequenceAbortBtn","runningScreen","runningProgramName","gpsStatus","runningElapsed","runningDistance","runningAvgPace","runningCurrentPace","runningGpsAccuracy","runningPointCount","runningPauseBtn","runningFinishBtn","runningDiscardBtn","twentyScreen","twentyCard","twentyProgramName","twentyRemaining","twentyBigTime","twentyPhaseText","twentyProgressBar","twentyPauseBtn","twentyFinishBtn","twentyDiscardBtn","freeWorkoutScreen","freeWorkoutProgramName","freeWorkoutElapsed","freeWorkoutBigTime","freeWorkoutFinishBtn","freeWorkoutDiscardBtn","finishDistanceWrap","finishDistance","programInfoModal","programInfoTitle","programInfoDescription","programInfoSummary","programInfoList","programInfoClose","routeMapModal","routeMapTitle","routeMapMeta","routeMap","routeMapClose","coachLiveSection","coachLiveSummary","coachLiveList","coachLiveRefreshBtn","liveRouteMapModal","liveRouteMapTitle","liveRouteMapMeta","liveRouteMap","liveRouteMapClose","coachLiveUpdated","golfScreen","golfCourseName","golfRoundMeta","golfElapsed","golfProgressText","golfTotalStrokes","golfProgressBar","golfDistance","golfGpsStatus","golfCurrentHole","golfHoleStatus","golfStrokesInput","golfMinusStrokeBtn","golfPlusStrokeBtn","golfNextHole","golfNextMeta","golfCompleteBtn","golfSkipBtn","golfPostponeBtn","golfMapBtn","golfFinishRoundBtn","golfDiscardBtn","golfSetupModal","golfSetupClose","golfSetupCourse","golfSetupHoles","golfSetupStartHole","golfStartRoundBtn","golfPreviousBtn","golfNextBtn","golfHistoryLabel","golfPar","golfPinDistance","golfFindCourseBtn","golfNearbyCourseBtn","golfCourseResultsWrap","golfCourseResults","golfCourseLookupStatus","golfTrackCount","coachGolfCoursesBtn","golfCoursesScreen","golfCoursesBackBtn","golfAdminCourseSelect","golfAdminNewCourseBtn","golfAdminCourseMeta","golfAdminHoles","golfAdminSaveBtn","golfSavedCourseSelect","golfSwipe","golfSwipeDots","golfOverviewHole","golfOverviewPar","golfMapHoleTitle","golfMapCourseTitle","golfMapDistance","golfInlineMap","golfInlineMapMessage","installAppBtn","golfSetupTee","golfHoleLength","golfOverviewLength","golfAdminTees","golfImportCsvBtn","golfImportCsvFile","golfDownloadCsvTemplateBtn","golfImportStatus","programCategoryView","programCategoryGrid","categoryProgramsWrap","categoryProgramsBackBtn","categoryProgramsTitle","categoryPrograms","editProgramCategory","statsTrendSwipe","statsTrendDots","statsChartDays","statsChartMonths","statsChartYears"].forEach(id=>e[id]=$(id));
+"sequenceProgramName","sequenceGroupRound","sequenceElapsed","sequenceProgressText","sequenceProgressBar","sequenceActivity","sequenceReps","sequenceLoad","sequenceDesc","sequenceNextActivity","sequenceNextMeta","sequenceCompleteBtn","sequenceSkipBtn","sequencePostponeBtn","sequenceHowToBtn","sequenceNextHowToBtn","exerciseHowToModal","exerciseHowToTitle","exerciseHowToBody","exerciseHowToTip","exerciseHowToClose","exerciseHowToOk","sequenceAbortBtn","runningScreen","runningProgramName","gpsStatus","runningElapsed","runningDistance","runningAvgPace","runningCurrentPace","runningGpsAccuracy","runningPointCount","runningPauseBtn","runningFinishBtn","runningDiscardBtn","twentyScreen","twentyCard","twentyProgramName","twentyRemaining","twentyBigTime","twentyPhaseText","twentyProgressBar","twentyPauseBtn","twentyFinishBtn","twentyDiscardBtn","freeWorkoutScreen","freeWorkoutProgramName","freeWorkoutElapsed","freeWorkoutBigTime","freeWorkoutFinishBtn","freeWorkoutDiscardBtn","finishDistanceWrap","finishDistance","programInfoModal","programInfoTitle","programInfoDescription","programInfoSummary","programInfoList","programInfoClose","routeMapModal","routeMapTitle","routeMapMeta","routeMap","routeMapClose","coachLiveSection","coachLiveSummary","coachLiveList","coachLiveRefreshBtn","liveRouteMapModal","liveRouteMapTitle","liveRouteMapMeta","liveRouteMap","liveRouteMapClose","coachLiveUpdated","golfScreen","golfCourseName","golfRoundMeta","golfElapsed","golfProgressText","golfTotalStrokes","golfProgressBar","golfDistance","golfGpsStatus","golfCurrentHole","golfHoleStatus","golfStrokesInput","golfMinusStrokeBtn","golfPlusStrokeBtn","golfNextHole","golfNextMeta","golfCompleteBtn","golfSkipBtn","golfPostponeBtn","golfMapBtn","golfFinishRoundBtn","golfDiscardBtn","golfSetupModal","golfSetupClose","golfSetupCourse","golfSetupHoles","golfSetupStartHole","golfStartRoundBtn","golfPreviousBtn","golfNextBtn","golfHistoryLabel","golfPar","golfPinDistance","golfFindCourseBtn","golfNearbyCourseBtn","golfCourseResultsWrap","golfCourseResults","golfCourseLookupStatus","golfTrackCount","coachGolfCoursesBtn","golfCoursesScreen","golfCoursesBackBtn","golfAdminCourseSelect","golfAdminNewCourseBtn","golfAdminCourseMeta","golfAdminHoles","golfAdminSaveBtn","golfSavedCourseSelect","golfSwipe","golfSwipeDots","golfOverviewHole","golfOverviewPar","golfMapHoleTitle","golfMapCourseTitle","golfMapDistance","golfInlineMap","golfInlineMapMessage","installAppBtn","golfSetupTee","golfHoleLength","golfOverviewLength","golfAdminTees","golfImportCsvBtn","golfImportCsvFile","golfDownloadCsvTemplateBtn","golfImportStatus","programCategoryView","programCategoryGrid","categoryProgramsWrap","categoryProgramsBackBtn","categoryProgramsTitle","categoryPrograms","editProgramCategory"].forEach(id=>e[id]=$(id));
 
 let session=null,user=null,profile=null,athletes=[],programs=[],programAthleteId=null,activeSession=null,homeTimer=null,runnerTimer=null,finishRating=4,currentMonth=new Date(),realtimeChannel=null,runnerMode=null,intervalState=null,sequenceState=null,lastCueKey="";
 let wakeLock=null;
@@ -3091,108 +3091,7 @@ function renderCalendarDetails(key,sessions){
   });
 }
 
-function statsPeriodKey(date,mode){
-  const d=new Date(date);
-  if(Number.isNaN(d.getTime()))return "";
-  if(mode==="days")return d.toISOString().slice(0,10);
-  if(mode==="months")return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}`;
-  return String(d.getFullYear());
-}
-
-function statsPeriodLabel(key,mode){
-  if(mode==="days"){
-    const d=new Date(key+"T12:00:00");
-    return d.toLocaleDateString("no-NO",{day:"2-digit",month:"2-digit"});
-  }
-  if(mode==="months"){
-    const [y,m]=key.split("-").map(Number);
-    return new Date(y,m-1,1).toLocaleDateString("no-NO",{month:"short",year:"2-digit"});
-  }
-  return key;
-}
-
-function statsRecentPeriods(completed,mode){
-  const keys=[...new Set(completed.map(s=>statsPeriodKey(s.completed_at||s.ended_at||s.started_at,mode)).filter(Boolean))].sort();
-  const limits={days:14,months:12,years:8};
-  return keys.slice(-limits[mode]);
-}
-
-function renderRatingActivityChart(target,completed,mode){
-  if(!target)return;
-  const sessions=completed.filter(s=>s.rating && s.program_name);
-  if(!sessions.length){
-    target.innerHTML='<div class="empty">Ingen ratede aktiviteter ennå.</div>';
-    return;
-  }
-
-  const activities=[...new Set(sessions.map(s=>s.program_name))].sort((a,b)=>a.localeCompare(b,"no"));
-  const periods=statsRecentPeriods(sessions,mode);
-  if(!periods.length){
-    target.innerHTML='<div class="empty">Ingen data i perioden.</div>';
-    return;
-  }
-
-  const cellMap=new Map();
-  sessions.forEach(s=>{
-    const key=statsPeriodKey(s.completed_at||s.ended_at||s.started_at,mode);
-    if(!periods.includes(key))return;
-    const mk=`${s.program_name}|||${key}`;
-    const cur=cellMap.get(mk)||[];
-    cur.push(Number(s.rating)||0);
-    cellMap.set(mk,cur);
-  });
-
-  const cols=periods.length;
-  const rows=activities.length;
-  const minWidth=Math.max(520,120+cols*62);
-
-  let html=`<div class="rating-matrix" style="--stats-cols:${cols};min-width:${minWidth}px">`;
-  html+=`<div class="rating-matrix-corner"></div>`;
-  periods.forEach(p=>html+=`<div class="rating-x-label">${esc(statsPeriodLabel(p,mode))}</div>`);
-
-  activities.forEach(activity=>{
-    html+=`<div class="rating-y-label" title="${esc(activity)}">${esc(activity)}</div>`;
-    periods.forEach(period=>{
-      const vals=cellMap.get(`${activity}|||${period}`)||[];
-      if(vals.length){
-        const avg=vals.reduce((a,b)=>a+b,0)/vals.length;
-        const rounded=Math.round(avg*10)/10;
-        html+=`<div class="rating-cell has-rating" title="${esc(activity)} · ${esc(statsPeriodLabel(period,mode))} · rating ${rounded}">
-          <span class="rating-dot rating-${Math.max(1,Math.min(5,Math.round(avg)))}">${rounded}</span>
-        </div>`;
-      }else{
-        html+=`<div class="rating-cell"></div>`;
-      }
-    });
-  });
-  html+=`</div>`;
-  target.innerHTML=html;
-}
-
-function renderStatsTrendCharts(completed){
-  renderRatingActivityChart(e.statsChartDays,completed,"days");
-  renderRatingActivityChart(e.statsChartMonths,completed,"months");
-  renderRatingActivityChart(e.statsChartYears,completed,"years");
-}
-
-function initStatsSwipe(){
-  if(!e.statsTrendSwipe||e.statsTrendSwipe.dataset.ready==="1")return;
-  e.statsTrendSwipe.dataset.ready="1";
-
-  const updateDots=()=>{
-    const page=Math.round(e.statsTrendSwipe.scrollLeft/Math.max(1,e.statsTrendSwipe.clientWidth));
-    e.statsTrendDots?.querySelectorAll("button").forEach((b,i)=>b.classList.toggle("active",i===page));
-  };
-  e.statsTrendSwipe.addEventListener("scroll",()=>requestAnimationFrame(updateDots),{passive:true});
-  e.statsTrendDots?.querySelectorAll("button").forEach(btn=>{
-    btn.onclick=()=>{
-      const page=Number(btn.dataset.page)||0;
-      e.statsTrendSwipe.scrollTo({left:page*e.statsTrendSwipe.clientWidth,behavior:"smooth"});
-    };
-  });
-}
-
-async function renderStats(){const selected=e.statsAthleteSelect.value||"",sessions=await sessionsForView(selected),valid=sessions.filter(x=>x.status!=="cancelled"),completed=valid.filter(x=>x.status==="completed"),ratings=completed.filter(x=>x.rating).map(x=>x.rating);e.statsSubtitle.textContent=profile?.role==="coach"?(selected?(athletes.find(a=>a.id===selected)?.full_name||"Utøver"):"Alle utøvere"):"Mine økter";e.statSessions.textContent=valid.length;e.statMinutes.textContent=Math.round(completed.reduce((s,x)=>s+(x.duration_seconds||0),0)/60);e.statRating.textContent=ratings.length?(ratings.reduce((a,b)=>a+b,0)/ratings.length).toFixed(1):"–";e.statCompleted.textContent=valid.length?`${Math.round(completed.length/valid.length*100)}%`:"0%";const counts={};completed.forEach(x=>counts[x.program_name]=(counts[x.program_name]||0)+1);const entries=Object.entries(counts),max=Math.max(1,...entries.map(x=>x[1]));e.programStats.innerHTML=entries.length?entries.map(([n,v])=>`<div class="bar-row"><span>${esc(n)}</span><div class="bar-track"><div class="bar-fill" style="width:${v/max*100}%"></div></div><strong>${v}</strong></div>`).join(""):`<div class="empty">Ingen fullførte økter ennå.</div>`;renderStatsTrendCharts(completed);initStatsSwipe()}
+async function renderStats(){const selected=e.statsAthleteSelect.value||"",sessions=await sessionsForView(selected),valid=sessions.filter(x=>x.status!=="cancelled"),completed=valid.filter(x=>x.status==="completed"),ratings=completed.filter(x=>x.rating).map(x=>x.rating);e.statsSubtitle.textContent=profile?.role==="coach"?(selected?(athletes.find(a=>a.id===selected)?.full_name||"Utøver"):"Alle utøvere"):"Mine økter";e.statSessions.textContent=valid.length;e.statMinutes.textContent=Math.round(completed.reduce((s,x)=>s+(x.duration_seconds||0),0)/60);e.statRating.textContent=ratings.length?(ratings.reduce((a,b)=>a+b,0)/ratings.length).toFixed(1):"–";e.statCompleted.textContent=valid.length?`${Math.round(completed.length/valid.length*100)}%`:"0%";const counts={};completed.forEach(x=>counts[x.program_name]=(counts[x.program_name]||0)+1);const entries=Object.entries(counts),max=Math.max(1,...entries.map(x=>x[1]));e.programStats.innerHTML=entries.length?entries.map(([n,v])=>`<div class="bar-row"><span>${esc(n)}</span><div class="bar-track"><div class="bar-fill" style="width:${v/max*100}%"></div></div><strong>${v}</strong></div>`).join(""):`<div class="empty">Ingen fullførte økter ennå.</div>`}
 
 document.querySelectorAll(".nav-btn").forEach(b=>b.onclick=async()=>{
   const n=b.dataset.screen;
