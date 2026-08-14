@@ -479,3 +479,12 @@ Hopp, meter og sekunder uten `reps` beholdes i reps-feltet.
 - Kortere navn på de seks TIF Viking-programmene.
 - TIF Viking-logo lagt inn som `tif-viking-logo.png` og brukes på TIF-programkortene.
 - Ingen endring i øvelser, runder, reps eller load.
+
+## v9.8.9.3 – Balløkt
+- Nytt program `Balløkt`, basert på Fri økt.
+- Fri timer uten definert slutt.
+- Rating og kommentar ved avslutning.
+- Distanse er fjernet.
+- Programkortet bruker TIF Viking-logo med volleyballmarkør.
+- Balløkt behandles som åpen økt i coachens Pågående økter.
+- Wake Lock er av, som for Fri økt/Løping/Golf.

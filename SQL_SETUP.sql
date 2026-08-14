@@ -1235,3 +1235,17 @@ notify pgrst, 'reload schema';
 select id,name from public.cr_programs
 where id in ('tif_offseason_1_v1','tif_offseason_1_v2','tif_offseason_2_v1','tif_offseason_2_v2','tif_offseason_3_v1','tif_offseason_3_v2')
 order by sort_order;
+
+
+-- CR-Workout v9.8.9.3 – Balløkt
+-- Kopi av Fri økt uten distanse.
+insert into public.cr_programs (id,name,description,icon,active,sort_order)
+values ('ball_session','Balløkt','Fri balløkt · timer · rating · kommentar','🏐',true,85)
+on conflict (id) do update
+set name=excluded.name,description=excluded.description,icon=excluded.icon,active=true,sort_order=excluded.sort_order;
+
+notify pgrst, 'reload schema';
+
+select id,name,description,active,sort_order
+from public.cr_programs
+where id='ball_session';

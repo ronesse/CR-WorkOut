@@ -27,6 +27,7 @@ function programIcon(program){
   if(id.includes("kettlebell-mix")||id.includes("kettlebell_mix")||name.includes("kettlebell mix")) return "kettlebell.png";
   if(id==="kettlebell"||id.includes("60-30")||id.includes("60_30")||name.includes("arbeid/hvile 60/30")) return "workrest.png";
   if(id.startsWith("tif_offseason_")||name.startsWith("tif viking-økt")) return "tif-viking-logo.png";
+  if(id==="ball_session"||name==="balløkt") return "tif-viking-logo.png";
   return null;
 }
 
@@ -113,7 +114,7 @@ function activeProgramWakeLockMode(){
   if(
     type.includes("running") || type.includes("run") || type.includes("golf") || type.includes("free") ||
     name.includes("løping") || name.includes("loping") || name.includes("running") ||
-    name.includes("golf") || name.includes("fri økt") || name.includes("fri okt")
+    name.includes("golf") || name.includes("fri økt") || name.includes("fri okt") || name.includes("balløkt")
   ) return "off";
 
   return "on";
@@ -254,7 +255,7 @@ document.addEventListener("click",ev=>{
 });
 
 function renderPrograms(list){
-  e.assignedPrograms.innerHTML=list.length?list.map(p=>`<article class="program-card" data-program-id="${p.id}">
+  e.assignedPrograms.innerHTML=list.length?list.map(p=>`<article class="program-card ${String(p.id)==="ball_session"?"ball-session-card":""}" data-program-id="${p.id}">
     <button type="button" class="program-info-btn" data-id="${p.id}" aria-label="Vis programinnhold" title="Vis programinnhold">i</button>
     <span class="program-icon">${programIcon(p)?`<img src="${programIcon(p)}" alt="${esc(p.name)}">`:esc(p.icon||"🏋️")}</span>
     <h3>${esc(p.name)}</h3>
@@ -277,6 +278,11 @@ function programInfoSummaryHtml(program, activities, settings){
   if(id==="free_workout"){
     return `<div class="program-info-badges">
       <span>⏱ Fri timer</span><span>⭐ Rating</span><span>📝 Kommentar</span><span>📏 Valgfri distanse</span>
+    </div>`;
+  }
+  if(id==="ball_session"){
+    return `<div class="program-info-badges">
+      <span>🏐 Balløkt</span><span>⏱ Fri timer</span><span>⭐ Rating</span><span>📝 Kommentar</span>
     </div>`;
   }
   if(id==="golf"){
@@ -378,6 +384,9 @@ async function openProgramInfo(programId){
   }else if(programId==="free_workout"){
     e.programInfoList.innerHTML=`
       <div class="program-info-simple">Starter en fri timer. Ved avslutning kan utøveren rate økten, beskrive hva som er gjort og angi valgfri distanse.</div>`;
+  }else if(programId==="ball_session"){
+    e.programInfoList.innerHTML=`
+      <div class="program-info-simple">Starter en fri timer for balltrening. Ved avslutning kan utøveren rate økten og legge inn en kommentar.</div>`;
   }else if(programId==="golf"){
     e.programInfoList.innerHTML=`
       <div class="program-info-simple">Velg golfbane, antall hull og starthull. Runden lagrer tid, GPS-spor, gangdistanse og score per hull. Hull kan fullføres, hoppes over eller utsettes.</div>`;
@@ -417,7 +426,7 @@ async function startSession(programId){
  await unlockAudio();
  if(activeSession){renderActiveSession();alert("Du har allerede en aktiv økt. Velg «Fortsett økten» eller forkast den først.");return}
  if(programId==="golf"){openGolfSetup();return}
- if(!INTERVAL_PROGRAMS[programId]&&!isSequenceProgram(programId)&&programId!=="kettlebell_mix"&&!isRunningProgram(programId)&&programId!=="twenty_minutes"&&programId!=="free_workout"&&programId!=="golf"){alert("Dette programmet er ikke aktivert i treningsmotoren ennå.");return}
+ if(!INTERVAL_PROGRAMS[programId]&&!isSequenceProgram(programId)&&programId!=="kettlebell_mix"&&!isRunningProgram(programId)&&programId!=="twenty_minutes"&&programId!=="free_workout"&&programId!=="ball_session"&&programId!=="golf"){alert("Dette programmet er ikke aktivert i treningsmotoren ennå.");return}
  const p=programs.find(x=>x.id===programId);const {data,error}=await sb.from("cr_workout_sessions").insert({athlete_id:user.id,program_id:programId,program_name:p?.name||programId,status:"started",started_at:new Date().toISOString()}).select().single();if(error){alert(error.message);return}activeSession=data;clearRunnerState();requestWakeLock().catch(()=>{});await launchRunner();
 }
 function renderActiveSession(){
@@ -450,7 +459,7 @@ async function launchRunner(){
  const id=activeSession.program_id;
 
  if(id==="golf")runnerMode="golf";
- else if(id==="free_workout")runnerMode="freeWorkout";
+ else if(id==="free_workout"||id==="ball_session")runnerMode="freeWorkout";
  else if(id==="twenty_minutes")runnerMode="twenty";
  else if(isRunningProgram(id))runnerMode="running";
  else if(id==="kettlebell_mix")runnerMode="intervalSequence";
@@ -714,7 +723,7 @@ function seqPostpone(){if(!sequenceState?.queue.length)return;const item=sequenc
 function renderStars(){e.finishStars.querySelectorAll("button").forEach(b=>b.textContent=Number(b.dataset.rating)<=finishRating?"★":"☆")}
 function openFinish(){if(!activeSession||!e.finishModal.classList.contains("hidden"))return;finishRating=4;e.finishComment.value="";e.finishSummary.textContent=`${activeSession.program_name} · ${fmtElapsed(elapsed(activeSession.started_at))}`;renderStars();openModal(e.finishModal)}
 async function saveFinish(){
-  const ended=new Date(),isRunning=activeSession?.program_id==="running",isTwenty=activeSession?.program_id==="twenty_minutes",isFree=activeSession?.program_id==="free_workout",isGolf=activeSession?.program_id==="golf";
+  const ended=new Date(),isRunning=activeSession?.program_id==="running",isTwenty=activeSession?.program_id==="twenty_minutes",isFree=["free_workout","ball_session"].includes(activeSession?.program_id),isGolf=activeSession?.program_id==="golf";
   const duration=isRunning?(activeSession._runningDuration||runningElapsedSeconds()):isTwenty?(activeSession._twentyDuration??twentyElapsedSeconds()):isFree?(activeSession._freeDuration??elapsed(activeSession.started_at)):isGolf?(activeSession._golfDuration??elapsed(activeSession.started_at)):elapsed(activeSession.started_at);
   const distance=isRunning?(activeSession._runningDistance??runningState?.distanceMeters??0):null;
   const avgPace=isRunning?(activeSession._runningAvgPace??(distance>=50?duration/(distance/1000):null)):null;
@@ -734,7 +743,7 @@ async function saveFinish(){
       skipped:golfState?.skipped||[],
       total_strokes:golfTotalStrokes()
     };
-  }if(isFree){const km=Number(String(e.finishDistance?.value||"").replace(",","."));if(km>0)updates.distance_meters=km*1000}
+  }if(isFree && activeSession?.program_id==="free_workout"){const km=Number(String(e.finishDistance?.value||"").replace(",","."));if(km>0)updates.distance_meters=km*1000}
   const {error}=await sb.from("cr_workout_sessions").update(updates).eq("id",activeSession.id);
   if(error){alert(error.message);return}
   if(isRunning){clearRunningState();stopGeolocation();runningState=null}if(isTwenty){clearTwentyState();twentyState=null}if(isGolf){stopGolfGeolocation();destroyGolfInlineMap();clearGolfState();golfState=null}
@@ -1132,7 +1141,10 @@ async function finishTwenty(){
 
 function renderFreeWorkout(){if(!activeSession)return;const sec=elapsed(activeSession.started_at);e.freeWorkoutElapsed.textContent=fmtElapsed(sec);e.freeWorkoutBigTime.textContent=fmtElapsed(sec);e.freeWorkoutProgramName.textContent=activeSession.program_name||"Fri økt"}
 async function startFreeWorkoutRunner(){requestWakeLock().catch(()=>{});renderFreeWorkout();stopRunnerTick();runnerTimer=setInterval(renderFreeWorkout,500)}
-async function finishFreeWorkout(){if(!activeSession)return;stopRunnerTick();const sec=elapsed(activeSession.started_at);activeSession._freeDuration=sec;e.finishSummary.textContent=`${activeSession.program_name} · ${fmtElapsed(sec)}`;finishRating=4;e.finishComment.value="";e.finishDistance.value="";e.finishDistanceWrap.classList.remove("hidden");renderStars();openModal(e.finishModal)}
+async function finishFreeWorkout(){if(!activeSession)return;stopRunnerTick();const sec=elapsed(activeSession.started_at);activeSession._freeDuration=sec;e.finishSummary.textContent=`${activeSession.program_name} · ${fmtElapsed(sec)}`;finishRating=4;e.finishComment.value="";e.finishDistance.value="";
+  // Balløkt uses rating + comment like Fri økt, but has no distance field.
+  e.finishDistanceWrap.classList.toggle("hidden",activeSession.program_id==="ball_session");
+  renderStars();openModal(e.finishModal)}
 
 
 let livePublishTimer=null;
@@ -1166,9 +1178,9 @@ function currentWorkoutLivePayload(){
     return payload;
   }
 
-  if(activeSession.program_id==="free_workout"){
+  if(activeSession.program_id==="free_workout"||activeSession.program_id==="ball_session"){
     payload.progress_percent=null;
-    payload.current_activity="Fri økt";
+    payload.current_activity=activeSession.program_id==="ball_session"?"Balløkt":"Fri økt";
     return payload;
   }
 
@@ -1264,7 +1276,7 @@ function destroyLiveRouteMap(){
 function isOpenEndedLiveSession(session){
   const id=String(session?.program_id||"").toLowerCase();
   const name=String(session?.program_name||"").trim().toLowerCase();
-  return id==="running" || id==="free_workout" || name==="løping" || name==="fri økt";
+  return id==="running" || id==="free_workout" || id==="ball_session" || name==="løping" || name==="fri økt" || name==="balløkt";
 }
 
 function rollingHourProgress(session){

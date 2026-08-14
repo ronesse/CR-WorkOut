@@ -1094,3 +1094,15 @@ button.confirm-end{
   width:48px;height:48px;object-fit:contain;display:block;
   border-radius:6px;background:#fff;padding:2px;
 }
+
+/* v9.8.9.3 – Balløkt icon: TIF Viking logo + volleyball */
+.ball-session-card .program-icon{position:relative;display:inline-block}
+.ball-session-card .program-icon::after{
+  content:"🏐";
+  position:absolute;
+  right:-10px;
+  bottom:-7px;
+  font-size:24px;
+  line-height:1;
+  filter:drop-shadow(0 2px 2px rgba(0,0,0,.55));
+}
