@@ -915,3 +915,68 @@ body:not(.coach-mode) #coachLiveSection{
 /* v9.7 dynamiske tees */
 .golf-admin-tee-list{display:flex;flex-wrap:wrap;gap:7px;align-items:center;margin:8px 0 12px}
 .golf-admin-tee-list span{padding:6px 9px;border-radius:999px;background:rgba(59,130,246,.11);border:1px solid rgba(96,165,250,.22);font-size:.76rem;font-weight:850}
+
+/* v9.8 Golf CSV import */
+.golf-import-panel{margin-bottom:12px}
+.golf-import-actions{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.golf-import-actions button{flex:1 1 180px}
+#golfImportStatus[data-state="loading"]{border-color:rgba(59,130,246,.35);color:#bfdbfe}
+#golfImportStatus[data-state="ok"]{border-color:rgba(34,197,94,.35);color:#bbf7d0}
+#golfImportStatus[data-state="warn"]{border-color:rgba(245,158,11,.35);color:#fde68a}
+.golf-admin-hole{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+
+/* v9.8.1 mobile/navigation fix */
+.bottom-nav{
+  left:0!important;
+  right:0!important;
+  width:100%!important;
+  max-width:none!important;
+  box-sizing:border-box!important;
+  display:grid!important;
+  grid-template-columns:repeat(5,minmax(0,1fr))!important;
+  gap:0!important;
+  padding-left:max(4px,env(safe-area-inset-left))!important;
+  padding-right:max(4px,env(safe-area-inset-right))!important;
+  overflow:hidden!important;
+}
+.bottom-nav button,.bottom-nav .nav-btn{
+  min-width:0!important;
+  width:100%!important;
+  padding-left:2px!important;
+  padding-right:2px!important;
+  font-size:clamp(.66rem,2.8vw,.82rem)!important;
+  overflow:hidden!important;
+}
+.bottom-nav button span,.bottom-nav .nav-btn span{
+  max-width:100%!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+#golfCoursesScreen{
+  width:100%!important;
+  max-width:980px!important;
+  margin:0 auto!important;
+  padding:12px 12px 110px!important;
+  box-sizing:border-box!important;
+}
+#golfCoursesScreen .panel{
+  width:100%!important;
+  box-sizing:border-box!important;
+}
+#golfCoursesScreen .section-heading{
+  display:flex!important;
+  align-items:flex-start!important;
+  justify-content:space-between!important;
+  gap:10px!important;
+  flex-wrap:wrap!important;
+}
+#golfCoursesScreen select{
+  width:100%!important;
+  max-width:100%!important;
+}
+@media(max-width:600px){
+  #golfCoursesScreen{padding:8px 10px 105px!important}
+  #golfCoursesScreen h2{font-size:1.55rem!important}
+  .golf-import-actions{display:grid!important;grid-template-columns:1fr!important}
+  .golf-import-actions button{width:100%!important}
+}

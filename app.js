@@ -15,7 +15,7 @@ const $=id=>document.getElementById(id),e={};
 "registerModal","closeRegisterBtn","regName","regPhone","regEmail","regPassword","registerBtn","registerMessage","programModal","programAthleteName","closeProgramBtn","programChecklist","saveProgramsBtn",
 "finishModal","finishSummary","finishStars","finishComment","saveFinishBtn","cancelFinishBtn",
 "intervalCard","intervalProgramName","intervalElapsed","intervalRound","intervalRemainingTotal","intervalPhase","intervalMessage","intervalTime","intervalProgressBar","intervalNext","intervalSkipBtn","runnerAbortBtn",
-"sequenceProgramName","sequenceGroupRound","sequenceElapsed","sequenceProgressText","sequenceProgressBar","sequenceActivity","sequenceReps","sequenceLoad","sequenceDesc","sequenceNextActivity","sequenceNextMeta","sequenceCompleteBtn","sequenceSkipBtn","sequencePostponeBtn","sequenceAbortBtn","runningScreen","runningProgramName","gpsStatus","runningElapsed","runningDistance","runningAvgPace","runningCurrentPace","runningGpsAccuracy","runningPointCount","runningPauseBtn","runningFinishBtn","runningDiscardBtn","twentyScreen","twentyCard","twentyProgramName","twentyRemaining","twentyBigTime","twentyPhaseText","twentyProgressBar","twentyPauseBtn","twentyFinishBtn","twentyDiscardBtn","freeWorkoutScreen","freeWorkoutProgramName","freeWorkoutElapsed","freeWorkoutBigTime","freeWorkoutFinishBtn","freeWorkoutDiscardBtn","finishDistanceWrap","finishDistance","programInfoModal","programInfoTitle","programInfoDescription","programInfoSummary","programInfoList","programInfoClose","routeMapModal","routeMapTitle","routeMapMeta","routeMap","routeMapClose","coachLiveSection","coachLiveSummary","coachLiveList","coachLiveRefreshBtn","liveRouteMapModal","liveRouteMapTitle","liveRouteMapMeta","liveRouteMap","liveRouteMapClose","coachLiveUpdated","golfScreen","golfCourseName","golfRoundMeta","golfElapsed","golfProgressText","golfTotalStrokes","golfProgressBar","golfDistance","golfGpsStatus","golfCurrentHole","golfHoleStatus","golfStrokesInput","golfMinusStrokeBtn","golfPlusStrokeBtn","golfNextHole","golfNextMeta","golfCompleteBtn","golfSkipBtn","golfPostponeBtn","golfMapBtn","golfFinishRoundBtn","golfDiscardBtn","golfSetupModal","golfSetupClose","golfSetupCourse","golfSetupHoles","golfSetupStartHole","golfStartRoundBtn","golfPreviousBtn","golfNextBtn","golfHistoryLabel","golfPar","golfPinDistance","golfFindCourseBtn","golfNearbyCourseBtn","golfCourseResultsWrap","golfCourseResults","golfCourseLookupStatus","golfTrackCount","coachGolfCoursesBtn","golfCoursesScreen","golfCoursesBackBtn","golfAdminCourseSelect","golfAdminNewCourseBtn","golfAdminCourseMeta","golfAdminHoles","golfAdminSaveBtn","golfSavedCourseSelect","golfSwipe","golfSwipeDots","golfOverviewHole","golfOverviewPar","golfMapHoleTitle","golfMapCourseTitle","golfMapDistance","golfInlineMap","golfInlineMapMessage","installAppBtn","golfSetupTee","golfHoleLength","golfOverviewLength","golfAdminTees"].forEach(id=>e[id]=$(id));
+"sequenceProgramName","sequenceGroupRound","sequenceElapsed","sequenceProgressText","sequenceProgressBar","sequenceActivity","sequenceReps","sequenceLoad","sequenceDesc","sequenceNextActivity","sequenceNextMeta","sequenceCompleteBtn","sequenceSkipBtn","sequencePostponeBtn","sequenceAbortBtn","runningScreen","runningProgramName","gpsStatus","runningElapsed","runningDistance","runningAvgPace","runningCurrentPace","runningGpsAccuracy","runningPointCount","runningPauseBtn","runningFinishBtn","runningDiscardBtn","twentyScreen","twentyCard","twentyProgramName","twentyRemaining","twentyBigTime","twentyPhaseText","twentyProgressBar","twentyPauseBtn","twentyFinishBtn","twentyDiscardBtn","freeWorkoutScreen","freeWorkoutProgramName","freeWorkoutElapsed","freeWorkoutBigTime","freeWorkoutFinishBtn","freeWorkoutDiscardBtn","finishDistanceWrap","finishDistance","programInfoModal","programInfoTitle","programInfoDescription","programInfoSummary","programInfoList","programInfoClose","routeMapModal","routeMapTitle","routeMapMeta","routeMap","routeMapClose","coachLiveSection","coachLiveSummary","coachLiveList","coachLiveRefreshBtn","liveRouteMapModal","liveRouteMapTitle","liveRouteMapMeta","liveRouteMap","liveRouteMapClose","coachLiveUpdated","golfScreen","golfCourseName","golfRoundMeta","golfElapsed","golfProgressText","golfTotalStrokes","golfProgressBar","golfDistance","golfGpsStatus","golfCurrentHole","golfHoleStatus","golfStrokesInput","golfMinusStrokeBtn","golfPlusStrokeBtn","golfNextHole","golfNextMeta","golfCompleteBtn","golfSkipBtn","golfPostponeBtn","golfMapBtn","golfFinishRoundBtn","golfDiscardBtn","golfSetupModal","golfSetupClose","golfSetupCourse","golfSetupHoles","golfSetupStartHole","golfStartRoundBtn","golfPreviousBtn","golfNextBtn","golfHistoryLabel","golfPar","golfPinDistance","golfFindCourseBtn","golfNearbyCourseBtn","golfCourseResultsWrap","golfCourseResults","golfCourseLookupStatus","golfTrackCount","coachGolfCoursesBtn","golfCoursesScreen","golfCoursesBackBtn","golfAdminCourseSelect","golfAdminNewCourseBtn","golfAdminCourseMeta","golfAdminHoles","golfAdminSaveBtn","golfSavedCourseSelect","golfSwipe","golfSwipeDots","golfOverviewHole","golfOverviewPar","golfMapHoleTitle","golfMapCourseTitle","golfMapDistance","golfInlineMap","golfInlineMapMessage","installAppBtn","golfSetupTee","golfHoleLength","golfOverviewLength","golfAdminTees","golfImportCsvBtn","golfImportCsvFile","golfDownloadCsvTemplateBtn","golfImportStatus"].forEach(id=>e[id]=$(id));
 
 let session=null,user=null,profile=null,athletes=[],programs=[],programAthleteId=null,activeSession=null,homeTimer=null,runnerTimer=null,finishRating=4,currentMonth=new Date(),realtimeChannel=null,runnerMode=null,intervalState=null,sequenceState=null,lastCueKey="";
 let wakeLock=null;
@@ -63,23 +63,21 @@ function dateKey(d){const p=n=>String(n).padStart(2,"0");return `${d.getFullYear
 function elapsed(from,to=new Date()){return Math.max(0,Math.floor((new Date(to)-new Date(from))/1000))}
 function fmtElapsed(sec){const h=Math.floor(sec/3600),m=Math.floor((sec%3600)/60),s=sec%60;return h?`${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`:`${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`}
 function showOnly(name){
-  ["landing","athlete","coach","athletes","programs","golfCourses","runner","running","twenty","freeWorkout","golf","calendar","stats"]
-    .forEach(n=>e[n+"Screen"]?.classList.toggle("hidden",n!==name));
-
-  document.querySelectorAll(".nav-btn").forEach(b=>
-    b.classList.toggle("active",
-      (name==="athlete"&&b.dataset.screen==="home")||
-      (name==="coach"&&b.dataset.screen==="home")||
-      (name==="athletes"&&b.dataset.screen==="coach")||
-      b.dataset.screen===name
-    )
-  );
-
-  const isCoachDashboard=profile?.role==="coach"&&name==="coach";
-  document.body.classList.toggle("coach-mode",profile?.role==="coach");
-  if(!isCoachDashboard)stopCoachLivePolling();
-
-  document.body.classList.toggle("golf-active-screen",name==="golf");
+  const map={
+    login:e.loginScreen,
+    athlete:e.athleteScreen,
+    coach:e.coachScreen,
+    athletes:e.athletesScreen,
+    programs:e.programsScreen,
+    golfCourses:e.golfCoursesScreen,
+    runner:e.runnerScreen,
+    calendar:e.calendarScreen,
+    stats:e.statsScreen
+  };
+  Object.values(map).filter(Boolean).forEach(x=>x.classList.add("hidden"));
+  const target=map[name];
+  if(target)target.classList.remove("hidden");
+  window.scrollTo({top:0,left:0,behavior:"auto"});
 }
 
 function openModal(m){m.classList.remove("hidden")}function closeModal(m){m.classList.add("hidden")}
@@ -1512,10 +1510,263 @@ async function chooseSavedGolfCourse(){
  const lengthCount=(r.lengths||[]).filter(x=>Number(x.length_m)>0).length;
  setGolfCourseStatus(`Banedata lastet: ${r.holes.length} hull · ${r.tees?.length||0} utslagssteder · ${lengthCount} hull-lengder · ${pins} green-posisjoner.`,"ok");
 }
+
+const GOLF_CSV_REQUIRED=[
+  "course_id","course_name","hole_no","par","tee_code","length_m"
+];
+
+function golfCsvStatus(text,state=""){
+  if(!e.golfImportStatus)return;
+  e.golfImportStatus.textContent=text;
+  e.golfImportStatus.dataset.state=state;
+}
+
+function parseCsvText(text){
+  const rows=[];
+  let row=[],field="",quoted=false;
+  text=String(text||"").replace(/^\uFEFF/,"");
+
+  for(let i=0;i<text.length;i++){
+    const ch=text[i];
+    if(quoted){
+      if(ch==='"'&&text[i+1]==='"'){field+='"';i++}
+      else if(ch==='"'){quoted=false}
+      else field+=ch;
+    }else{
+      if(ch==='"')quoted=true;
+      else if(ch===","){row.push(field);field=""}
+      else if(ch==="\n"){
+        row.push(field);field="";
+        if(row.some(v=>String(v).trim()!==""))rows.push(row);
+        row=[];
+      }else if(ch!=="\r")field+=ch;
+    }
+  }
+  row.push(field);
+  if(row.some(v=>String(v).trim()!==""))rows.push(row);
+  if(!rows.length)return [];
+
+  const headers=rows.shift().map(h=>String(h).trim().toLowerCase());
+  return rows.map(cols=>{
+    const obj={};
+    headers.forEach((h,i)=>obj[h]=String(cols[i]??"").trim());
+    return obj;
+  });
+}
+
+function csvNum(v){
+  if(v==null||String(v).trim()==="")return null;
+  const n=Number(String(v).replace(",","."));
+  return Number.isFinite(n)?n:null;
+}
+
+function csvInt(v){
+  const n=csvNum(v);
+  return n==null?null:Math.trunc(n);
+}
+
+function slugGolfCourse(name){
+  return String(name||"course")
+    .trim().toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+    .replace(/æ/g,"ae").replace(/ø/g,"o").replace(/å/g,"a")
+    .replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"");
+}
+
+function validateGolfCsv(rows){
+  const errors=[];
+  if(!rows.length)return ["CSV-filen inneholder ingen datarader."];
+
+  const headers=Object.keys(rows[0]||{});
+  GOLF_CSV_REQUIRED.forEach(h=>{
+    if(!headers.includes(h))errors.push(`Mangler kolonnen ${h}`);
+  });
+  if(errors.length)return errors;
+
+  const courseIds=new Set(rows.map(r=>r.course_id).filter(Boolean));
+  if(courseIds.size!==1)errors.push("CSV-filen må inneholde nøyaktig én course_id.");
+
+  rows.forEach((r,i)=>{
+    const line=i+2;
+    const hole=csvInt(r.hole_no),par=csvInt(r.par),len=csvInt(r.length_m);
+    if(!r.course_name)errors.push(`Linje ${line}: course_name mangler.`);
+    if(!(hole>=1&&hole<=36))errors.push(`Linje ${line}: ugyldig hole_no.`);
+    if(!(par>=3&&par<=6))errors.push(`Linje ${line}: ugyldig par.`);
+    if(!r.tee_code)errors.push(`Linje ${line}: tee_code mangler.`);
+    if(!(len>0))errors.push(`Linje ${line}: length_m må være > 0.`);
+  });
+  return errors.slice(0,25);
+}
+
+async function importGolfCourseCsv(file){
+  if(!file)return;
+  golfCsvStatus("Leser CSV…","loading");
+
+  try{
+    const text=await file.text();
+    const rows=parseCsvText(text);
+    const errors=validateGolfCsv(rows);
+    if(errors.length){
+      golfCsvStatus("Import stoppet: "+errors.join(" | "),"warn");
+      return;
+    }
+
+    const first=rows[0];
+    const courseId=first.course_id||slugGolfCourse(first.course_name);
+    const courseName=first.course_name;
+    const holesCount=Math.max(...rows.map(r=>csvInt(r.hole_no)||0));
+    const checkedDates=rows.map(r=>r.data_checked_date).filter(Boolean).sort();
+    const checkedDate=checkedDates.at(-1)||"";
+
+    golfCsvStatus(`Validerer ${courseName}…`,"loading");
+
+    const course={
+      id:courseId,
+      name:courseName,
+      country:first.country||"NO",
+      location:first.location||null,
+      holes:csvInt(first.course_holes)||holesCount||18,
+      source_name:first.source_name||"CSV import",
+      source_url:first.source_url||null,
+      active:true,
+      updated_at:new Date().toISOString()
+    };
+
+    const holeMap=new Map();
+    const teeMap=new Map();
+    const lengthMap=new Map();
+
+    rows.forEach(r=>{
+      const holeNo=csvInt(r.hole_no);
+      const teeCode=String(r.tee_code);
+      const hk=holeNo;
+      const tk=teeCode;
+      const lk=`${holeNo}:${teeCode}`;
+
+      if(!holeMap.has(hk)){
+        holeMap.set(hk,{
+          course_id:courseId,
+          hole_no:holeNo,
+          par:csvInt(r.par),
+          stroke_index:csvInt(r.stroke_index),
+          green_lat:csvNum(r.green_lat),
+          green_lon:csvNum(r.green_lon),
+          notes:r.hole_notes||null,
+          updated_at:new Date().toISOString()
+        });
+      }else{
+        const h=holeMap.get(hk);
+        if(h.green_lat==null&&csvNum(r.green_lat)!=null)h.green_lat=csvNum(r.green_lat);
+        if(h.green_lon==null&&csvNum(r.green_lon)!=null)h.green_lon=csvNum(r.green_lon);
+      }
+
+      if(!teeMap.has(tk)){
+        teeMap.set(tk,{
+          course_id:courseId,
+          tee_code:teeCode,
+          tee_name:r.tee_name||teeCode,
+          sort_order:csvInt(r.tee_sort_order)??100,
+          total_length_m:csvInt(r.tee_total_length_m),
+          active:true,
+          notes:r.tee_notes||null
+        });
+      }
+
+      lengthMap.set(lk,{
+        course_id:courseId,
+        hole_no:holeNo,
+        tee_code:teeCode,
+        length_m:csvInt(r.length_m)
+      });
+    });
+
+    const holes=[...holeMap.values()].sort((a,b)=>a.hole_no-b.hole_no);
+    const tees=[...teeMap.values()].sort((a,b)=>a.sort_order-b.sort_order);
+    const lengths=[...lengthMap.values()];
+
+    // Safety: verify each tee has a useful number of lengths.
+    const coverage=tees.map(t=>({
+      tee:t.tee_code,
+      count:lengths.filter(x=>x.tee_code===t.tee_code&&x.length_m>0).length
+    }));
+    const low=coverage.filter(x=>x.count<Math.min(9,course.holes));
+    if(low.length){
+      golfCsvStatus(`Import stoppet: mangelfulle hullengder for ${low.map(x=>`${x.tee} (${x.count})`).join(", ")}.`,"warn");
+      return;
+    }
+
+    let r=await sb.from("cr_golf_courses").upsert(course,{onConflict:"id"});
+    if(r.error)throw r.error;
+
+    r=await sb.from("cr_golf_holes").upsert(holes,{onConflict:"course_id,hole_no"});
+    if(r.error)throw r.error;
+
+    r=await sb.from("cr_golf_tees").upsert(tees,{onConflict:"course_id,tee_code"});
+    if(r.error)throw r.error;
+
+    r=await sb.from("cr_golf_hole_lengths").upsert(lengths,{onConflict:"course_id,hole_no,tee_code"});
+    if(r.error)throw r.error;
+
+    await loadGolfDbCourses();
+    if(e.golfAdminCourseSelect){
+      e.golfAdminCourseSelect.innerHTML=golfDbCourses.map(c=>`<option value="${esc(c.id)}">${esc(c.name)}</option>`).join("");
+      e.golfAdminCourseSelect.value=courseId;
+      golfAdminCourseId=courseId;
+      await renderGolfCourseAdmin();
+    }
+
+    golfCsvStatus(
+      `✅ Importert ${courseName}: ${holes.length} hull · ${tees.length} utslagssteder · ${lengths.length} hullengder${checkedDate?` · kontrollert ${checkedDate}`:""}.`,
+      "ok"
+    );
+  }catch(err){
+    console.error("Golf CSV import:",err);
+    golfCsvStatus(`Import feilet: ${err?.message||err}`,"warn");
+  }finally{
+    if(e.golfImportCsvFile)e.golfImportCsvFile.value="";
+  }
+}
+
+function downloadGolfCsvTemplate(){
+  const header=[
+    "course_id","course_name","country","location","course_holes",
+    "source_name","source_url","data_checked_date",
+    "hole_no","par","stroke_index",
+    "tee_code","tee_name","tee_sort_order","tee_total_length_m","length_m",
+    "green_lat","green_lon","hole_notes","tee_notes"
+  ].join(",");
+
+  const example=[
+    "example-golfklubb","Example Golfklubb","NO","By, Fylke","18",
+    "Klubbens offisielle baneguide","https://example.no/baneguide","2026-08-13",
+    "1","4","7","57","57","30","5700","345","","","",""
+  ].map(v=>`"${String(v).replace(/"/g,'""')}"`).join(",");
+
+  const blob=new Blob([header+"\n"+example+"\n"],{type:"text/csv;charset=utf-8"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;a.download="CR-Workout_Golfbane_Mal.csv";a.click();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
 async function openGolfCourseAdmin(){
- showOnly("golfCourses");const cs=await loadGolfDbCourses();
- e.golfAdminCourseSelect.innerHTML=cs.map(c=>`<option value="${esc(c.id)}">${esc(c.name)}</option>`).join("");
- if(cs.length){golfAdminCourseId=cs[0].id;await renderGolfCourseAdmin()}
+  showOnly("golfCourses");
+  golfCsvStatus("Laster golfbaner…","loading");
+  try{
+    const courses=await loadGolfDbCourses();
+    if(e.golfAdminCourseSelect){
+      e.golfAdminCourseSelect.innerHTML=(courses||[]).map(c=>`<option value="${esc(c.id)}">${esc(c.name)}</option>`).join("");
+    }
+    if(courses?.length){
+      golfAdminCourseId=courses[0].id;
+      if(e.golfAdminCourseSelect)e.golfAdminCourseSelect.value=golfAdminCourseId;
+      await renderGolfCourseAdmin();
+    }
+    golfCsvStatus("Velg en CSV-fil generert med CR-Workout-promten.","");
+  }catch(err){
+    console.error(err);
+    golfCsvStatus("Kunne ikke laste golfbanesiden: "+(err?.message||err),"warn");
+  }
 }
 async function renderGolfCourseAdmin(){
  const id=e.golfAdminCourseSelect.value||golfAdminCourseId;if(!id)return;golfAdminCourseId=id;
@@ -2651,6 +2902,9 @@ e.continueSessionBtn.onclick=async()=>{
   await launchRunner();
 };e.runningPauseBtn.onclick=toggleRunningPause;e.runningFinishBtn.onclick=finishRunning;e.runningDiscardBtn.onclick=discardActive;e.twentyPauseBtn.onclick=toggleTwentyPause;e.twentyFinishBtn.onclick=finishTwenty;e.twentyDiscardBtn.onclick=discardActive;e.freeWorkoutFinishBtn.onclick=finishFreeWorkout;e.freeWorkoutDiscardBtn.onclick=discardActive;
 e.golfSetupClose.onclick=()=>closeModal(e.golfSetupModal);
+if(e.golfDownloadCsvTemplateBtn)e.golfDownloadCsvTemplateBtn.onclick=downloadGolfCsvTemplate;
+if(e.golfImportCsvFile)e.golfImportCsvFile.onchange=()=>importGolfCourseCsv(e.golfImportCsvFile.files?.[0]);
+if(e.golfImportCsvBtn&&e.golfImportCsvFile)e.golfImportCsvBtn.onclick=()=>e.golfImportCsvFile.click();
 if(e.golfSavedCourseSelect)e.golfSavedCourseSelect.onchange=chooseSavedGolfCourse;
 if(e.coachGolfCoursesBtn)e.coachGolfCoursesBtn.onclick=openGolfCourseAdmin;
 if(e.golfCoursesBackBtn)e.golfCoursesBackBtn.onclick=()=>showOnly("coach");

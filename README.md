@@ -377,3 +377,18 @@ Merk: Tabellen som ble oppgitt har 15 arbeidsøkter + 15 hvileøkter, altså 22:
 - Hvis en aktiv eller ny runde har gammel/ufullstendig `golf_course_data`, lastes banedata på nytt fra `cr_golf_tees` og `cr_golf_hole_lengths`.
 - Golf-oppsettet viser nå også hvor mange hull-lengder som er lastet fra databasen.
 - Ingen ny SQL nødvendig dersom v9.7-SQL er kjørt.
+
+## v9.8 – Golf CSV-import
+- Coach → Golfbaner har nå `Importer CSV`.
+- Importen oppretter/oppdaterer `cr_golf_courses`, `cr_golf_holes`, `cr_golf_tees` og `cr_golf_hole_lengths`.
+- CSV valideres før import: én bane, gyldige hull/par/tee/lengder og tilstrekkelig teedekning.
+- `CSV-mal` kan lastes ned direkte fra appen.
+- `GOLF_CSV_PROMPT.txt` følger med og kan brukes ved å bytte kun banenavnet.
+- Ingen ny SQL nødvendig når v9.7-tabellene allerede finnes.
+
+## v9.8.1 – Golfbaner/mobile fix
+- Rettet skjermnavigasjonen slik at Coach → Golfbaner faktisk viser golfadministrasjonen.
+- Golfbanesiden viser CSV-importen på mobil.
+- Bunnmenyen bruker fem like kolonner og kan ikke skyve Statistikk utenfor skjermen.
+- Bedre mobilbredde/padding og safe-area-støtte.
+- Ny service-worker-cache for å tvinge inn oppdatert kode.

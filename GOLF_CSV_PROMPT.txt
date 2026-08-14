@@ -1,0 +1,90 @@
+CR-WORKOUT – FINN OG LAG CSV FOR GOLFBANE
+
+BANE: [SKRIV KUN NAVNET PÅ GOLFBANEN HER]
+
+Oppgave:
+Finn den mest oppdaterte, pålitelige og dokumenterbare informasjonen om golfbanen over, og lag ÉN CSV-fil som kan importeres direkte i CR-Workout.
+
+VIKTIG:
+- Søk på nettet. Ikke bruk gammel informasjon dersom nyere informasjon finnes.
+- Prioriter kilder i denne rekkefølgen:
+  1. Golfklubbens/offisiell banes egen nettside, baneguide, scorekort eller slope-tabell.
+  2. Norges Golfforbund / offisielle handicap- eller slope-kilder.
+  3. Offisielle turnerings-/banedokumenter.
+  4. Anerkjente golfdatabaser som sekundær kontroll.
+- Kryssjekk opplysninger mellom minst to kilder når det er mulig.
+- Kontroller spesielt om banen nylig har endret hullrekkefølge, par, tee-navn eller hullengder.
+- Bruk dagens aktive baneoppsett, ikke historiske scorekort.
+- Ikke gjett manglende data.
+- Dersom en verdi ikke kan dokumenteres, la CSV-feltet stå tomt.
+- Green-koordinater skal bare fylles inn dersom de kan dokumenteres fra en legitim/offentlig kart- eller banekilde. Ikke kopier proprietære GPS-data fra kommersielle golfapper uten tillatelse.
+- Alle lengder skal være i METER.
+- Én CSV-rad skal representere kombinasjonen HULL + UTSLAGSSTED.
+- Dersom banen har 18 hull og 4 utslagssteder forventes normalt 72 datarader.
+- Gjenta banedata på hver rad. Dette er tilsiktet.
+
+Finn:
+1. Offisielt navn på banen/klubben.
+2. Land.
+3. Sted/by/fylke.
+4. Antall hull.
+5. Gjeldende Par og Stroke Index/HCP for hvert hull.
+6. ALLE aktive utslagssteder/tee-er som banen tilbyr.
+7. Navn/kode på hvert utslagssted.
+8. Sorteringsrekkefølge fra kortest til lengst tee.
+9. Total banelengde fra hvert utslagssted dersom den er publisert.
+10. Lengde i meter fra hvert utslagssted på hvert hull.
+11. Green latitude/longitude per hull dersom dette finnes fra en legitim kilde.
+12. Primær kilde og URL.
+13. Dato informasjonen ble kontrollert.
+
+COURSE_ID:
+Lag en stabil course_id av banenavnet:
+- små bokstaver
+- norske bokstaver konverteres: æ=ae, ø=o, å=a
+- mellomrom og tegn erstattes med bindestrek
+Eksempel:
+Grenland & Omegn Golfklubb -> grenland-og-omegn-golfklubb
+
+CSV-FORMAT:
+CSV-en MÅ ha nøyaktig disse kolonnene i denne rekkefølgen:
+
+course_id,course_name,country,location,course_holes,source_name,source_url,data_checked_date,hole_no,par,stroke_index,tee_code,tee_name,tee_sort_order,tee_total_length_m,length_m,green_lat,green_lon,hole_notes,tee_notes
+
+Feltregler:
+- course_id: tekst
+- course_name: tekst
+- country: ISO-landkode, f.eks. NO
+- location: sted/fylke
+- course_holes: heltall
+- source_name: navnet på den viktigste/offisielle kilden
+- source_url: URL til den viktigste kilden
+- data_checked_date: YYYY-MM-DD
+- hole_no: heltall
+- par: heltall
+- stroke_index: heltall; tomt hvis ukjent
+- tee_code: kort stabil kode slik banen bruker den, f.eks. 39, 48, 53, 57, 59 eller Gul
+- tee_name: visningsnavn
+- tee_sort_order: 10 for korteste tee, 20 for neste, 30 osv.
+- tee_total_length_m: total meter fra denne tee; tomt hvis ukjent
+- length_m: hullets meter fra denne tee
+- green_lat: desimalgrader; tomt hvis ukjent
+- green_lon: desimalgrader; tomt hvis ukjent
+- hole_notes: kun dersom viktig
+- tee_notes: kun dersom viktig, f.eks. alternativ fysisk teekloss/Gimmie-navn
+
+KVALITETSKONTROLL FØR DU LAGER FILEN:
+- Kontroller at alle hull 1–N finnes.
+- Kontroller at Par-summen stemmer med dagens oppgitte banepar.
+- Kontroller at hvert utslagssted har samme antall hull-lengder som banen har hull.
+- Summer length_m for hvert utslagssted og sammenlign med tee_total_length_m.
+- Dersom summen avviker, undersøk kildene på nytt før du konkluderer.
+- Kontroller at samme hull har samme Par og Stroke Index på alle tee-rader.
+- Ikke bland historiske og nåværende data.
+- Dersom kilder er uenige, bruk den mest oppdaterte offisielle kilden og forklar avviket kort.
+
+LEVERANSE:
+1. Lag CSV-filen som et faktisk nedlastbart vedlegg, UTF-8.
+2. Filnavn: golf_<course_id>.csv
+3. I svaret: skriv kort hvilke kilder som ble brukt, dato de ble kontrollert og eventuelle felt som mangler/er usikre.
+4. Ikke skriv CSV-en bare som en markdown-tabell; lag selve .csv-filen.

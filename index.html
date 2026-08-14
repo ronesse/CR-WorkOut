@@ -10,9 +10,9 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="CR-Workout">
   <meta name="format-detection" content="telephone=no">
-  <link rel="manifest" href="manifest.webmanifest?v=9.7.1">
+  <link rel="manifest" href="manifest.webmanifest?v=9.8.1">
   <link rel="icon" href="icon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="style.css?v=9.7.1">
+  <link rel="stylesheet" href="style.css?v=9.8.1">
   <title>CR-Workout</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     crossorigin="">
@@ -131,7 +131,52 @@
       </section>
 
 
-      <section id="runnerScreen" class="screen hidden">
+      
+      <section id="golfCoursesScreen" class="screen hidden">
+        <div class="section-heading">
+          <div>
+            <div class="eyebrow">COACH / ADMIN</div>
+            <h2>⛳ Golfbaner</h2>
+            <p>Importer, kontroller og vedlikehold golfbaner.</p>
+          </div>
+          <button id="golfCoursesBackBtn" class="secondary-btn compact-btn">← Tilbake</button>
+        </div>
+
+        <div class="panel golf-import-panel">
+          <div class="section-heading">
+            <div>
+              <h3>Importer golfbane fra CSV</h3>
+              <p>CSV-filen kan inneholde hele banen: hull, par, index, utslagssteder, lengder og green-koordinater.</p>
+            </div>
+          </div>
+
+          <div class="golf-import-actions">
+            <button id="golfImportCsvBtn" class="primary-btn">📥 Importer CSV</button>
+            <input id="golfImportCsvFile" type="file" accept=".csv,text/csv" class="hidden">
+            <button id="golfDownloadCsvTemplateBtn" class="secondary-btn">⬇ CSV-mal</button>
+          </div>
+
+          <div id="golfImportStatus" class="golf-course-status">
+            Velg en CSV-fil generert med CR-Workout-promten.
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="golf-admin-top">
+            <label>Golfbane
+              <select id="golfAdminCourseSelect"></select>
+            </label>
+            <button id="golfAdminNewCourseBtn" class="secondary-btn">+ Ny bane</button>
+          </div>
+
+          <div id="golfAdminCourseMeta" class="golf-course-status"></div>
+          <div id="golfAdminTees" class="golf-admin-tees"></div>
+          <div id="golfAdminHoles" class="golf-admin-holes"></div>
+          <button id="golfAdminSaveBtn" class="primary-btn full">Lagre bane</button>
+        </div>
+      </section>
+
+<section id="runnerScreen" class="screen hidden">
         <div id="intervalRunner" class="runner-wrap hidden">
           <div id="intervalCard" class="interval-card">
             <div class="runner-top">
@@ -615,8 +660,8 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="programs.js?v=9.7.1"></script>
-  <script src="app.js?v=9.7.1"></script>
+  <script src="programs.js?v=9.8.1"></script>
+  <script src="app.js?v=9.8.1"></script>
 <script>if("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js").catch(()=>{});</script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
   crossorigin=""></script>
