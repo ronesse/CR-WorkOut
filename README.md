@@ -516,3 +516,11 @@ Hopp, meter og sekunder uten `reps` beholdes i reps-feltet.
 - Start økt-knapper nederst på kortene.
 - Personlig velkomsttekst med fullt navn.
 - Ingen SQL-endring.
+
+## v9.9.4 – kompakt hjem + sveipbar statistikk
+- Godkjent-boksen viser kun `Godkjent utøver - [Fullt navn]`.
+- Statistikksiden har en ny sveipbar matrise med Dager / Måneder / År.
+- X-aksen viser tid; Y-aksen viser aktiviteter/programmer.
+- Celler med fullførte ratede økter viser gjennomsnittlig rating 1–5.
+- Sveip horisontalt mellom dags-, måneds- og årsvisning.
+- Ingen SQL-endring.

@@ -10,9 +10,9 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="CR-Workout">
   <meta name="format-detection" content="telephone=no">
-  <link rel="manifest" href="manifest.webmanifest?v=9.9.3">
+  <link rel="manifest" href="manifest.webmanifest?v=9.9.4">
   <link rel="icon" href="icon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="style.css?v=9.9.3">
+  <link rel="stylesheet" href="style.css?v=9.9.4">
   <title>CR-Workout</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     crossorigin="">
@@ -502,6 +502,34 @@
           <div class="stat-card"><strong id="statRating">–</strong><span>snittrating</span></div>
           <div class="stat-card"><strong id="statCompleted">0%</strong><span>fullført</span></div>
         </div>
+        <div class="panel stats-trend-panel">
+          <div class="stats-trend-head">
+            <div>
+              <h3>Aktivitet & rating</h3>
+              <p>Sveip mellom dager, måneder og år.</p>
+            </div>
+            <div id="statsTrendDots" class="stats-trend-dots" aria-label="Visning">
+              <button class="active" data-page="0" aria-label="Dager"></button>
+              <button data-page="1" aria-label="Måneder"></button>
+              <button data-page="2" aria-label="År"></button>
+            </div>
+          </div>
+          <div id="statsTrendSwipe" class="stats-trend-swipe">
+            <section class="stats-trend-page" data-mode="days">
+              <div class="stats-chart-title">Dager</div>
+              <div id="statsChartDays" class="stats-rating-chart"></div>
+            </section>
+            <section class="stats-trend-page" data-mode="months">
+              <div class="stats-chart-title">Måneder</div>
+              <div id="statsChartMonths" class="stats-rating-chart"></div>
+            </section>
+            <section class="stats-trend-page" data-mode="years">
+              <div class="stats-chart-title">År</div>
+              <div id="statsChartYears" class="stats-rating-chart"></div>
+            </section>
+          </div>
+          <div class="stats-chart-legend"><span>Y-akse: aktivitet</span><span>● rating 1–5</span></div>
+        </div>
         <div class="panel"><h3>Programbruk</h3><div id="programStats"></div></div>
       </section>
     
@@ -705,8 +733,8 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="programs.js?v=9.9.3"></script>
-  <script src="app.js?v=9.9.3"></script>
+  <script src="programs.js?v=9.9.4"></script>
+  <script src="app.js?v=9.9.4"></script>
 <script>if("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js").catch(()=>{});</script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
   crossorigin=""></script>
