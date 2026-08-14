@@ -429,3 +429,8 @@ Merk: Tabellen som ble oppgitt har 15 arbeidsøkter + 15 hvileøkter, altså 22:
 Fem oppgavebaserte styrkeprogrammer basert på Hardworkout sitt 12-ukersprogram med manualer/egenvekt.
 Hvert sett er en egen aktivitet. Målreps, sett X/Y, ca. 45 sek pause og 1–2 RIR vises i aktivitetsdata.
 SQL_v9_8_6_MUSCLE_GROWTH.sql registrerer både programmer og alle aktivitetene i Supabase.
+
+## v9.8.7 – Muskelvekst: sett = runde
+Rettet rekkefølgen i Muskelvekst Dag 1–5. Ett sett av hver øvelse gjennomføres før neste runde.
+Eksempel: Runde 1: Brystpress → Skrå brystpress → ... → Dips. Runde 2 starter deretter på Brystpress igjen.
+Øvelser med færre sett hoppes over i senere runder.

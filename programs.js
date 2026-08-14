@@ -112,13 +112,17 @@
     const cfg=MUSCLE_GROWTH[programId];
     if(!cfg)return [];
     let out=[],order=1;
-    for(const ex of cfg.exercises){
-      const [activity,sets,reps]=ex;
-      for(let setNo=1;setNo<=sets;setNo++){
+    const maxSets=Math.max(...cfg.exercises.map(ex=>Number(ex[1]||0)));
+    // Ett sett av hver øvelse per runde:
+    // Runde 1 = sett 1 av alle øvelser, Runde 2 = sett 2 osv.
+    for(let setNo=1;setNo<=maxSets;setNo++){
+      for(const ex of cfg.exercises){
+        const [activity,sets,reps]=ex;
+        if(setNo>sets)continue;
         out.push({
           group:"Main",order:order++,activity,
           round:setNo,reps,load:"",
-          desc:`Sett ${setNo} av ${sets} · mål ${reps} reps · ca. 45 sek pause · velg belastning med ca. 1–2 RIR`
+          desc:`Runde ${setNo} · sett ${setNo} av ${sets} · mål ${reps} reps · ca. 45 sek pause · velg belastning med ca. 1–2 RIR`
         });
       }
     }
