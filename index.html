@@ -10,9 +10,9 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="CR-Workout">
   <meta name="format-detection" content="telephone=no">
-  <link rel="manifest" href="manifest.webmanifest?v=9.8.9.3">
+  <link rel="manifest" href="manifest.webmanifest?v=9.9.0">
   <link rel="icon" href="icon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="style.css?v=9.8.9.3">
+  <link rel="stylesheet" href="style.css?v=9.9.0">
   <title>CR-Workout</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     crossorigin="">
@@ -57,10 +57,33 @@
         </div>
 
         <div id="assignedProgramsWrap" class="hidden">
-          <div class="section-heading">
-            <div><h2>Mine programmer</h2><p>Programmene coachen har gjort tilgjengelige.</p></div>
+          <div id="programCategoryView">
+            <div class="section-heading">
+              <div><h2>Mine aktiviteter</h2><p>Velg kategori.</p></div>
+            </div>
+            <div id="programCategoryGrid" class="program-category-grid"></div>
           </div>
-          <div class="program-layout-toolbar"><span>Visning</span><div class="layout-choice" role="group"><button type="button" class="layout-btn" data-cols="1">1</button><button type="button" class="layout-btn" data-cols="2">2</button><button type="button" class="layout-btn" data-cols="3">3</button></div></div><div id="assignedPrograms" class="program-grid program-cols-2"></div>
+
+          <div id="categoryProgramsWrap" class="hidden">
+            <div class="category-programs-head">
+              <button id="categoryProgramsBackBtn" class="secondary-btn compact-btn">← Tilbake</button>
+              <div>
+                <div class="eyebrow">PROGRAMMER</div>
+                <h2 id="categoryProgramsTitle"></h2>
+              </div>
+            </div>
+            <div class="program-layout-toolbar">
+              <span>Visning</span>
+              <div class="layout-choice" role="group">
+                <button type="button" class="layout-btn" data-cols="1">1</button>
+                <button type="button" class="layout-btn" data-cols="2">2</button>
+                <button type="button" class="layout-btn" data-cols="3">3</button>
+              </div>
+            </div>
+            <div id="categoryPrograms" class="program-grid program-cols-2"></div>
+          </div>
+
+          <div id="assignedPrograms" class="hidden"></div>
         </div>
 
         <div id="activeSessionCard" class="active-session hidden">
@@ -263,6 +286,14 @@
             </label>
             <label>Beskrivelse
               <input id="editProgramDescription" type="text">
+            </label>
+            <label>Kategori
+              <select id="editProgramCategory">
+                <option value="strength">Styrke</option>
+                <option value="ball">Ball</option>
+                <option value="running">Løpe</option>
+                <option value="golf">Golf</option>
+              </select>
             </label>
           </div>
 
@@ -674,8 +705,8 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="programs.js?v=9.8.9.3"></script>
-  <script src="app.js?v=9.8.9.3"></script>
+  <script src="programs.js?v=9.9.0"></script>
+  <script src="app.js?v=9.9.0"></script>
 <script>if("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js").catch(()=>{});</script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
   crossorigin=""></script>

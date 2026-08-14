@@ -488,3 +488,14 @@ Hopp, meter og sekunder uten `reps` beholdes i reps-feltet.
 - Programkortet bruker TIF Viking-logo med volleyballmarkør.
 - Balløkt behandles som åpen økt i coachens Pågående økter.
 - Wake Lock er av, som for Fri økt/Løping/Golf.
+
+## v9.9.0 – Programkategorier
+- Utøverens Hjem viser kategori-kort: Styrke, Ball, Løpe og Golf.
+- Bare kategorier som inneholder programmer tildelt akkurat den utøveren vises.
+- Trykk på kategori åpner utøverens tildelte programmer i kategorien.
+- 1/2/3-kolonnevisning beholdes inne i kategorien.
+- Coach → Utøver → Programmer grupperer tildelingslisten etter kategori.
+- Coach → Programmer har et nytt Kategori-felt som kan endres.
+- Ny additiv kolonne `cr_programs.category`.
+- Treningsmotor, GPS, historikk og programinnhold er uendret.
+- Rollback til v9.8.3 er fortsatt mulig; den ekstra category-kolonnen er ufarlig.

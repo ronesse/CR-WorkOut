@@ -15,7 +15,7 @@ const $=id=>document.getElementById(id),e={};
 "registerModal","closeRegisterBtn","regName","regPhone","regEmail","regPassword","registerBtn","registerMessage","programModal","programAthleteName","closeProgramBtn","programChecklist","saveProgramsBtn",
 "finishModal","finishSummary","finishStars","finishComment","saveFinishBtn","cancelFinishBtn",
 "intervalCard","intervalProgramName","intervalElapsed","intervalRound","intervalRemainingTotal","intervalPhase","intervalMessage","intervalTime","intervalProgressBar","intervalNext","intervalSkipBtn","runnerAbortBtn",
-"sequenceProgramName","sequenceGroupRound","sequenceElapsed","sequenceProgressText","sequenceProgressBar","sequenceActivity","sequenceReps","sequenceLoad","sequenceDesc","sequenceNextActivity","sequenceNextMeta","sequenceCompleteBtn","sequenceSkipBtn","sequencePostponeBtn","sequenceHowToBtn","sequenceNextHowToBtn","exerciseHowToModal","exerciseHowToTitle","exerciseHowToBody","exerciseHowToTip","exerciseHowToClose","exerciseHowToOk","sequenceAbortBtn","runningScreen","runningProgramName","gpsStatus","runningElapsed","runningDistance","runningAvgPace","runningCurrentPace","runningGpsAccuracy","runningPointCount","runningPauseBtn","runningFinishBtn","runningDiscardBtn","twentyScreen","twentyCard","twentyProgramName","twentyRemaining","twentyBigTime","twentyPhaseText","twentyProgressBar","twentyPauseBtn","twentyFinishBtn","twentyDiscardBtn","freeWorkoutScreen","freeWorkoutProgramName","freeWorkoutElapsed","freeWorkoutBigTime","freeWorkoutFinishBtn","freeWorkoutDiscardBtn","finishDistanceWrap","finishDistance","programInfoModal","programInfoTitle","programInfoDescription","programInfoSummary","programInfoList","programInfoClose","routeMapModal","routeMapTitle","routeMapMeta","routeMap","routeMapClose","coachLiveSection","coachLiveSummary","coachLiveList","coachLiveRefreshBtn","liveRouteMapModal","liveRouteMapTitle","liveRouteMapMeta","liveRouteMap","liveRouteMapClose","coachLiveUpdated","golfScreen","golfCourseName","golfRoundMeta","golfElapsed","golfProgressText","golfTotalStrokes","golfProgressBar","golfDistance","golfGpsStatus","golfCurrentHole","golfHoleStatus","golfStrokesInput","golfMinusStrokeBtn","golfPlusStrokeBtn","golfNextHole","golfNextMeta","golfCompleteBtn","golfSkipBtn","golfPostponeBtn","golfMapBtn","golfFinishRoundBtn","golfDiscardBtn","golfSetupModal","golfSetupClose","golfSetupCourse","golfSetupHoles","golfSetupStartHole","golfStartRoundBtn","golfPreviousBtn","golfNextBtn","golfHistoryLabel","golfPar","golfPinDistance","golfFindCourseBtn","golfNearbyCourseBtn","golfCourseResultsWrap","golfCourseResults","golfCourseLookupStatus","golfTrackCount","coachGolfCoursesBtn","golfCoursesScreen","golfCoursesBackBtn","golfAdminCourseSelect","golfAdminNewCourseBtn","golfAdminCourseMeta","golfAdminHoles","golfAdminSaveBtn","golfSavedCourseSelect","golfSwipe","golfSwipeDots","golfOverviewHole","golfOverviewPar","golfMapHoleTitle","golfMapCourseTitle","golfMapDistance","golfInlineMap","golfInlineMapMessage","installAppBtn","golfSetupTee","golfHoleLength","golfOverviewLength","golfAdminTees","golfImportCsvBtn","golfImportCsvFile","golfDownloadCsvTemplateBtn","golfImportStatus"].forEach(id=>e[id]=$(id));
+"sequenceProgramName","sequenceGroupRound","sequenceElapsed","sequenceProgressText","sequenceProgressBar","sequenceActivity","sequenceReps","sequenceLoad","sequenceDesc","sequenceNextActivity","sequenceNextMeta","sequenceCompleteBtn","sequenceSkipBtn","sequencePostponeBtn","sequenceHowToBtn","sequenceNextHowToBtn","exerciseHowToModal","exerciseHowToTitle","exerciseHowToBody","exerciseHowToTip","exerciseHowToClose","exerciseHowToOk","sequenceAbortBtn","runningScreen","runningProgramName","gpsStatus","runningElapsed","runningDistance","runningAvgPace","runningCurrentPace","runningGpsAccuracy","runningPointCount","runningPauseBtn","runningFinishBtn","runningDiscardBtn","twentyScreen","twentyCard","twentyProgramName","twentyRemaining","twentyBigTime","twentyPhaseText","twentyProgressBar","twentyPauseBtn","twentyFinishBtn","twentyDiscardBtn","freeWorkoutScreen","freeWorkoutProgramName","freeWorkoutElapsed","freeWorkoutBigTime","freeWorkoutFinishBtn","freeWorkoutDiscardBtn","finishDistanceWrap","finishDistance","programInfoModal","programInfoTitle","programInfoDescription","programInfoSummary","programInfoList","programInfoClose","routeMapModal","routeMapTitle","routeMapMeta","routeMap","routeMapClose","coachLiveSection","coachLiveSummary","coachLiveList","coachLiveRefreshBtn","liveRouteMapModal","liveRouteMapTitle","liveRouteMapMeta","liveRouteMap","liveRouteMapClose","coachLiveUpdated","golfScreen","golfCourseName","golfRoundMeta","golfElapsed","golfProgressText","golfTotalStrokes","golfProgressBar","golfDistance","golfGpsStatus","golfCurrentHole","golfHoleStatus","golfStrokesInput","golfMinusStrokeBtn","golfPlusStrokeBtn","golfNextHole","golfNextMeta","golfCompleteBtn","golfSkipBtn","golfPostponeBtn","golfMapBtn","golfFinishRoundBtn","golfDiscardBtn","golfSetupModal","golfSetupClose","golfSetupCourse","golfSetupHoles","golfSetupStartHole","golfStartRoundBtn","golfPreviousBtn","golfNextBtn","golfHistoryLabel","golfPar","golfPinDistance","golfFindCourseBtn","golfNearbyCourseBtn","golfCourseResultsWrap","golfCourseResults","golfCourseLookupStatus","golfTrackCount","coachGolfCoursesBtn","golfCoursesScreen","golfCoursesBackBtn","golfAdminCourseSelect","golfAdminNewCourseBtn","golfAdminCourseMeta","golfAdminHoles","golfAdminSaveBtn","golfSavedCourseSelect","golfSwipe","golfSwipeDots","golfOverviewHole","golfOverviewPar","golfMapHoleTitle","golfMapCourseTitle","golfMapDistance","golfInlineMap","golfInlineMapMessage","installAppBtn","golfSetupTee","golfHoleLength","golfOverviewLength","golfAdminTees","golfImportCsvBtn","golfImportCsvFile","golfDownloadCsvTemplateBtn","golfImportStatus","programCategoryView","programCategoryGrid","categoryProgramsWrap","categoryProgramsBackBtn","categoryProgramsTitle","categoryPrograms","editProgramCategory"].forEach(id=>e[id]=$(id));
 
 let session=null,user=null,profile=null,athletes=[],programs=[],programAthleteId=null,activeSession=null,homeTimer=null,runnerTimer=null,finishRating=4,currentMonth=new Date(),realtimeChannel=null,runnerMode=null,intervalState=null,sequenceState=null,lastCueKey="";
 let wakeLock=null;
@@ -234,14 +234,13 @@ function applyProgramColumns(cols){
   cols=Number(cols);
   if(![1,2,3].includes(cols))cols=2;
   localStorage.setItem(athleteUiKey("programColumns"),String(cols));
-  const grid=document.getElementById("assignedPrograms");
-  if(grid){
+  [e.assignedPrograms,e.categoryPrograms].filter(Boolean).forEach(grid=>{
     grid.classList.remove("program-cols-1","program-cols-2","program-cols-3");
     grid.classList.add(`program-cols-${cols}`);
     grid.style.gridTemplateColumns=cols===1
       ?"1fr"
       :`repeat(${cols}, minmax(0, 1fr))`;
-  }
+  });
   document.querySelectorAll(".layout-btn").forEach(b=>{
     b.classList.toggle("active",Number(b.dataset.cols)===cols);
     b.setAttribute("aria-pressed",String(Number(b.dataset.cols)===cols));
@@ -254,18 +253,94 @@ document.addEventListener("click",ev=>{
   applyProgramColumns(btn.dataset.cols);
 });
 
-function renderPrograms(list){
-  e.assignedPrograms.innerHTML=list.length?list.map(p=>`<article class="program-card ${String(p.id)==="ball_session"?"ball-session-card":""}" data-program-id="${p.id}">
+
+const PROGRAM_CATEGORIES={
+  strength:{label:"Styrke",icon:"🏋️",description:"Styrke, kettlebell og kroppsvekt"},
+  ball:{label:"Ball",icon:"🏐",description:"Volleyball og balløkter"},
+  running:{label:"Løpe",icon:"🏃",description:"Løping og kondisjon"},
+  golf:{label:"Golf",icon:"⛳",description:"Golf"}
+};
+
+let athleteAssignedPrograms=[];
+
+function normalizeProgramCategory(program){
+  const explicit=String(program?.category||"").trim().toLowerCase();
+  if(PROGRAM_CATEGORIES[explicit])return explicit;
+
+  const id=String(program?.id||program?.program_id||"").toLowerCase();
+  const name=String(program?.name||program?.title||"").toLowerCase();
+
+  if(id==="golf"||name.includes("golf"))return "golf";
+  if(id==="ball_session"||name.includes("balløkt")||name.includes("ballokt"))return "ball";
+  if(id==="running"||name.includes("løping")||name.includes("loping"))return "running";
+  return "strength";
+}
+
+function renderProgramCards(container,list){
+  container.innerHTML=list.length?list.map(p=>`<article class="program-card ${String(p.id)==="ball_session"?"ball-session-card":""}" data-program-id="${p.id}">
     <button type="button" class="program-info-btn" data-id="${p.id}" aria-label="Vis programinnhold" title="Vis programinnhold">i</button>
     <span class="program-icon">${programIcon(p)?`<img src="${programIcon(p)}" alt="${esc(p.name)}">`:esc(p.icon||"🏋️")}</span>
     <h3>${esc(p.name)}</h3>
     <p>${esc(p.description||"")}</p>
     <button class="primary-btn start-program" data-id="${p.id}">Start økt</button>
-  </article>`).join(""):`<div class="empty">Ingen programmer er tildelt ennå.</div>`;
-  e.assignedPrograms.querySelectorAll(".start-program").forEach(b=>b.onclick=()=>startSession(b.dataset.id));
-  e.assignedPrograms.querySelectorAll(".program-info-btn").forEach(b=>b.onclick=ev=>{ev.stopPropagation();openProgramInfo(b.dataset.id)});
-  initProgramLayoutControls();
+  </article>`).join(""):`<div class="empty">Ingen programmer i denne kategorien.</div>`;
+
+  container.querySelectorAll(".start-program").forEach(b=>b.onclick=()=>startSession(b.dataset.id));
+  container.querySelectorAll(".program-info-btn").forEach(b=>b.onclick=ev=>{ev.stopPropagation();openProgramInfo(b.dataset.id)});
 }
+
+function renderProgramCategories(list){
+  athleteAssignedPrograms=[...(list||[])];
+
+  const groups={strength:[],ball:[],running:[],golf:[]};
+  athleteAssignedPrograms.forEach(p=>{
+    const cat=normalizeProgramCategory(p);
+    groups[cat].push(p);
+  });
+
+  const visible=Object.entries(groups).filter(([,items])=>items.length);
+  e.programCategoryGrid.innerHTML=visible.length
+    ?visible.map(([key,items])=>{
+      const cfg=PROGRAM_CATEGORIES[key];
+      return `<button type="button" class="program-category-card" data-category="${key}">
+        <span class="program-category-icon">${cfg.icon}</span>
+        <span class="program-category-label">${esc(cfg.label)}</span>
+        <span class="program-category-count">${items.length} ${items.length===1?"program":"programmer"}</span>
+        <span class="program-category-desc">${esc(cfg.description)}</span>
+      </button>`;
+    }).join("")
+    :'<div class="empty">Ingen programmer er tildelt ennå.</div>';
+
+  e.programCategoryGrid.querySelectorAll(".program-category-card").forEach(btn=>{
+    btn.onclick=()=>openProgramCategory(btn.dataset.category);
+  });
+
+  e.programCategoryView.classList.remove("hidden");
+  e.categoryProgramsWrap.classList.add("hidden");
+}
+
+function openProgramCategory(category){
+  const cfg=PROGRAM_CATEGORIES[category]||PROGRAM_CATEGORIES.strength;
+  const filtered=athleteAssignedPrograms.filter(p=>normalizeProgramCategory(p)===category);
+
+  e.categoryProgramsTitle.textContent=`${cfg.icon} ${cfg.label}`;
+  e.programCategoryView.classList.add("hidden");
+  e.categoryProgramsWrap.classList.remove("hidden");
+
+  renderProgramCards(e.categoryPrograms,filtered);
+  applyProgramColumns(getProgramColumns());
+}
+
+function closeProgramCategory(){
+  e.categoryProgramsWrap.classList.add("hidden");
+  e.programCategoryView.classList.remove("hidden");
+}
+
+function renderPrograms(list){
+  renderProgramCards(e.assignedPrograms,list);
+  renderProgramCategories(list);
+}
+
 
 
 function programInfoSummaryHtml(program, activities, settings){
@@ -810,6 +885,7 @@ async function loadProgramEditor(programId){
   e.coachProgramTitle.textContent=p?.name||programId;
   if(e.editProgramName)e.editProgramName.value=p?.name||"";
   if(e.editProgramDescription)e.editProgramDescription.value=p?.description||"";
+  if(e.editProgramCategory)e.editProgramCategory.value=normalizeProgramCategory(p);
 
   const isInterval=!!INTERVAL_PROGRAMS[programId];
   const isIntervalSequence=programId==="kettlebell_mix";
@@ -876,7 +952,8 @@ async function saveProgramActivities(){
 
   const {error:programError}=await sb.from("cr_programs").update({
     name:(e.editProgramName?.value||"").trim(),
-    description:(e.editProgramDescription?.value||"").trim()
+    description:(e.editProgramDescription?.value||"").trim(),
+    category:e.editProgramCategory?.value||normalizeProgramCategory(programs.find(x=>x.id===programId))
   }).eq("id",programId);
   if(programError){e.programEditorMessage.textContent=`Feil: ${programError.message}`;return}
 
@@ -2749,7 +2826,27 @@ programAthleteId=id;const athlete=athletes.find(x=>x.id===id);e.programAthleteNa
 let rows=[];const q=await sb.from("cr_athlete_programs").select("program_id,enabled,sort_order").eq("athlete_id",id);
 if(q.error){const f=await sb.from("cr_athlete_programs").select("program_id,enabled").eq("athlete_id",id);if(f.error){alert("Kunne ikke laste programtilgang: "+f.error.message);return}rows=(f.data||[]).map((x,i)=>({...x,sort_order:i+1}))}else rows=q.data||[];
 const current=new Map(rows.map(x=>[x.program_id,x]));
-e.programChecklist.innerHTML=programs.map((p,idx)=>{const row=current.get(p.id),checked=!!row?.enabled,order=row?.sort_order??idx+1;return `<div class="program-order-row" data-program-id="${p.id}"><label class="program-enable"><span><strong>${esc(p.name)}</strong><small>${esc(p.description||"")}</small></span><input class="program-enabled" type="checkbox" ${checked?"checked":""}></label><label class="program-order-label"><span>Nr.</span><input class="program-order-input" type="number" min="1" value="${order}" ${checked?"":"disabled"}></label></div>`}).join("");
+e.programChecklist.innerHTML=["strength","ball","running","golf"].map(cat=>{
+  const cfg=PROGRAM_CATEGORIES[cat];
+  const items=programs.filter(p=>normalizeProgramCategory(p)===cat);
+  if(!items.length)return "";
+  return `<div class="assignment-category">
+    <div class="assignment-category-title">${cfg.icon} ${esc(cfg.label)}</div>
+    ${items.map((p,idx)=>{
+      const row=current.get(p.id),checked=!!row?.enabled,order=row?.sort_order??idx+1;
+      return `<div class="program-order-row" data-program-id="${p.id}">
+        <label class="program-enable">
+          <span><strong>${esc(p.name)}</strong><small>${esc(p.description||"")}</small></span>
+          <input class="program-enabled" type="checkbox" ${checked?"checked":""}>
+        </label>
+        <label class="program-order-label">
+          <span>Nr.</span>
+          <input class="program-order-input" type="number" min="1" value="${order}" ${checked?"":"disabled"}>
+        </label>
+      </div>`;
+    }).join("")}
+  </div>`;
+}).join("");
 e.programChecklist.querySelectorAll(".program-enabled").forEach(cb=>cb.onchange=()=>{cb.closest(".program-order-row").querySelector(".program-order-input").disabled=!cb.checked});openModal(e.programModal)}
 async function savePrograms(){const rows=[...e.programChecklist.querySelectorAll(".program-order-row")].map((row,idx)=>{const enabled=row.querySelector(".program-enabled").checked;return{athlete_id:programAthleteId,program_id:row.dataset.programId,enabled,sort_order:enabled?Math.max(1,Number(row.querySelector(".program-order-input").value)||idx+1):null}});const en=rows.filter(x=>x.enabled).sort((a,b)=>(a.sort_order??9999)-(b.sort_order??9999));en.forEach((r,i)=>r.sort_order=i+1);const {error}=await sb.from("cr_athlete_programs").upsert(rows,{onConflict:"athlete_id,program_id"});if(error){alert("Kunne ikke lagre programrekkefølge. Kjør v7.6 SQL først.\n\n"+error.message);return}closeModal(e.programModal)}
 
@@ -3073,6 +3170,7 @@ e.programInfoClose.onclick=()=>closeModal(e.programInfoModal);e.routeMapClose.on
 // v9.8.8.1 – How To modal controls must be bound inside the application scope.
 if(e.exerciseHowToClose)e.exerciseHowToClose.onclick=closeExerciseHowTo;
 if(e.exerciseHowToOk)e.exerciseHowToOk.onclick=closeExerciseHowTo;
+if(e.categoryProgramsBackBtn)e.categoryProgramsBackBtn.onclick=closeProgramCategory;
 
 // Also allow tapping the dark backdrop to close, but not taps inside the card.
 if(e.exerciseHowToModal)e.exerciseHowToModal.addEventListener("click",ev=>{
