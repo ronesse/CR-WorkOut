@@ -499,3 +499,8 @@ Hopp, meter og sekunder uten `reps` beholdes i reps-feltet.
 - Ny additiv kolonne `cr_programs.category`.
 - Treningsmotor, GPS, historikk og programinnhold er uendret.
 - Rollback til v9.8.3 er fortsatt mulig; den ekstra category-kolonnen er ufarlig.
+
+## v9.9.1 – Annen aktivitet
+- Kategorien «Løpe» heter nå «Annen aktivitet».
+- Løping, Kettlebell, Kettlebell Mix og Fri økt legges i denne kategorien.
+- Intern category-verdi `running` beholdes for kompatibilitet.

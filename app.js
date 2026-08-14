@@ -257,7 +257,7 @@ document.addEventListener("click",ev=>{
 const PROGRAM_CATEGORIES={
   strength:{label:"Styrke",icon:"🏋️",description:"Styrke, kettlebell og kroppsvekt"},
   ball:{label:"Ball",icon:"🏐",description:"Volleyball og balløkter"},
-  running:{label:"Løpe",icon:"🏃",description:"Løping og kondisjon"},
+  running:{label:"Annen aktivitet",icon:"🏃",description:"Løping, kettlebell, fri økt og andre aktiviteter"},
   golf:{label:"Golf",icon:"⛳",description:"Golf"}
 };
 
@@ -272,7 +272,18 @@ function normalizeProgramCategory(program){
 
   if(id==="golf"||name.includes("golf"))return "golf";
   if(id==="ball_session"||name.includes("balløkt")||name.includes("ballokt"))return "ball";
-  if(id==="running"||name.includes("løping")||name.includes("loping"))return "running";
+  if(
+    id==="running" ||
+    id==="free_workout" ||
+    id==="kettlebell" ||
+    id==="kettlebell_mix" ||
+    id.includes("kettlebell") ||
+    name.includes("løping") ||
+    name.includes("loping") ||
+    name.includes("kettlebell") ||
+    name.includes("fri økt") ||
+    name.includes("fri okt")
+  )return "running";
   return "strength";
 }
 
