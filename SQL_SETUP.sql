@@ -583,3 +583,25 @@ values
 on conflict(course_id,hole_no,tee_code) do update set length_m=excluded.length_m;
 
 NOTIFY pgrst,'reload schema';
+
+
+-- v9.8.4: Kroppsvekt Dag 1/2/3
+-- CR-Workout v9.8.4
+-- Registrerer de tre nye kroppsvektprogrammene i Supabase.
+-- Kjør hele denne filen én gang i Supabase SQL Editor.
+
+insert into public.cr_programs
+  (id,name,description,icon,active,sort_order)
+values
+  ('bodyweight_day1','Kroppsvekt Dag 1','9 øvelser · 3 runder · egen kroppsvekt','🏋️',true,100),
+  ('bodyweight_day2','Kroppsvekt Dag 2','9 øvelser · 3 runder · egen kroppsvekt','🏋️',true,110),
+  ('bodyweight_day3','Kroppsvekt Dag 3','9 øvelser · 3 runder · egen kroppsvekt','🏋️',true,120)
+on conflict (id) do update set
+  name=excluded.name,
+  description=excluded.description,
+  icon=excluded.icon,
+  active=true,
+  sort_order=excluded.sort_order;
+
+notify pgrst, 'reload schema';
+
