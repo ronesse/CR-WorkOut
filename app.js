@@ -63,20 +63,23 @@ function dateKey(d){const p=n=>String(n).padStart(2,"0");return `${d.getFullYear
 function elapsed(from,to=new Date()){return Math.max(0,Math.floor((new Date(to)-new Date(from))/1000))}
 function fmtElapsed(sec){const h=Math.floor(sec/3600),m=Math.floor((sec%3600)/60),s=sec%60;return h?`${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`:`${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`}
 function showOnly(name){
-  const map={
-    login:e.loginScreen,
-    athlete:e.athleteScreen,
-    coach:e.coachScreen,
-    athletes:e.athletesScreen,
-    programs:e.programsScreen,
-    golfCourses:e.golfCoursesScreen,
-    runner:e.runnerScreen,
-    calendar:e.calendarScreen,
-    stats:e.statsScreen
-  };
-  Object.values(map).filter(Boolean).forEach(x=>x.classList.add("hidden"));
-  const target=map[name];
-  if(target)target.classList.remove("hidden");
+  ["landing","athlete","coach","athletes","programs","golfCourses","runner","running","twenty","freeWorkout","golf","calendar","stats"]
+    .forEach(n=>e[n+"Screen"]?.classList.toggle("hidden",n!==name));
+
+  document.querySelectorAll(".nav-btn").forEach(b=>
+    b.classList.toggle("active",
+      (name==="athlete"&&b.dataset.screen==="home")||
+      (name==="coach"&&b.dataset.screen==="home")||
+      (name==="athletes"&&b.dataset.screen==="coach")||
+      b.dataset.screen===name
+    )
+  );
+
+  const isCoachDashboard=profile?.role==="coach"&&name==="coach";
+  document.body.classList.toggle("coach-mode",profile?.role==="coach");
+  if(!isCoachDashboard)stopCoachLivePolling();
+
+  document.body.classList.toggle("golf-active-screen",name==="golf");
   window.scrollTo({top:0,left:0,behavior:"auto"});
 }
 

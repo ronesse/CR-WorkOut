@@ -392,3 +392,11 @@ Merk: Tabellen som ble oppgitt har 15 arbeidsøkter + 15 hvileøkter, altså 22:
 - Bunnmenyen bruker fem like kolonner og kan ikke skyve Statistikk utenfor skjermen.
 - Bedre mobilbredde/padding og safe-area-støtte.
 - Ny service-worker-cache for å tvinge inn oppdatert kode.
+
+## v9.8.2 – navigasjon/login-visning fix
+- Rettet regresjon fra v9.8.1 der `landingScreen` ikke ble skjult etter innlogging.
+- Gjeninnført den stabile `showOnly()`-logikken fra v9.7.1, med støtte for `golfCourses`.
+- Rettet bunnmenyen: gammel `translateX(-50%)` fjernes eksplisitt.
+- Menyknapper fordeles automatisk over hele skjermbredden, og skjulte coach-knapper tar ikke plass.
+- `Statistikk` skal nå være fullt synlig på mobil.
+- Ingen SQL-endring.
