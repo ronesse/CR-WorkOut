@@ -466,3 +466,10 @@ Seks nye programmer:
 
 Sett behandles som runder. Runde 1 går gjennom sett 1 av alle øvelser, deretter runde 2 osv.
 Øvelser med tre sett hoppes over i runde 4. Fokus-teksten fra programmet vises i aktivitetsbeskrivelsen.
+
+## v9.8.9.1 – TIF Viking reps/load
+For TIF Viking Off Season flyttes belastningsinformasjon som står etter `reps`,
+`reps per fot`, `reps per arm` eller `reps per side` til `load`.
+Eksempel: `4 reps 80–85 % @ 1-2 RIR` blir reps=`4 reps`, load=`80–85 % @ 1-2 RIR`.
+`6 reps per fot (2 RIR)` blir reps=`6 reps per fot`, load=`2 RIR`.
+Hopp, meter og sekunder uten `reps` beholdes i reps-feltet.

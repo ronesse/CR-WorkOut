@@ -138,6 +138,23 @@
     tif_offseason_3_v2: {name:'TIF Viking – Økt 3 Split Over/underkropp variant 2', exercises:[['Lateral Bound', 'Sideveis eksplosivitet', ['4 per side', '4 per side', '4 per side']],['Frivending / drag til bryst', 'Start fra hofte, eksplosiv avslutning', ['3 reps (2 RIR)', '3 reps (2 RIR)', '3 reps (2 RIR)', '3 reps (2 RIR)']],['Valgfri bøy variant', 'Eksplosivt opp, kontrollert ned', ['4 reps @ 75–80 % (2 RIR)', '4 reps @ 75–80 % (2 RIR)', '4 reps @ 75–80 % (2 RIR)']],['Step Up m/ manualer', 'Eksplosivt opp, kontrollert ned', ['6 reps per fot (2 RIR)', '6 reps per fot (2 RIR)', '6 reps per fot (2 RIR)']],['Explosive Bench Press', 'Maks stanghastighet', ['4 reps 40–50 % benk', '4 reps 40–50 % benk', '4 reps 40–50 % benk', '4 reps 40–50 % benk']],['Pull Ups / Nedtrekk', 'Full bevegelse, trekk albuer ned mot hofte', ['6 reps (2 RIR)', '6 reps (2 RIR)', '6 reps (2 RIR)']],['Sideplanke med rotasjon', 'Stabilisering kjerne, kontrollert rotasjon', ['8 reps per side', '8 reps per side', '8 reps per side']],['Copenhagen Plank', 'Stabilisering kjerne', ['30s per side', '30s per side', '30s per side']]]},
   };
 
+  function splitTifRepsLoad(value){
+    const s=String(value||"").trim();
+
+    // Keep the movement quantity in reps; move intensity/RIR/% prescriptions to load.
+    // Examples:
+    // "4 reps 80–85 % @ 1-2 RIR" -> reps "4 reps", load "80–85 % @ 1-2 RIR"
+    // "6 reps per fot (2 RIR)" -> reps "6 reps per fot", load "2 RIR"
+    // "8 reps per arm (2 RIR)" -> reps "8 reps per arm", load "2 RIR"
+    const m=s.match(/^(.+?\breps(?:\s+per\s+(?:fot|arm|side))?)(?:\s+(.+))?$/i);
+    if(m){
+      let load=String(m[2]||"").trim();
+      if(load.startsWith("(")&&load.endsWith(")"))load=load.slice(1,-1).trim();
+      return {reps:m[1].trim(),load};
+    }
+    return {reps:s,load:""};
+  }
+
   function tifOffseasonRows(programId){
     const cfg=TIF_OFFSEASON[programId];
     if(!cfg)return [];
@@ -147,9 +164,10 @@
       for(const ex of cfg.exercises){
         const [activity,focus,sets]=ex;
         if(roundNo>sets.length)continue;
+        const prescription=splitTifRepsLoad(sets[roundNo-1]);
         out.push({
           group:"Main", order:order++, activity,
-          round:roundNo, reps:sets[roundNo-1], load:"",
+          round:roundNo, reps:prescription.reps, load:prescription.load,
           desc:`Runde ${roundNo} · ${focus}`
         });
       }
