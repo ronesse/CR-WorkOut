@@ -473,3 +473,9 @@ For TIF Viking Off Season flyttes belastningsinformasjon som står etter `reps`,
 Eksempel: `4 reps 80–85 % @ 1-2 RIR` blir reps=`4 reps`, load=`80–85 % @ 1-2 RIR`.
 `6 reps per fot (2 RIR)` blir reps=`6 reps per fot`, load=`2 RIR`.
 Hopp, meter og sekunder uten `reps` beholdes i reps-feltet.
+
+## v9.8.9.2 – TIF Viking navn, logo og How To
+- `i` fjernet fra NESTE-kortet; beholdes kun på NÅ/current.
+- Kortere navn på de seks TIF Viking-programmene.
+- TIF Viking-logo lagt inn som `tif-viking-logo.png` og brukes på TIF-programkortene.
+- Ingen endring i øvelser, runder, reps eller load.

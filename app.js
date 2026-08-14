@@ -26,6 +26,7 @@ function programIcon(program){
   const name=String(program?.name||program?.title||"").toLowerCase();
   if(id.includes("kettlebell-mix")||id.includes("kettlebell_mix")||name.includes("kettlebell mix")) return "kettlebell.png";
   if(id==="kettlebell"||id.includes("60-30")||id.includes("60_30")||name.includes("arbeid/hvile 60/30")) return "workrest.png";
+  if(id.startsWith("tif_offseason_")||name.startsWith("tif viking-økt")) return "tif-viking-logo.png";
   return null;
 }
 
@@ -400,7 +401,7 @@ function isSequenceProgram(programId){
 
   const p=programs.find(x=>String(x.id)===id);
   const name=String(p?.name||"").trim().toLowerCase();
-  return name.startsWith("kroppsvekt dag ") || name.startsWith("styrke dag") || name.startsWith("muskelvekst dag ") || name.startsWith("tif viking – økt ") || name.startsWith("tif viking - økt ");
+  return name.startsWith("kroppsvekt dag ") || name.startsWith("styrke dag") || name.startsWith("muskelvekst dag ") || name.startsWith("tif viking-økt ") || name.startsWith("tif viking – økt ") || name.startsWith("tif viking - økt ");
 }
 
 function isRunningProgram(programId){
@@ -688,9 +689,9 @@ async function startSequenceRunner(){
     const curHowTo=MUSCLE_GROWTH_HOWTO[String(cur.activity||"")];
     e.sequenceHowToBtn.classList.toggle("hidden",!curHowTo);
     e.sequenceHowToBtn.onclick=curHowTo?()=>showExerciseHowTo(cur):null;
-    const nextHowTo=next?MUSCLE_GROWTH_HOWTO[String(next.activity||"")]:null;
-    e.sequenceNextHowToBtn.classList.toggle("hidden",!nextHowTo);
-    e.sequenceNextHowToBtn.onclick=nextHowTo?()=>showExerciseHowTo(next):null;
+    // How To is intentionally available only on the current activity card.
+    e.sequenceNextHowToBtn.classList.add("hidden");
+    e.sequenceNextHowToBtn.onclick=null;
     e.sequenceReps.textContent=cur.reps||"–";
     e.sequenceLoad.textContent=cur.load||"–";
     e.sequenceDesc.textContent=cur.desc||"";
