@@ -220,7 +220,11 @@ async function loadAthleteData(){
 
  await loadPrograms();const {data:sessions}=await sb.from("cr_workout_sessions").select("*").eq("athlete_id",user.id).order("started_at",{ascending:false});const all=sessions||[];activeSession=all.find(x=>x.status==="started")||null;
  const completed=all.filter(x=>x.status==="completed");e.athleteSessionCount.textContent=completed.length;e.athleteMinutes.textContent=Math.round(completed.reduce((s,x)=>s+(x.duration_seconds||0),0)/60);const ratings=completed.filter(x=>x.rating).map(x=>x.rating);e.athleteAvgRating.textContent=ratings.length?(ratings.reduce((a,b)=>a+b,0)/ratings.length).toFixed(1):"–";
- const approved=!!profile?.approved;e.athleteStatusCard.className="status-card "+(approved?"approved":"pending");e.athleteStatusTitle.textContent=approved?"Godkjent utøver":"Venter på godkjenning";e.athleteStatusText.textContent=approved?"Du har tilgang til programmene coachen har tildelt deg.":"Coachen må godkjenne kontoen før programmene blir tilgjengelige.";e.assignedProgramsWrap.classList.toggle("hidden",!approved);
+ const approved=!!profile?.approved;
+ const athleteFullName=[profile?.first_name,profile?.last_name].filter(Boolean).join(" ").trim()||profile?.full_name||profile?.name||"";
+ e.athleteStatusCard.className="status-card "+(approved?"approved":"pending");
+ e.athleteStatusTitle.textContent=approved?(athleteFullName?`Godkjent utøver - ${athleteFullName}`:"Godkjent utøver"):"Venter på godkjenning";
+ e.athleteStatusText.textContent=approved?"CR har gitt deg tilgang til følgende programmer:":"Coachen må godkjenne kontoen før programmene blir tilgjengelige.";e.assignedProgramsWrap.classList.toggle("hidden",!approved);
  if(approved){let assigned=[];const q=await sb.from("cr_athlete_programs").select("program_id,sort_order").eq("athlete_id",user.id).eq("enabled",true).order("sort_order",{ascending:true});if(q.error){const f=await sb.from("cr_athlete_programs").select("program_id").eq("athlete_id",user.id).eq("enabled",true);assigned=(f.data||[]).map((x,i)=>({...x,sort_order:1000+i}))}else assigned=q.data||[];const rank=new Map(assigned.map((x,i)=>[x.program_id,Number(x.sort_order)||1000+i]));const ids=new Set(assigned.map(x=>x.program_id));renderPrograms(programs.filter(p=>ids.has(p.id)).sort((x,y)=>(rank.get(x.id)??9999)-(rank.get(y.id)??9999)))}
  renderActiveSession();if(activeSession)requestWakeLock();
 }

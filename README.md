@@ -510,3 +510,9 @@ Hopp, meter og sekunder uten `reps` beholdes i reps-feltet.
   kettlebell, løping og timer.
 - Symbolene vises samlet på kategorikortet.
 - Ingen databaseendring er nødvendig fra v9.9.1.
+
+## v9.9.3
+- Tre større, like symboler på Annen aktivitet.
+- Start økt-knapper nederst på kortene.
+- Personlig velkomsttekst med fullt navn.
+- Ingen SQL-endring.
