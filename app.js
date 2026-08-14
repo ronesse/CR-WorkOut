@@ -257,7 +257,7 @@ document.addEventListener("click",ev=>{
 const PROGRAM_CATEGORIES={
   strength:{label:"Styrke",icon:"🏋️",description:"Styrke, kettlebell og kroppsvekt"},
   ball:{label:"Ball",icon:"🏐",description:"Volleyball og balløkter"},
-  running:{label:"Annen aktivitet",icon:"🏃",description:"Løping, kettlebell, fri økt og andre aktiviteter"},
+  running:{label:"Annen aktivitet",icon:"",description:"Løping, kettlebell, fri økt og andre aktiviteter"},
   golf:{label:"Golf",icon:"⛳",description:"Golf"}
 };
 
@@ -314,7 +314,13 @@ function renderProgramCategories(list){
     ?visible.map(([key,items])=>{
       const cfg=PROGRAM_CATEGORIES[key];
       return `<button type="button" class="program-category-card" data-category="${key}">
-        <span class="program-category-icon">${cfg.icon}</span>
+        <span class="program-category-icon">${key==="running"
+          ?`<span class="other-activity-icons">
+              <img src="other-activity-icon-1.png" alt="Kettlebell">
+              <img src="other-activity-icon-2.png" alt="Løping">
+              <img src="other-activity-icon-3.png" alt="Timer">
+            </span>`
+          :cfg.icon}</span>
         <span class="program-category-label">${esc(cfg.label)}</span>
         <span class="program-category-count">${items.length} ${items.length===1?"program":"programmer"}</span>
         <span class="program-category-desc">${esc(cfg.description)}</span>
@@ -334,7 +340,7 @@ function openProgramCategory(category){
   const cfg=PROGRAM_CATEGORIES[category]||PROGRAM_CATEGORIES.strength;
   const filtered=athleteAssignedPrograms.filter(p=>normalizeProgramCategory(p)===category);
 
-  e.categoryProgramsTitle.textContent=`${cfg.icon} ${cfg.label}`;
+  e.categoryProgramsTitle.textContent=category==="running"?cfg.label:`${cfg.icon} ${cfg.label}`;
   e.programCategoryView.classList.add("hidden");
   e.categoryProgramsWrap.classList.remove("hidden");
 
@@ -2842,7 +2848,9 @@ e.programChecklist.innerHTML=["strength","ball","running","golf"].map(cat=>{
   const items=programs.filter(p=>normalizeProgramCategory(p)===cat);
   if(!items.length)return "";
   return `<div class="assignment-category">
-    <div class="assignment-category-title">${cfg.icon} ${esc(cfg.label)}</div>
+    <div class="assignment-category-title">${cat==="running"
+      ?`<span class="other-activity-icons assignment-icons"><img src="other-activity-icon-1.png" alt=""><img src="other-activity-icon-2.png" alt=""><img src="other-activity-icon-3.png" alt=""></span>`
+      :cfg.icon} ${esc(cfg.label)}</div>
     ${items.map((p,idx)=>{
       const row=current.get(p.id),checked=!!row?.enabled,order=row?.sort_order??idx+1;
       return `<div class="program-order-row" data-program-id="${p.id}">

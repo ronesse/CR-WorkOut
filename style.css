@@ -1160,3 +1160,33 @@ button.confirm-end{
   .program-category-label{font-size:1.15rem}
   .program-category-desc{font-size:.73rem}
 }
+
+/* v9.9.2 – tre symboler på Annen aktivitet */
+.other-activity-icons{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  min-height:38px;
+}
+.other-activity-icons img{
+  width:36px;
+  height:36px;
+  object-fit:contain;
+  border-radius:8px;
+  display:block;
+}
+.assignment-icons{
+  display:inline-flex;
+  min-height:24px;
+  vertical-align:middle;
+  margin-right:6px;
+}
+.assignment-icons img{
+  width:24px;
+  height:24px;
+  border-radius:5px;
+}
+@media(max-width:600px){
+  .other-activity-icons{gap:5px}
+  .other-activity-icons img{width:31px;height:31px}
+}

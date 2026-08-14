@@ -504,3 +504,9 @@ Hopp, meter og sekunder uten `reps` beholdes i reps-feltet.
 - Kategorien «Løpe» heter nå «Annen aktivitet».
 - Løping, Kettlebell, Kettlebell Mix og Fri økt legges i denne kategorien.
 - Intern category-verdi `running` beholdes for kompatibilitet.
+
+## v9.9.2 – symboler på Annen aktivitet
+- Kategorien «Annen aktivitet» viser nå brukerens tre ønskede symboler:
+  kettlebell, løping og timer.
+- Symbolene vises samlet på kategorikortet.
+- Ingen databaseendring er nødvendig fra v9.9.1.
