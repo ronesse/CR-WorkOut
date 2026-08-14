@@ -100,6 +100,31 @@
     return out;
   }
 
+  const MUSCLE_GROWTH = {
+    muscle_growth_day1: {name:'Muskelvekst Dag 1', focus:'Bryst, skuldre og triceps', exercises:[['Brystpress flatbenk',5,'8–10'],['Skrå brystpress',4,'8–10'],['Brystpress fra gulv',3,'8–12'],['Stående skulderpress',4,'8–10'],['Sidehev',3,'8–12'],['Enarms triceps press',3,'8–12'],['Dips på benk (eller stol)',3,'8–12']]},
+    muscle_growth_day2: {name:'Muskelvekst Dag 2', focus:'Bein og mage', exercises:[['Goblet squat',4,'8–10'],['Strake markløft',4,'8–10'],['Utfall bakover',4,'8–10 per bein'],['Markløft',3,'8–12'],['Tåhev',4,'20'],['Russian twist',3,'20'],['Liggende beinhev',3,'20']]},
+    muscle_growth_day3: {name:'Muskelvekst Dag 3', focus:'Rygg og biceps', exercises:[['Fremoverlent roing',4,'8–12'],['En-arms roing',4,'8–12 per side'],['Pullover',3,'8–12'],['Renegade row',4,'8–12'],['Bicepscurl',3,'10–15'],['Hammercurl',3,'10–15']]},
+    muscle_growth_day4: {name:'Muskelvekst Dag 4', focus:'Bein og mage', exercises:[['Knebøy',4,'8–10'],['Markløft',4,'8–10'],['Splitt-knebøy',3,'8–12 per side'],['Hip Thrust',4,'10–15'],['Tåhev',4,'20'],['Sidebøy',3,'15 per side'],['Planken',3,'30 sek']]},
+    muscle_growth_day5: {name:'Muskelvekst Dag 5', focus:'Helkropp', exercises:[['Goblet squat',4,'8–10'],['Hip Thrust',4,'10–15'],['Renegade row',4,'8–12'],['Arnold Press',4,'8–10'],['Skrå brystpress',4,'8–12'],['Roing over benk',3,'8–12'],['Dips på benk (eller stol)',3,'8–12']]},
+  };
+
+  function muscleGrowthRows(programId){
+    const cfg=MUSCLE_GROWTH[programId];
+    if(!cfg)return [];
+    let out=[],order=1;
+    for(const ex of cfg.exercises){
+      const [activity,sets,reps]=ex;
+      for(let setNo=1;setNo<=sets;setNo++){
+        out.push({
+          group:"Main",order:order++,activity,
+          round:setNo,reps,load:"",
+          desc:`Sett ${setNo} av ${sets} · mål ${reps} reps · ca. 45 sek pause · velg belastning med ca. 1–2 RIR`
+        });
+      }
+    }
+    return out;
+  }
+
   window.CR_PROGRAMS = {
     interval,
     sequence: {
@@ -107,7 +132,12 @@
       strength_day2:{name:"Styrke Dag2",items:rows(DAY2_MAIN)},
       bodyweight_day1:{name:"Kroppsvekt Dag 1",items:bodyweightRows()},
       bodyweight_day2:{name:"Kroppsvekt Dag 2",items:bodyweightRows()},
-      bodyweight_day3:{name:"Kroppsvekt Dag 3",items:bodyweightRows()}
+      bodyweight_day3:{name:"Kroppsvekt Dag 3",items:bodyweightRows()},
+      muscle_growth_day1:{name:"Muskelvekst Dag 1",items:muscleGrowthRows("muscle_growth_day1")},
+      muscle_growth_day2:{name:"Muskelvekst Dag 2",items:muscleGrowthRows("muscle_growth_day2")},
+      muscle_growth_day3:{name:"Muskelvekst Dag 3",items:muscleGrowthRows("muscle_growth_day3")},
+      muscle_growth_day4:{name:"Muskelvekst Dag 4",items:muscleGrowthRows("muscle_growth_day4")},
+      muscle_growth_day5:{name:"Muskelvekst Dag 5",items:muscleGrowthRows("muscle_growth_day5")}
     }
   };
 })();

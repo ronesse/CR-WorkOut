@@ -394,11 +394,12 @@ function isSequenceProgram(programId){
   const id=String(programId||"").trim();
   if(SEQUENCE_PROGRAMS[id])return true;
   if(/^bodyweight_day[123]$/i.test(id))return true;
+  if(/^muscle_growth_day[1-5]$/i.test(id))return true;
   if(/^strength_day[12]$/i.test(id))return true;
 
   const p=programs.find(x=>String(x.id)===id);
   const name=String(p?.name||"").trim().toLowerCase();
-  return name.startsWith("kroppsvekt dag ") || name.startsWith("styrke dag");
+  return name.startsWith("kroppsvekt dag ") || name.startsWith("styrke dag") || name.startsWith("muskelvekst dag ");
 }
 
 function isRunningProgram(programId){

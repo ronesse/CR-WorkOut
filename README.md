@@ -424,3 +424,8 @@ Merk: Tabellen som ble oppgitt har 15 arbeidsøkter + 15 hvileøkter, altså 22:
 - Sequence runner kan hente programnavn fra cr_programs hvis lokal definisjon mangler.
 - SQL_v9_8_5_BODYWEIGHT_ACTIVITIES.sql legger eksplisitt inn 27 aktiviteter per program i Supabase.
 - Kjør SQL-filen én gang før testing.
+
+## v9.8.6 – Muskelvekst Dag 1–5
+Fem oppgavebaserte styrkeprogrammer basert på Hardworkout sitt 12-ukersprogram med manualer/egenvekt.
+Hvert sett er en egen aktivitet. Målreps, sett X/Y, ca. 45 sek pause og 1–2 RIR vises i aktivitetsdata.
+SQL_v9_8_6_MUSCLE_GROWTH.sql registrerer både programmer og alle aktivitetene i Supabase.
