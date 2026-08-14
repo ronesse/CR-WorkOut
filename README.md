@@ -457,3 +457,12 @@ Eksempel: Runde 1: Brystpress → Skrå brystpress → ... → Dips. Runde 2 sta
   Pike push-ups, Omvendt roing, Ett-beins glute bridge, Planke og Sideplanke.
 - X, «Tilbake til økten» og trykk på bakgrunnen fungerer som i v9.8.8.1.
 - Ingen SQL-endring nødvendig.
+
+## v9.8.9 – TIF Viking Off Season
+Seks nye programmer:
+- Økt 1 Underkropp variant 1 og 2
+- Økt 2 Overkropp variant 1 og 2
+- Økt 3 Split Over/underkropp variant 1 og 2
+
+Sett behandles som runder. Runde 1 går gjennom sett 1 av alle øvelser, deretter runde 2 osv.
+Øvelser med tre sett hoppes over i runde 4. Fokus-teksten fra programmet vises i aktivitetsbeskrivelsen.
