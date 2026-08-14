@@ -1040,3 +1040,9 @@ body:not(.coach-mode) #coachLiveSection{
     padding-right:2px!important;
   }
 }
+
+/* v9.8.3 – avslutningssikring */
+button.confirm-end{
+  outline:2px solid currentColor!important;
+  font-weight:800!important;
+}

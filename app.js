@@ -30,6 +30,8 @@ function programIcon(program){
 }
 
 async function requestWakeLock(){
+  if(typeof activeProgramWakeLockMode==="function" && activeProgramWakeLockMode()==="off"){ await releaseWorkoutWakeLock(); return null; }
+
   if(!activeSession || document.visibilityState!=="visible") return;
   if(!("wakeLock" in navigator)) return;
   try{
@@ -98,6 +100,48 @@ function getAudioContext(){
 
 }
 
+
+
+/* v9.8.3 – programstyrt Wake Lock
+   Løping, Golf og Fri økt skal kunne kjøres med skjermen av.
+   Tids-/intervallprogrammer beholder Wake Lock. */
+function activeProgramWakeLockMode(){
+  const type=String(activeSession?.type||activeSession?.program_type||activeSession?.mode||"").toLowerCase();
+  const name=String(activeSession?.program_name||activeSession?.name||activeSession?.title||"").toLowerCase();
+
+  if(
+    type.includes("running") || type.includes("run") || type.includes("golf") || type.includes("free") ||
+    name.includes("løping") || name.includes("loping") || name.includes("running") ||
+    name.includes("golf") || name.includes("fri økt") || name.includes("fri okt")
+  ) return "off";
+
+  return "on";
+}
+
+async function releaseWorkoutWakeLock(){
+  try{
+    if(typeof wakeLockSentinel!=="undefined" && wakeLockSentinel && !wakeLockSentinel.released){
+      await wakeLockSentinel.release();
+    }
+  }catch(err){ console.warn("Wake Lock release:",err); }
+  try{
+    if(typeof wakeLock!=="undefined" && wakeLock && !wakeLock.released && typeof wakeLock.release==="function"){
+      await wakeLock.release();
+    }
+  }catch(err){ console.warn("Wake Lock release:",err); }
+}
+
+async function applyWorkoutWakeLockPolicy(){
+  if(activeProgramWakeLockMode()==="off"){
+    await releaseWorkoutWakeLock();
+    return false;
+  }
+  try{
+    if(typeof requestWakeLock==="function"){ await requestWakeLock(); return true; }
+    if(typeof acquireWakeLock==="function"){ await acquireWakeLock(); return true; }
+  }catch(err){ console.warn("Wake Lock policy:",err); }
+  return false;
+}
 
 async function unlockAudio(){
   try{
@@ -353,6 +397,8 @@ function isRunningProgram(programId){
 }
 
 async function startSession(programId){
+  setTimeout(()=>applyWorkoutWakeLockPolicy(),0);
+
  await unlockAudio();
  if(activeSession){renderActiveSession();alert("Du har allerede en aktiv økt. Velg «Fortsett økten» eller forkast den først.");return}
  if(programId==="golf"){openGolfSetup();return}
@@ -382,6 +428,8 @@ async function discardActive(){
 }
 
 async function launchRunner(){
+  setTimeout(()=>applyWorkoutWakeLockPolicy(),0);
+
  if(!activeSession || !activeSession.program_id)return;
  requestWakeLock().catch(()=>{});
  const id=activeSession.program_id;
@@ -2937,3 +2985,52 @@ sb.auth.onAuthStateChange(async(_event,newSession)=>{session=newSession;user=new
 
 e.programInfoClose.onclick=()=>closeModal(e.programInfoModal);e.routeMapClose.onclick=()=>{destroyRouteMap();closeModal(e.routeMapModal)};e.liveRouteMapClose.onclick=()=>{destroyLiveRouteMap();closeModal(e.liveRouteMapModal)};e.coachLiveRefreshBtn.onclick=loadCoachLiveSessions;
 })();
+
+document.addEventListener("visibilitychange",()=>{
+  if(document.visibilityState==="visible" && activeSession){
+    applyWorkoutWakeLockPolicy();
+  }
+});
+
+
+/* v9.8.3 – ekstra avslutningssikring for GPS-økter */
+function isGpsFreeEndTarget(target){
+  const btn=target?.closest?.("button");
+  if(!btn)return null;
+  const text=String(btn.textContent||"").trim().toLowerCase();
+  const id=String(btn.id||"").toLowerCase();
+  const ending=text.includes("avslutt") || text.includes("fullfør økt") || id.includes("end") || id.includes("finish");
+  if(!ending)return null;
+  return btn;
+}
+
+document.addEventListener("click",(ev)=>{
+  if(!activeSession || activeProgramWakeLockMode()!=="off")return;
+  const btn=isGpsFreeEndTarget(ev.target);
+  if(!btn)return;
+
+  const now=Date.now();
+  const armedUntil=Number(btn.dataset.endConfirmUntil||0);
+
+  if(now<=armedUntil){
+    delete btn.dataset.endConfirmUntil;
+    return; // second intentional tap: let original handler run
+  }
+
+  ev.preventDefault();
+  ev.stopImmediatePropagation();
+  btn.dataset.endConfirmUntil=String(now+5000);
+
+  const old=btn.dataset.originalEndLabel || btn.textContent;
+  btn.dataset.originalEndLabel=old;
+  btn.textContent="Trykk igjen for å avslutte";
+  btn.classList.add("confirm-end");
+
+  setTimeout(()=>{
+    if(Number(btn.dataset.endConfirmUntil||0)<=Date.now()){
+      btn.textContent=btn.dataset.originalEndLabel||old;
+      btn.classList.remove("confirm-end");
+      delete btn.dataset.endConfirmUntil;
+    }
+  },5100);
+},true);

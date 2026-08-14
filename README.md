@@ -400,3 +400,12 @@ Merk: Tabellen som ble oppgitt har 15 arbeidsøkter + 15 hvileøkter, altså 22:
 - Menyknapper fordeles automatisk over hele skjermbredden, og skjulte coach-knapper tar ikke plass.
 - `Statistikk` skal nå være fullt synlig på mobil.
 - Ingen SQL-endring.
+
+## v9.8.3 – Wake Lock / GPS-sikkerhet
+- Wake Lock AV for Løping, Golf og Fri økt, slik at skjermen kan slukkes/låses.
+- Wake Lock PÅ for øvrige aktive programmer med timer/definert økt.
+- Når appen kommer tilbake i forgrunnen, brukes programtypen til å avgjøre om Wake Lock skal gjenopprettes.
+- Løping, Golf og Fri økt krever to trykk innen 5 sekunder for å avslutte økten.
+- Første trykk endrer knappen til «Trykk igjen for å avslutte».
+- Ingen SQL-endring.
+- Merk: PWA/nettleser kan ikke garantere kontinuerlig GPS når skjermen er låst; dette styres også av mobilens operativsystem/nettleser.
