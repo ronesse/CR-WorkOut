@@ -417,3 +417,10 @@ Merk: Tabellen som ble oppgitt har 15 arbeidsøkter + 15 hvileøkter, altså 22:
 - Øvelseskortene inneholder reps/tid og korte teknikk-/nivåvarianter.
 - Programinnholdet følger helkroppsprogrammet fra Hardworkout.no (kontrollert 2026-08-14).
 - Ingen database- eller SQL-endring i denne pakken.
+
+## v9.8.5 – Kroppsvekt treningsmotor fix
+- Kroppsvekt Dag 1/2/3 gjenkjennes nå eksplisitt som oppgavebaserte sequence-programmer.
+- Start av programmet er ikke lenger avhengig av at nettleseren har nyeste programs.js i minnet.
+- Sequence runner kan hente programnavn fra cr_programs hvis lokal definisjon mangler.
+- SQL_v9_8_5_BODYWEIGHT_ACTIVITIES.sql legger eksplisitt inn 27 aktiviteter per program i Supabase.
+- Kjør SQL-filen én gang før testing.

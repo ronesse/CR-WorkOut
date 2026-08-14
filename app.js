@@ -389,6 +389,18 @@ async function openProgramInfo(programId){
 }
 
 
+
+function isSequenceProgram(programId){
+  const id=String(programId||"").trim();
+  if(SEQUENCE_PROGRAMS[id])return true;
+  if(/^bodyweight_day[123]$/i.test(id))return true;
+  if(/^strength_day[12]$/i.test(id))return true;
+
+  const p=programs.find(x=>String(x.id)===id);
+  const name=String(p?.name||"").trim().toLowerCase();
+  return name.startsWith("kroppsvekt dag ") || name.startsWith("styrke dag");
+}
+
 function isRunningProgram(programId){
   const id=String(programId||"").trim().toLowerCase();
   if(id==="running")return true;
@@ -402,7 +414,7 @@ async function startSession(programId){
  await unlockAudio();
  if(activeSession){renderActiveSession();alert("Du har allerede en aktiv økt. Velg «Fortsett økten» eller forkast den først.");return}
  if(programId==="golf"){openGolfSetup();return}
- if(!INTERVAL_PROGRAMS[programId]&&!SEQUENCE_PROGRAMS[programId]&&programId!=="kettlebell_mix"&&!isRunningProgram(programId)&&programId!=="twenty_minutes"&&programId!=="free_workout"&&programId!=="golf"){alert("Dette programmet er ikke aktivert i treningsmotoren ennå.");return}
+ if(!INTERVAL_PROGRAMS[programId]&&!isSequenceProgram(programId)&&programId!=="kettlebell_mix"&&!isRunningProgram(programId)&&programId!=="twenty_minutes"&&programId!=="free_workout"&&programId!=="golf"){alert("Dette programmet er ikke aktivert i treningsmotoren ennå.");return}
  const p=programs.find(x=>x.id===programId);const {data,error}=await sb.from("cr_workout_sessions").insert({athlete_id:user.id,program_id:programId,program_name:p?.name||programId,status:"started",started_at:new Date().toISOString()}).select().single();if(error){alert(error.message);return}activeSession=data;clearRunnerState();requestWakeLock().catch(()=>{});await launchRunner();
 }
 function renderActiveSession(){
@@ -440,7 +452,7 @@ async function launchRunner(){
  else if(isRunningProgram(id))runnerMode="running";
  else if(id==="kettlebell_mix")runnerMode="intervalSequence";
  else if(INTERVAL_PROGRAMS[id])runnerMode="interval";
- else if(SEQUENCE_PROGRAMS[id])runnerMode="sequence";
+ else if(isSequenceProgram(id))runnerMode="sequence";
  else runnerMode=null;
 
  if(!runnerMode){
@@ -548,11 +560,11 @@ async function skipIntervalSequence(){
 }
 
 async function startSequenceRunner(){
-  const cfg=SEQUENCE_PROGRAMS[activeSession.program_id];
-  if(!cfg){
-    alert("Programmotor mangler for denne økten.");
-    return;
-  }
+  const cfg=SEQUENCE_PROGRAMS[activeSession.program_id] || {
+    name: programs.find(x=>String(x.id)===String(activeSession.program_id))?.name
+      || activeSession.program_name
+      || activeSession.program_id
+  };
 
   showOnly("runner");
   e.intervalRunner.classList.add("hidden");
@@ -560,6 +572,7 @@ async function startSequenceRunner(){
   e.sequenceProgramName.textContent=cfg.name;
 
   const saved=loadRunnerState();
+  try{ await ensureProgramActivitiesSeeded(activeSession.program_id); }catch(err){ console.warn("Aktivitets-seed:",err); }
   const items=await getSequenceItems(activeSession.program_id);
 
   if(!items.length){
