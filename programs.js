@@ -66,11 +66,48 @@
     ["Lårstrekk","10","50 %","3 x 10 (50%)"]
   ];
 
+
+  // Kroppsvekt-program basert på Hardworkout.no sitt 3-dagers helkroppsprogram.
+  // Samme sirkel gjennomføres tre ganger. Dag 1/2/3 er separate programmer
+  // slik at coach kan tildele og planlegge dem uavhengig.
+  const BODYWEIGHT_MAIN = [
+    ["Jump squat","10–15","","Land mykt. Enklere: vanlig knebøy. Mer krevende: tuck jump eller kort pause i bunn."],
+    ["Push-ups","10–20","","Hold kroppen strak. Enklere: knær i gulvet eller hender på benk. Mer krevende: diamond/archer push-ups."],
+    ["Pull-ups / assisterte pull-ups","6–12","","Trekk skulderbladene ned og bak. Enklere: strikk eller negative. Mer krevende: ekstra vekt."],
+    ["Gående utfall","10–15 per bein","","Langt steg og kontrollert 90° knevinkel. Enklere: utfall på stedet. Mer krevende: bulgarske utfall."],
+    ["Pike push-ups","8–12","","Hold hoftene høyt i omvendt V. Enklere: hender på benk. Mer krevende: handstand push-ups mot vegg."],
+    ["Omvendt roing","10–15","","Hold kroppen strak og trekk brystet mot stangen/ringene. Enklere: høyere stang. Mer krevende: ettbeins variant."],
+    ["Ett-beins glute bridge","10–15 per bein","","Press hoften opp uten rotasjon. Enklere: begge bein i gulvet. Mer krevende: hold 2–3 sek i toppen."],
+    ["Planke","30–60 sek","","Stram mage og sete og hold kroppen rett. Enklere: knær i gulvet. Mer krevende: beinløft."],
+    ["Sideplanke","20–40 sek per side","","Hold kroppen i rett linje. Enklere: kne i gulvet. Mer krevende: løftet bein eller hoftehev."]
+  ];
+
+  function bodyweightRows(){
+    let out=[],order=1;
+    for(let r=1;r<=3;r++){
+      for(const x of BODYWEIGHT_MAIN){
+        out.push({
+          group:"Main",
+          order:order++,
+          activity:x[0],
+          round:r,
+          reps:x[1],
+          load:x[2],
+          desc:x[3]
+        });
+      }
+    }
+    return out;
+  }
+
   window.CR_PROGRAMS = {
     interval,
     sequence: {
       strength_day1:{name:"Styrke Dag1",items:rows(DAY1_MAIN)},
-      strength_day2:{name:"Styrke Dag2",items:rows(DAY2_MAIN)}
+      strength_day2:{name:"Styrke Dag2",items:rows(DAY2_MAIN)},
+      bodyweight_day1:{name:"Kroppsvekt Dag 1",items:bodyweightRows()},
+      bodyweight_day2:{name:"Kroppsvekt Dag 2",items:bodyweightRows()},
+      bodyweight_day3:{name:"Kroppsvekt Dag 3",items:bodyweightRows()}
     }
   };
 })();

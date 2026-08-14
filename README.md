@@ -409,3 +409,11 @@ Merk: Tabellen som ble oppgitt har 15 arbeidsøkter + 15 hvileøkter, altså 22:
 - Første trykk endrer knappen til «Trykk igjen for å avslutte».
 - Ingen SQL-endring.
 - Merk: PWA/nettleser kan ikke garantere kontinuerlig GPS når skjermen er låst; dette styres også av mobilens operativsystem/nettleser.
+
+## v9.8.4 – Kroppsvekt Dag 1/2/3
+- Bygget videre på stabil v9.8.3-baseline, ikke v9.9.
+- Lagt til Kroppsvekt Dag 1, Dag 2 og Dag 3 i programs.js.
+- Hver økt består av 9 øvelser gjennomført som 3 runder.
+- Øvelseskortene inneholder reps/tid og korte teknikk-/nivåvarianter.
+- Programinnholdet følger helkroppsprogrammet fra Hardworkout.no (kontrollert 2026-08-14).
+- Ingen database- eller SQL-endring i denne pakken.
