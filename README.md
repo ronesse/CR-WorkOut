@@ -530,3 +530,18 @@ Hopp, meter og sekunder uten `reps` beholdes i reps-feltet.
 - Statistikksiden er tilbake til tidligere oppsett med nøkkeltall og Programbruk.
 - Den kompakte velkomstboksen fra v9.9.4 beholdes.
 - Ingen SQL-endring.
+
+## v9.9.6 – Hardworkout 4-splitt for viderekomne
+Fire nye programmer i Styrke:
+1. Rygg og biceps
+2. Bryst og triceps
+3. Bein og legger
+4. Skuldre, øvre rygg og underarmer
+
+Implementasjon følger eksisterende CR-Workout-prinsipp:
+- sett = runde,
+- reps i reps-feltet,
+- RIR/belastning i load-feltet,
+- How To via description,
+- 5-min høy-rep som egen avsluttende aktivitet,
+- programmene er aktivert i sequence-treningsmotoren.

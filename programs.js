@@ -175,6 +175,39 @@
     return out;
   }
 
+
+
+  // Hardworkout.no – Fire økter i uken for viderekomne (v9.9.6)
+  const HARDWORKOUT_4DAY_1={name:'Viderekommen 4-splitt – Økt 1',exercises:[{activity:'Markløft',sets:'2',reps:'5 reps',load:'',desc:'Stabil rygg og buktrykk. Press gulvet fra deg og hold stangen tett på kroppen.'},{activity:'En-arms roing med manual',sets:'3',reps:'8–12 reps per arm',load:'1–2 RIR',desc:'Støtt deg stabilt. Trekk albuen bakover mot hoften uten å rotere overkroppen.'},{activity:'Pull-ups bredt grep / nedtrekk',sets:'3',reps:'10–12 reps',load:'1–2 RIR',desc:'Start med skuldrene kontrollert. Trekk albuene ned og før brystet mot stangen/håndtaket.'},{activity:'Roing med stang',sets:'3',reps:'8–12 reps',load:'1–2 RIR',desc:'Hold ryggen stabil og trekk stangen kontrollert mot nedre del av magen.'},{activity:'Preacher curl med EZ-stang',sets:'3',reps:'10–12 reps',load:'1–2 RIR',desc:'Hold overarmene i puten og bøy albuene uten å løfte skuldrene.'},{activity:'Konsentrasjonscurl med manual',sets:'3',reps:'10–12 reps per arm',load:'1–2 RIR',desc:'Hold overarmen rolig og løft manualen kontrollert gjennom hele bevegelsen.'}],finishers:[{activity:'Sittende roing kabel / maskin',reps:'5 min høy-rep',load:'ca. 12–15RM',desc:'Jobb i korte serier nær utmattelse, hvil kort og fortsett gjennom fem minutter.'},{activity:'Sittende bicepscurl med manualer',reps:'5 min høy-rep',load:'ca. 12–15RM',desc:'Bruk en belastning du normalt klarer 12–15 reps med. Korte pauser og nye serier gjennom fem minutter.'}]};
+  const HARDWORKOUT_4DAY_2={name:'Viderekommen 4-splitt – Økt 2',exercises:[{activity:'Benkpress',sets:'3',reps:'6–10 reps',load:'1–2 RIR',desc:'Trekk skulderbladene sammen, hold føttene stabile og senk stangen kontrollert mot brystet.'},{activity:'Skrå benkpress med manualer',sets:'3',reps:'8–12 reps',load:'1–2 RIR',desc:'Hold brystet oppe og senk manualene kontrollert før du presser opp.'},{activity:'Dips',sets:'3',reps:'Maks reps',load:'1–2 RIR',desc:'Hold skuldrene stabile. Senk kontrollert og press opp uten å miste kroppskontrollen.'},{activity:'Cable crossover / pec deck',sets:'3',reps:'12–15 reps',load:'1–2 RIR',desc:'Hold lett bøy i albuene og før armene sammen med kontrollert bevegelse.'},{activity:'Franskpress med EZ-stang',sets:'3',reps:'8–12 reps',load:'1–2 RIR',desc:'Hold overarmene mest mulig i ro mens albuene bøyes og strekkes.'},{activity:'Sittende tricepspress over hodet med manual',sets:'3',reps:'8–12 reps',load:'1–2 RIR',desc:'Hold albuene pekende frem og strekk ut over hodet uten å svaie i ryggen.'}],finishers:[{activity:'Brystpress maskin / benkpress manualer',reps:'5 min høy-rep',load:'ca. 12–15RM',desc:'Kjør korte serier nær utmattelse med korte pauser gjennom fem minutter.'},{activity:'Triceps pushdown i kabel',reps:'5 min høy-rep',load:'ca. 12–15RM',desc:'Hold albuene inntil kroppen. Korte serier og korte pauser gjennom fem minutter.'}]};
+  const HARDWORKOUT_4DAY_3={name:'Viderekommen 4-splitt – Økt 3',exercises:[{activity:'Knebøy',sets:'3',reps:'6–10 reps',load:'1–2 RIR',desc:'Hold buktrykk og stabil overkropp. Senk kontrollert og press gjennom hele foten.'},{activity:'Beinpress',sets:'3',reps:'15–20 reps',load:'1–2 RIR',desc:'Hold korsryggen mot puten og senk kontrollert så langt god bevegelighet tillater.'},{activity:'Hack squat / utfall med manualer',sets:'3',reps:'8–12 reps',load:'1–2 RIR',desc:'Hold kneet i linje med foten og arbeid kontrollert gjennom god bevegelsesbane.'},{activity:'Strake markløft',sets:'3',reps:'8–12 reps',load:'1–2 RIR',desc:'Skyv hoften bakover med lett knekk i knærne og hold ryggen stabil.'},{activity:'Stående tåhev',sets:'3',reps:'10–15 reps',load:'1–2 RIR',desc:'Bruk full bevegelsesbane: kontrollert ned og høyt opp på tå.'}],finishers:[{activity:'Leg extension',reps:'5 min høy-rep',load:'ca. 12–15RM',desc:'Korte serier med korte pauser gjennom fem minutter. Hold bevegelsen kontrollert.'},{activity:'Legcurl',reps:'5 min høy-rep',load:'ca. 12–15RM',desc:'Korte serier nær utmattelse med korte pauser gjennom fem minutter.'},{activity:'Sittende tåhev',reps:'5 min høy-rep',load:'ca. 12–15RM',desc:'Arbeid med full bevegelsesbane i korte serier gjennom fem minutter.'}]};
+  const HARDWORKOUT_4DAY_4={name:'Viderekommen 4-splitt – Økt 4',exercises:[{activity:'Sittende skulderpress med stang',sets:'3',reps:'6–10 reps',load:'1–2 RIR',desc:'Hold kjernen stabil og press stangen kontrollert over hodet.'},{activity:'Sittende Arnoldpress med manualer',sets:'3',reps:'8–12 reps',load:'1–2 RIR',desc:'Roter manualene kontrollert mens du presser opp. Unngå overdreven svai.'},{activity:'Sidehev med manualer',sets:'3',reps:'10–15 reps',load:'1–2 RIR',desc:'Bruk moderat belastning og løft armene kontrollert ut til siden.'},{activity:'Stående roing med stang',sets:'3',reps:'8–12 reps',load:'1–2 RIR',desc:'Trekk stangen opp kontrollert med albuene ut, uten å rykke med kroppen.'},{activity:'Sittende håndleddscurl med stang',sets:'3',reps:'12–15 reps',load:'1–2 RIR',desc:'Støtt underarmene og beveg håndleddene kontrollert gjennom tilgjengelig bevegelsesbane.'}],finishers:[{activity:'Skulderpress maskin / Smith-maskin',reps:'5 min høy-rep',load:'ca. 12–15RM',desc:'Korte serier nær utmattelse og korte pauser gjennom fem minutter.'},{activity:'Shrugs med stang / manualer',reps:'5 min høy-rep',load:'ca. 12–15RM',desc:'Løft skuldrene rett opp, senk kontrollert og jobb i korte serier gjennom fem minutter.'},{activity:'Statisk hold med stang',reps:'5 min',load:'Tung, kontrollert belastning',desc:'Hold stangen med strake armer så lenge grepet holder. Sett ned, hvil kort og gjenta gjennom fem minutter.'}]};
+
+  function hardworkout4DayRows(cfg){
+    const out=[];
+    let order=1;
+    const maxSets=Math.max(...cfg.exercises.map(x=>Number(x.sets)||1));
+    // SETT = RUNDE: all set 1 exercises first, then all set 2, etc.
+    for(let round=1;round<=maxSets;round++){
+      for(const ex of cfg.exercises){
+        if(round>Number(ex.sets))continue;
+        out.push({
+          group:"Main",order:order++,round,
+          activity:ex.activity,reps:ex.reps,load:ex.load||"",
+          desc:`Runde ${round} · ${ex.desc}`
+        });
+      }
+    }
+    // Five-minute high-rep blocks are intentionally one task each.
+    for(const ex of cfg.finishers){
+      out.push({
+        group:"5 min høy-rep",order:order++,round:maxSets+1,
+        activity:ex.activity,reps:ex.reps,load:ex.load||"",desc:ex.desc
+      });
+    }
+    return out;
+  }
+
   window.CR_PROGRAMS = {
     interval,
     sequence: {
@@ -193,7 +226,11 @@
       tif_offseason_2_v1:{name:"TIF Viking-Økt 2 (over) vr.1",items:tifOffseasonRows("tif_offseason_2_v1")},
       tif_offseason_2_v2:{name:"TIF Viking-Økt 2 (over) vr.2",items:tifOffseasonRows("tif_offseason_2_v2")},
       tif_offseason_3_v1:{name:"TIF Viking-Økt 3 (split) vr.1",items:tifOffseasonRows("tif_offseason_3_v1")},
-      tif_offseason_3_v2:{name:"TIF Viking-Økt 3 (split) vr.2",items:tifOffseasonRows("tif_offseason_3_v2")}
+      tif_offseason_3_v2:{name:"TIF Viking-Økt 3 (split) vr.2",items:tifOffseasonRows("tif_offseason_3_v2")},
+      hardworkout_4day_1:{name:"Viderekommen 4-splitt – Økt 1",items:hardworkout4DayRows(HARDWORKOUT_4DAY_1)},
+      hardworkout_4day_2:{name:"Viderekommen 4-splitt – Økt 2",items:hardworkout4DayRows(HARDWORKOUT_4DAY_2)},
+      hardworkout_4day_3:{name:"Viderekommen 4-splitt – Økt 3",items:hardworkout4DayRows(HARDWORKOUT_4DAY_3)},
+      hardworkout_4day_4:{name:"Viderekommen 4-splitt – Økt 4",items:hardworkout4DayRows(HARDWORKOUT_4DAY_4)}
     }
   };
 })();
