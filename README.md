@@ -552,3 +552,14 @@ Implementasjon følger eksisterende CR-Workout-prinsipp:
 - Logoene overlapper for å bruke minst mulig plass på programkortet.
 - Volleyballmarkøren på Balløkt beholdes.
 - Ingen SQL-endring.
+
+## v9.9.8 – GPS + berøringssikker skjermlås
+- Løping og Golf bruker Screen Wake Lock igjen for å holde PWA-en synlig/aktiv mens GPS spores.
+- Ny `🔒 Lås skjerm` på Løping og Golf.
+- Låsen er et fullskjerms berøringsvern, ikke telefonens systemlås.
+- Hold inne i 2 sekunder for å låse opp.
+- Løpelåsen viser tid, distanse og aktuell pace.
+- Golflåsen viser hull, tid, distanse og antall GPS-punkter.
+- Wake Lock forsøkes hentet på nytt når appen blir synlig igjen.
+- GPS-watch forsøkes startet på nytt når appen får fokus igjen.
+- Ingen SQL-endring.

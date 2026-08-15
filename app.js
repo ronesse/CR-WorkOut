@@ -15,7 +15,7 @@ const $=id=>document.getElementById(id),e={};
 "registerModal","closeRegisterBtn","regName","regPhone","regEmail","regPassword","registerBtn","registerMessage","programModal","programAthleteName","closeProgramBtn","programChecklist","saveProgramsBtn",
 "finishModal","finishSummary","finishStars","finishComment","saveFinishBtn","cancelFinishBtn",
 "intervalCard","intervalProgramName","intervalElapsed","intervalRound","intervalRemainingTotal","intervalPhase","intervalMessage","intervalTime","intervalProgressBar","intervalNext","intervalSkipBtn","runnerAbortBtn",
-"sequenceProgramName","sequenceGroupRound","sequenceElapsed","sequenceProgressText","sequenceProgressBar","sequenceActivity","sequenceReps","sequenceLoad","sequenceDesc","sequenceNextActivity","sequenceNextMeta","sequenceCompleteBtn","sequenceSkipBtn","sequencePostponeBtn","sequenceHowToBtn","sequenceNextHowToBtn","exerciseHowToModal","exerciseHowToTitle","exerciseHowToBody","exerciseHowToTip","exerciseHowToClose","exerciseHowToOk","sequenceAbortBtn","runningScreen","runningProgramName","gpsStatus","runningElapsed","runningDistance","runningAvgPace","runningCurrentPace","runningGpsAccuracy","runningPointCount","runningPauseBtn","runningFinishBtn","runningDiscardBtn","twentyScreen","twentyCard","twentyProgramName","twentyRemaining","twentyBigTime","twentyPhaseText","twentyProgressBar","twentyPauseBtn","twentyFinishBtn","twentyDiscardBtn","freeWorkoutScreen","freeWorkoutProgramName","freeWorkoutElapsed","freeWorkoutBigTime","freeWorkoutFinishBtn","freeWorkoutDiscardBtn","finishDistanceWrap","finishDistance","programInfoModal","programInfoTitle","programInfoDescription","programInfoSummary","programInfoList","programInfoClose","routeMapModal","routeMapTitle","routeMapMeta","routeMap","routeMapClose","coachLiveSection","coachLiveSummary","coachLiveList","coachLiveRefreshBtn","liveRouteMapModal","liveRouteMapTitle","liveRouteMapMeta","liveRouteMap","liveRouteMapClose","coachLiveUpdated","golfScreen","golfCourseName","golfRoundMeta","golfElapsed","golfProgressText","golfTotalStrokes","golfProgressBar","golfDistance","golfGpsStatus","golfCurrentHole","golfHoleStatus","golfStrokesInput","golfMinusStrokeBtn","golfPlusStrokeBtn","golfNextHole","golfNextMeta","golfCompleteBtn","golfSkipBtn","golfPostponeBtn","golfMapBtn","golfFinishRoundBtn","golfDiscardBtn","golfSetupModal","golfSetupClose","golfSetupCourse","golfSetupHoles","golfSetupStartHole","golfStartRoundBtn","golfPreviousBtn","golfNextBtn","golfHistoryLabel","golfPar","golfPinDistance","golfFindCourseBtn","golfNearbyCourseBtn","golfCourseResultsWrap","golfCourseResults","golfCourseLookupStatus","golfTrackCount","coachGolfCoursesBtn","golfCoursesScreen","golfCoursesBackBtn","golfAdminCourseSelect","golfAdminNewCourseBtn","golfAdminCourseMeta","golfAdminHoles","golfAdminSaveBtn","golfSavedCourseSelect","golfSwipe","golfSwipeDots","golfOverviewHole","golfOverviewPar","golfMapHoleTitle","golfMapCourseTitle","golfMapDistance","golfInlineMap","golfInlineMapMessage","installAppBtn","golfSetupTee","golfHoleLength","golfOverviewLength","golfAdminTees","golfImportCsvBtn","golfImportCsvFile","golfDownloadCsvTemplateBtn","golfImportStatus","programCategoryView","programCategoryGrid","categoryProgramsWrap","categoryProgramsBackBtn","categoryProgramsTitle","categoryPrograms","editProgramCategory"].forEach(id=>e[id]=$(id));
+"sequenceProgramName","sequenceGroupRound","sequenceElapsed","sequenceProgressText","sequenceProgressBar","sequenceActivity","sequenceReps","sequenceLoad","sequenceDesc","sequenceNextActivity","sequenceNextMeta","sequenceCompleteBtn","sequenceSkipBtn","sequencePostponeBtn","sequenceHowToBtn","sequenceNextHowToBtn","exerciseHowToModal","exerciseHowToTitle","exerciseHowToBody","exerciseHowToTip","exerciseHowToClose","exerciseHowToOk","sequenceAbortBtn","runningScreen","runningProgramName","gpsStatus","runningElapsed","runningDistance","runningAvgPace","runningCurrentPace","runningGpsAccuracy","runningPointCount","runningPauseBtn","runningFinishBtn","runningDiscardBtn","twentyScreen","twentyCard","twentyProgramName","twentyRemaining","twentyBigTime","twentyPhaseText","twentyProgressBar","twentyPauseBtn","twentyFinishBtn","twentyDiscardBtn","freeWorkoutScreen","freeWorkoutProgramName","freeWorkoutElapsed","freeWorkoutBigTime","freeWorkoutFinishBtn","freeWorkoutDiscardBtn","finishDistanceWrap","finishDistance","programInfoModal","programInfoTitle","programInfoDescription","programInfoSummary","programInfoList","programInfoClose","routeMapModal","routeMapTitle","routeMapMeta","routeMap","routeMapClose","coachLiveSection","coachLiveSummary","coachLiveList","coachLiveRefreshBtn","liveRouteMapModal","liveRouteMapTitle","liveRouteMapMeta","liveRouteMap","liveRouteMapClose","coachLiveUpdated","golfScreen","golfCourseName","golfRoundMeta","golfElapsed","golfProgressText","golfTotalStrokes","golfProgressBar","golfDistance","golfGpsStatus","golfCurrentHole","golfHoleStatus","golfStrokesInput","golfMinusStrokeBtn","golfPlusStrokeBtn","golfNextHole","golfNextMeta","golfCompleteBtn","golfSkipBtn","golfPostponeBtn","golfMapBtn","golfFinishRoundBtn","golfDiscardBtn","golfSetupModal","golfSetupClose","golfSetupCourse","golfSetupHoles","golfSetupStartHole","golfStartRoundBtn","golfPreviousBtn","golfNextBtn","golfHistoryLabel","golfPar","golfPinDistance","golfFindCourseBtn","golfNearbyCourseBtn","golfCourseResultsWrap","golfCourseResults","golfCourseLookupStatus","golfTrackCount","coachGolfCoursesBtn","golfCoursesScreen","golfCoursesBackBtn","golfAdminCourseSelect","golfAdminNewCourseBtn","golfAdminCourseMeta","golfAdminHoles","golfAdminSaveBtn","golfSavedCourseSelect","golfSwipe","golfSwipeDots","golfOverviewHole","golfOverviewPar","golfMapHoleTitle","golfMapCourseTitle","golfMapDistance","golfInlineMap","golfInlineMapMessage","installAppBtn","golfSetupTee","golfHoleLength","golfOverviewLength","golfAdminTees","golfImportCsvBtn","golfImportCsvFile","golfDownloadCsvTemplateBtn","golfImportStatus","programCategoryView","programCategoryGrid","categoryProgramsWrap","categoryProgramsBackBtn","categoryProgramsTitle","categoryPrograms","editProgramCategory","runningTouchLockBtn","golfTouchLockBtn","touchLockOverlay","touchLockEyebrow","touchLockTitle","touchLockPrimary","touchLockSecondary","touchLockUnlockBtn","touchLockUnlockProgress"].forEach(id=>e[id]=$(id));
 
 let session=null,user=null,profile=null,athletes=[],programs=[],programAthleteId=null,activeSession=null,homeTimer=null,runnerTimer=null,finishRating=4,currentMonth=new Date(),realtimeChannel=null,runnerMode=null,intervalState=null,sequenceState=null,lastCueKey="";
 let wakeLock=null;
@@ -56,7 +56,11 @@ async function releaseWakeLock(){
   }
 }
 document.addEventListener("visibilitychange",()=>{
-  if(document.visibilityState==="visible" && activeSession) requestWakeLock();
+  if(document.visibilityState==="visible" && activeSession){
+    requestWakeLock();
+    if(runnerMode==="running" && !runningPaused && !runningWatchId) startRunningGeolocation();
+    if(runnerMode==="golf" && !golfWatchId) startGolfGeolocation();
+  }
 });
 document.addEventListener("pointerdown",()=>{if(activeSession)unlockAudio();},{passive:true});
 
@@ -104,17 +108,22 @@ function getAudioContext(){
 
 
 
-/* v9.8.3 – programstyrt Wake Lock
-   Løping, Golf og Fri økt skal kunne kjøres med skjermen av.
-   Tids-/intervallprogrammer beholder Wake Lock. */
+/* v9.9.8 – programstyrt Wake Lock
+   GPS-programmene Løping og Golf holder skjermen aktiv for stabil web-GPS.
+   Fri økt og Balløkt kan fortsatt la skjermen slås av. */
 function activeProgramWakeLockMode(){
   const type=String(activeSession?.type||activeSession?.program_type||activeSession?.mode||"").toLowerCase();
   const name=String(activeSession?.program_name||activeSession?.name||activeSession?.title||"").toLowerCase();
+  const id=String(activeSession?.program_id||"").toLowerCase();
 
   if(
-    type.includes("running") || type.includes("run") || type.includes("golf") || type.includes("free") ||
-    name.includes("løping") || name.includes("loping") || name.includes("running") ||
-    name.includes("golf") || name.includes("fri økt") || name.includes("fri okt") || name.includes("balløkt")
+    id==="golf" || isRunningProgram?.(id) ||
+    type.includes("running") || type.includes("run") || type.includes("golf") ||
+    name.includes("løping") || name.includes("loping") || name.includes("running") || name.includes("golf")
+  ) return "on";
+
+  if(
+    type.includes("free") || name.includes("fri økt") || name.includes("fri okt") || name.includes("balløkt")
   ) return "off";
 
   return "on";
@@ -552,7 +561,7 @@ function renderActiveSession(){
 }
 async function discardActive(){
  if(!activeSession||!confirm(`Forkaste den aktive økten «${activeSession.program_name}»?`))return;
- const id=activeSession.id;const {error}=await sb.from("cr_workout_sessions").update({status:"cancelled",completed_at:new Date().toISOString(),duration_seconds:elapsed(activeSession.started_at)}).eq("id",id);if(error){alert(error.message);return}if(activeSession?.program_id==="running"){clearRunningState();stopGeolocation();runningState=null}if(activeSession?.program_id==="twenty_minutes"){clearTwentyState();twentyState=null}if(activeSession?.program_id==="golf"){stopGolfGeolocation();destroyGolfInlineMap();clearGolfState();golfState=null}stopLivePublishing();clearRunnerState();activeSession=null;stopLivePublishing();await releaseWakeLock();stopRunnerTick();await loadAthleteData();showOnly("athlete")
+ const id=activeSession.id;const {error}=await sb.from("cr_workout_sessions").update({status:"cancelled",completed_at:new Date().toISOString(),duration_seconds:elapsed(activeSession.started_at)}).eq("id",id);if(error){alert(error.message);return}if(activeSession?.program_id==="running"){clearRunningState();stopGeolocation();runningState=null}if(activeSession?.program_id==="twenty_minutes"){clearTwentyState();twentyState=null}if(activeSession?.program_id==="golf"){stopGolfGeolocation();destroyGolfInlineMap();clearGolfState();golfState=null}stopLivePublishing();clearRunnerState();activeSession=null;deactivateTouchLock();stopLivePublishing();await releaseWakeLock();stopRunnerTick();await loadAthleteData();showOnly("athlete")
 }
 
 async function launchRunner(){
@@ -851,7 +860,7 @@ async function saveFinish(){
   const {error}=await sb.from("cr_workout_sessions").update(updates).eq("id",activeSession.id);
   if(error){alert(error.message);return}
   if(isRunning){clearRunningState();stopGeolocation();runningState=null}if(isTwenty){clearTwentyState();twentyState=null}if(isGolf){stopGolfGeolocation();destroyGolfInlineMap();clearGolfState();golfState=null}
-  stopLivePublishing();clearRunnerState();activeSession=null;stopLivePublishing();await releaseWakeLock();stopRunnerTick();closeModal(e.finishModal);await loadAthleteData();showOnly("athlete")
+  stopLivePublishing();clearRunnerState();activeSession=null;deactivateTouchLock();stopLivePublishing();await releaseWakeLock();stopRunnerTick();closeModal(e.finishModal);await loadAthleteData();showOnly("athlete")
 }
 
 async function ensureProgramActivitiesSeeded(programId){
@@ -3165,7 +3174,84 @@ e.continueSessionBtn.onclick=async()=>{
   unlockAudio().catch(()=>{});
   requestWakeLock().catch(()=>{});
   await launchRunner();
-};e.runningPauseBtn.onclick=toggleRunningPause;e.runningFinishBtn.onclick=finishRunning;e.runningDiscardBtn.onclick=discardActive;e.twentyPauseBtn.onclick=toggleTwentyPause;e.twentyFinishBtn.onclick=finishTwenty;e.twentyDiscardBtn.onclick=discardActive;e.freeWorkoutFinishBtn.onclick=finishFreeWorkout;e.freeWorkoutDiscardBtn.onclick=discardActive;
+};
+let touchLockMode=null,touchUnlockTimer=null,touchLockTicker=null;
+
+function touchLockStats(){
+  if(touchLockMode==="running"){
+    const sec=typeof runningElapsedSeconds==="function"?runningElapsedSeconds():0;
+    const km=(Number(runningState?.distanceMeters)||0)/1000;
+    const pace=runningState?.currentPace?fmtPace(runningState.currentPace):"– /km";
+    return {
+      eyebrow:"LØPING PÅGÅR",
+      title:activeSession?.program_name||"Løping",
+      primary:`${km.toFixed(2).replace(".",",")} km`,
+      secondary:`${fmtElapsed(sec)} · ${pace}`
+    };
+  }
+  if(touchLockMode==="golf"){
+    const sec=activeSession?.started_at?elapsed(activeSession.started_at):0;
+    const km=(Number(golfState?.distanceMeters)||0)/1000;
+    const hole=(typeof golfActiveHole==="function"?golfActiveHole():null)||golfState?.queue?.[0];
+    const holeNo=hole?.hole_no||hole?.hole||hole||"–";
+    return {
+      eyebrow:"GOLFRUNDE PÅGÅR",
+      title:`Hull ${holeNo}`,
+      primary:`${km.toFixed(2).replace(".",",")} km`,
+      secondary:`${fmtElapsed(sec)} · GPS ${golfState?.track?.length||0} punkter`
+    };
+  }
+  return {eyebrow:"ØKT PÅGÅR",title:"CR-Workout",primary:"",secondary:""};
+}
+
+function renderTouchLock(){
+  if(!touchLockMode||!e.touchLockOverlay)return;
+  const s=touchLockStats();
+  e.touchLockEyebrow.textContent=s.eyebrow;
+  e.touchLockTitle.textContent=s.title;
+  e.touchLockPrimary.textContent=s.primary;
+  e.touchLockSecondary.textContent=s.secondary;
+}
+
+async function activateTouchLock(mode){
+  if(!activeSession)return;
+  touchLockMode=mode;
+  e.touchLockOverlay?.classList.remove("hidden");
+  document.body.classList.add("touch-locked");
+  renderTouchLock();
+  clearInterval(touchLockTicker);
+  touchLockTicker=setInterval(renderTouchLock,500);
+  // A user gesture initiated this, which is the best moment to request Screen Wake Lock.
+  await requestWakeLock();
+}
+
+function cancelTouchUnlock(){
+  clearTimeout(touchUnlockTimer);touchUnlockTimer=null;
+  e.touchLockUnlockBtn?.classList.remove("holding");
+}
+
+function deactivateTouchLock(){
+  cancelTouchUnlock();
+  clearInterval(touchLockTicker);touchLockTicker=null;
+  touchLockMode=null;
+  e.touchLockOverlay?.classList.add("hidden");
+  document.body.classList.remove("touch-locked");
+}
+
+function beginTouchUnlock(ev){
+  ev?.preventDefault?.();
+  if(!touchLockMode)return;
+  cancelTouchUnlock();
+  e.touchLockUnlockBtn?.classList.add("holding");
+  touchUnlockTimer=setTimeout(deactivateTouchLock,2000);
+}
+
+e.runningTouchLockBtn.onclick=()=>activateTouchLock("running");
+e.golfTouchLockBtn.onclick=()=>activateTouchLock("golf");
+["pointerdown","touchstart"].forEach(type=>e.touchLockUnlockBtn?.addEventListener(type,beginTouchUnlock,{passive:false}));
+["pointerup","pointercancel","pointerleave","touchend","touchcancel"].forEach(type=>e.touchLockUnlockBtn?.addEventListener(type,cancelTouchUnlock,{passive:true}));
+
+e.runningPauseBtn.onclick=toggleRunningPause;e.runningFinishBtn.onclick=finishRunning;e.runningDiscardBtn.onclick=discardActive;e.twentyPauseBtn.onclick=toggleTwentyPause;e.twentyFinishBtn.onclick=finishTwenty;e.twentyDiscardBtn.onclick=discardActive;e.freeWorkoutFinishBtn.onclick=finishFreeWorkout;e.freeWorkoutDiscardBtn.onclick=discardActive;
 e.golfSetupClose.onclick=()=>closeModal(e.golfSetupModal);
 if(e.golfDownloadCsvTemplateBtn)e.golfDownloadCsvTemplateBtn.onclick=downloadGolfCsvTemplate;
 if(e.golfImportCsvFile)e.golfImportCsvFile.onchange=()=>importGolfCourseCsv(e.golfImportCsvFile.files?.[0]);
