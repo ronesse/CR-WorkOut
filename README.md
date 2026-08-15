@@ -563,3 +563,8 @@ Implementasjon følger eksisterende CR-Workout-prinsipp:
 - Wake Lock forsøkes hentet på nytt når appen blir synlig igjen.
 - GPS-watch forsøkes startet på nytt når appen får fokus igjen.
 - Ingen SQL-endring.
+
+## v9.9.8.1 – fix for GPS touch lock
+- Fixed an issue where the full-screen touch lock could remain visible after the 2-second unlock gesture.
+- Overlay visibility now uses the HTML `hidden` attribute, an explicit inline display state, and a CSS fallback.
+- No SQL change.

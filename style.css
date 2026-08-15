@@ -1285,3 +1285,9 @@ button.confirm-end{
 .touch-lock-unlock.holding span{width:100%;transition:width 2s linear}
 .touch-lock-content p{font-size:.8rem;color:#94a3b8;margin-top:16px}
 body.touch-locked{overflow:hidden!important}
+
+/* v9.9.8.1 – ensure touch-lock overlay can actually be closed */
+.touch-lock-overlay[hidden],
+.touch-lock-overlay.hidden{
+  display:none !important;
+}

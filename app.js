@@ -3216,7 +3216,11 @@ function renderTouchLock(){
 async function activateTouchLock(mode){
   if(!activeSession)return;
   touchLockMode=mode;
-  e.touchLockOverlay?.classList.remove("hidden");
+  if(e.touchLockOverlay){
+    e.touchLockOverlay.hidden=false;
+    e.touchLockOverlay.classList.remove("hidden");
+    e.touchLockOverlay.style.display="flex";
+  }
   document.body.classList.add("touch-locked");
   renderTouchLock();
   clearInterval(touchLockTicker);
@@ -3234,7 +3238,11 @@ function deactivateTouchLock(){
   cancelTouchUnlock();
   clearInterval(touchLockTicker);touchLockTicker=null;
   touchLockMode=null;
-  e.touchLockOverlay?.classList.add("hidden");
+  if(e.touchLockOverlay){
+    e.touchLockOverlay.classList.add("hidden");
+    e.touchLockOverlay.hidden=true;
+    e.touchLockOverlay.style.display="none";
+  }
   document.body.classList.remove("touch-locked");
 }
 
